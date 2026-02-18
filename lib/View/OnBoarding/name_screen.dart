@@ -67,30 +67,6 @@ class NameScreen extends StatelessWidget {
               Spacer(),
 
               CustomButton(label: "Continue", ontap: onNext),
-
-              /// Continue Button (Full width rounded)
-              // SizedBox(
-              //   width: double.infinity,
-              //   height: 55,
-              //   child: ElevatedButton(
-              //     onPressed: onNext,
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: AppColors.primary,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(30),
-              //       ),
-              //       elevation: 0,
-              //     ),
-              //     child: Text(
-              //       "Continue",
-              //       style: TextStyle(
-              //         fontSize: 16,
-              //         fontWeight: FontWeight.w600,
-              //         color: AppColors.white,
-              //       ),
-              //     ),
-              //   ),
-              // ),
               SizedBox(height: 30),
             ],
           ),
