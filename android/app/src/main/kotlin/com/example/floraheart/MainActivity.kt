@@ -1,0 +1,5 @@
+package com.example.floraheart
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
