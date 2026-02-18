@@ -13,6 +13,5 @@ class AppRoutes {
     GetPage(name: AppRoutesName.splash, page: ()=> SplashScreen()),
     GetPage(name: AppRoutesName.loginScreen, page: ()=> LoginScreen()),
     GetPage(name: AppRoutesName.signupScreen, page: ()=> SignupScreen()),
-    // GetPage(name: AppRoutesName.nameScreen, page: ()=> NameScreen(onNext: () {  },)),
   ];
 }

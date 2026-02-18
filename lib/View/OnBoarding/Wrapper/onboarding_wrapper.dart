@@ -6,6 +6,7 @@ import 'package:floraheart/View/OnBoarding/name_screen.dart';
 import 'package:floraheart/View/OnBoarding/period_end_screen.dart';
 import 'package:floraheart/View/OnBoarding/period_length.dart';
 import 'package:floraheart/View/OnBoarding/weight_screen.dart';
+import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -88,7 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 duration: const Duration(milliseconds: 300),
                                 height: 4,
                                 width: progress,
-                                color: const Color(0xffE91E63),
+                                color: AppColors.primary,
                               ),
                             ],
                           ),
