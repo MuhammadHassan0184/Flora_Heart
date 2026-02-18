@@ -1,5 +1,4 @@
 import 'package:floraheart/View/OnBoarding/birthday_screen.dart';
-import 'package:floraheart/View/OnBoarding/cycle_length_screen.dart';
 import 'package:floraheart/View/OnBoarding/cycle_regularity_screen.dart';
 import 'package:floraheart/View/OnBoarding/height_screen.dart';
 import 'package:floraheart/View/OnBoarding/name_screen.dart';
@@ -131,7 +130,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   HeightScreen(onNext: next),
                   PeriodLengthScreen(onNext: next),
                   CycleRegularityScreen(onNext: next),
-                  CycleLengthScreen(onNext: next),
                   PeriodEndScreen(onNext: next),
                 ],
               ),
