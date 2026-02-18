@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 15),
+            SizedBox(height: 20),
 
             /// ===== TOP HEADER =====
             Padding(
@@ -97,14 +97,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15),
 
                   /// Step Counter
                   Text(
                     "${currentIndex + 1}/$totalSteps",
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

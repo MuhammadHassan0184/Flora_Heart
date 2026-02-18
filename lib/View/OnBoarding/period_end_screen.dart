@@ -1,4 +1,5 @@
 import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class PeriodEndScreen extends StatefulWidget {
@@ -189,7 +190,7 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xffE31E4F)
+                                  ? AppColors.primary
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(10),
                             ),
