@@ -30,7 +30,7 @@ class _HeightScreenState extends State<HeightScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
               ),
 
-              SizedBox(height: 50),
+              SizedBox(height: 60),
 
               /// Feet & Inches Picker
               Row(
@@ -42,7 +42,7 @@ class _HeightScreenState extends State<HeightScreen> {
                       Text(
                         "Feet",
                         style: TextStyle(
-                          color: Colors.red,
+                          color: AppColors.primary,
                           fontSize: 21,
                           fontWeight: FontWeight.w500,
                         ),
@@ -82,7 +82,7 @@ class _HeightScreenState extends State<HeightScreen> {
                       Text(
                         "Inches",
                         style: TextStyle(
-                          color: Colors.red,
+                          color: AppColors.primary,
                           fontSize: 21,
                           fontWeight: FontWeight.w500,
                         ),
@@ -150,7 +150,7 @@ class _HeightScreenState extends State<HeightScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? Colors.red : Colors.grey[400],
+                color: isSelected ? AppColors.primary : Colors.grey[400],
               ),
             ),
           );

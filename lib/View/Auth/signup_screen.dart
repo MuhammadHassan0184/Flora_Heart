@@ -128,9 +128,11 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Get.toNamed(AppRoutesName.loginScreen);
+                        },
                         child: Text(
-                          "Sign Up",
+                          "Sign In",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

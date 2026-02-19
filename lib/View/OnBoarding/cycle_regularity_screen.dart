@@ -49,14 +49,14 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
             Divider(),
 
             /// 🔥 THIS MAKES PICKER CENTERED
-            Expanded(
-              child: Center(
-                child: SizedBox(
-                  height: 250, // important for proper centering
-                  child: isRegular ? buildSinglePicker() : buildDoublePicker(),
-                ),
+            Center(
+              child: SizedBox(
+                height: 250, // important for proper centering
+                child: isRegular ? buildSinglePicker() : buildDoublePicker(),
               ),
             ),
+
+            Spacer(),
 
             /// Continue Button
             Padding(
@@ -109,7 +109,7 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
                   Container(
                     margin: const EdgeInsets.only(top: 6),
                     width: 40,
-                    height: 1.5,
+                    height: 2,
                     color: AppColors.lightgrey,
                   ),
               ],

@@ -13,11 +13,16 @@ class WeightScreen extends StatefulWidget {
 
 class _WeightScreenState extends State<WeightScreen> {
   bool isKg = true;
-  double selectedWeight = 40.0;
+  // double selectedWeight = 40.0;
+  double selectedWeight = 10.00;
 
   final FixedExtentScrollController _controller = FixedExtentScrollController(
-    initialItem: 1000,
+    initialItem: 0,
   );
+
+  // final FixedExtentScrollController _controller = FixedExtentScrollController(
+  //   initialItem: 1000,
+  // );
 
   @override
   Widget build(BuildContext context) {
@@ -92,21 +97,28 @@ class _WeightScreenState extends State<WeightScreen> {
                     itemExtent: 40,
                     physics: const FixedExtentScrollPhysics(),
                     onSelectedItemChanged: (index) {
+                      int whole = 10 + (index ~/ 10);
+                      int decimal = index % 10;
+
                       setState(() {
-                        selectedWeight = 30 + index * 0.01;
+                        selectedWeight = double.parse("$whole.0$decimal");
                       });
                     },
                     childDelegate: ListWheelChildBuilderDelegate(
-                      childCount: 2000,
+                      childCount: (150 - 10 + 1) * 10, // 10.00 → 150.09
                       builder: (context, index) {
-                        double value = 30 + index * 0.01;
-                        bool isSelected =
-                            value.toStringAsFixed(2) ==
-                            selectedWeight.toStringAsFixed(2);
+                        int whole = 10 + (index ~/ 10);
+                        int decimal = index % 10;
+
+                        String valueString = "$whole.0$decimal";
+
+                        double value = double.parse(valueString);
+
+                        bool isSelected = value == selectedWeight;
 
                         return Center(
                           child: Text(
-                            value.toStringAsFixed(2),
+                            valueString,
                             style: TextStyle(
                               fontSize: isSelected ? 22 : 16,
                               fontWeight: isSelected
@@ -123,6 +135,7 @@ class _WeightScreenState extends State<WeightScreen> {
                   ),
                 ),
               ),
+
               Spacer(),
 
               SizedBox(height: 20),
