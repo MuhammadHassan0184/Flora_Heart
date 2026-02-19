@@ -46,7 +46,10 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
             ),
 
             SizedBox(height: 20),
-            Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(),
+            ),
 
             /// 🔥 THIS MAKES PICKER CENTERED
             Center(

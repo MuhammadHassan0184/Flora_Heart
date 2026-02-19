@@ -1,6 +1,9 @@
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:get/state_manager.dart';
 
 class PeriodEndScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -219,7 +222,12 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(label: "Continue", ontap: widget.onNext),
+              child: CustomButton(
+                label: "Continue",
+                ontap: () {
+                  Get.toNamed(AppRoutesName.homeScreen);
+                },
+              ),
             ),
 
             const SizedBox(height: 30),
