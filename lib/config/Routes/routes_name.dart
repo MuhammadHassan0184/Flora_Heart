@@ -4,5 +4,7 @@ class AppRoutesName {
   static const String splash = "/SplashScreen";
   static const String loginScreen = "/LoginScreen";
   static const String signupScreen = "/SignupScreen";
+  static const String mainScreen = "/MainScreen";
   static const String homeScreen = "/HomeScreen";
+  static const String calendarScreen = "/CalendarScreen";
 }

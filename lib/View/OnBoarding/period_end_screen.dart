@@ -1,3 +1,4 @@
+import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
@@ -225,7 +226,7 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
               child: CustomButton(
                 label: "Continue",
                 ontap: () {
-                  Get.toNamed(AppRoutesName.homeScreen);
+                  Get.offAll(() => MainScreen());
                 },
               ),
             ),

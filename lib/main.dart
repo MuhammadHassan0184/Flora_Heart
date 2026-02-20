@@ -1,5 +1,5 @@
-import 'package:floraheart/View/Splash/splash_screen.dart';
 import 'package:floraheart/config/Routes/routes.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,9 +17,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
-      // home: LoginScreen(),
-      // home: SignupScreen(),
+      // home: SplashScreen(),
+      
+      initialRoute: AppRoutesName.splash, // 👈 start from splash
+
+      
       theme: ThemeData(
          fontFamily: 'Poppins',
         textTheme: GoogleFonts.poppinsTextTheme(),

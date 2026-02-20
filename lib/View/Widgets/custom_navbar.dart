@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class CustomBottomBar extends StatelessWidget {
     return Container(
       // margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      height: 80,
+      height: 90,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
@@ -52,10 +52,7 @@ class CustomBottomBar extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.black : Colors.grey,
-          ),
+          Icon(icon, color: isSelected ? Colors.black : Colors.grey),
           const SizedBox(height: 4),
           Text(
             label,
@@ -73,17 +70,14 @@ class CustomBottomBar extends StatelessWidget {
     return GestureDetector(
       onTap: onCenterTap,
       child: Container(
+        margin: const EdgeInsets.only(bottom: 7),
         height: 60,
         width: 60,
         decoration: const BoxDecoration(
           color: Color(0xFFE91E63),
           shape: BoxShape.circle,
         ),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 30,
-        ),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
     );
   }
