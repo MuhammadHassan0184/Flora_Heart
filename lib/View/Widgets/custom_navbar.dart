@@ -1,6 +1,8 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -34,17 +36,17 @@ class CustomBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _navItem(Icons.home, "Home", 0),
-          _navItem(Icons.calendar_month, "Calendar", 1),
+          _navItem("assets/home.svg", "Home", 0),
+          _navItem("assets/calendar.svg", "Calendar", 1),
           _centerButton(),
-          _navItem(Icons.favorite_border, "Self Care", 2),
-          _navItem(Icons.person_outline, "Profile", 3),
+          _navItem("assets/selfcare.svg", "Self Care", 2),
+          _navItem("assets/profile.svg", "Profile", 3),
         ],
       ),
     );
   }
 
-  Widget _navItem(IconData icon, String label, int index) {
+  Widget _navItem(String iconPath, String label, int index) {
     bool isSelected = selectedIndex == index;
 
     return GestureDetector(
@@ -52,13 +54,21 @@ class CustomBottomBar extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: isSelected ? Colors.black : Colors.grey),
-          const SizedBox(height: 4),
+          SvgPicture.asset(
+            iconPath,
+            width: 24,
+            height: 24,
+            color: isSelected
+                ? Colors.black
+                : Colors.grey, // optional color tint
+          ),
+          SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
               color: isSelected ? Colors.black : Colors.grey,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             ),
           ),
         ],
@@ -73,8 +83,8 @@ class CustomBottomBar extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 7),
         height: 60,
         width: 60,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE91E63),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
           shape: BoxShape.circle,
         ),
         child: const Icon(Icons.add, color: Colors.white, size: 30),
