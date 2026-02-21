@@ -2,7 +2,7 @@
 import 'package:floraheart/View/Auth/login_screen.dart';
 import 'package:floraheart/View/Auth/signup_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
-import 'package:floraheart/View/Calendar/today_screen.dart';
+import 'package:floraheart/View/detail/today_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';

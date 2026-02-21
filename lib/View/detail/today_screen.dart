@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:floraheart/View/Calendar/flow_select.dart';
+import 'package:floraheart/View/detail/cards/flow_select.dart';
+import 'package:floraheart/View/detail/cards/mood_section.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -254,6 +255,8 @@ class _TodayScreenState extends State<TodayScreen> {
               ],
             ),
           ),
+          SizedBox(height: 10),
+          MoodSection(),
         ],
       ),
     );
