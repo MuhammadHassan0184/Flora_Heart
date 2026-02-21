@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:floraheart/View/Widgets/custom_date_card.dart';
-import 'package:floraheart/View/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/route_manager.dart';
+import 'package:get/state_manager.dart';
 import 'dart:math';
 
 // Add the wave package
@@ -98,7 +100,35 @@ class _HomeScreenState extends State<HomeScreen>
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [CustomEditButton()],
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(AppRoutesName.todayScreen);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      width: 71,
+                      height: 29,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.grey.withOpacity(0.3),
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/PinkDrops.svg",
+                            width: 21,
+                            height: 21,
+                          ),
+                          Text("Edit", style: TextStyle(color: AppColors.grey)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 10),
@@ -141,18 +171,15 @@ class _HomeScreenState extends State<HomeScreen>
                           gradients: [
                             [
                               AppColors.primary.withOpacity(0.6),
-                              AppColors.primary.withOpacity(0.4),
+                              AppColors.primary.withOpacity(0.4)
                             ],
                             [
                               AppColors.primary.withOpacity(0.4),
-                              AppColors.primary.withOpacity(0.2),
+                              AppColors.primary.withOpacity(0.2)
                             ],
                           ],
                           durations: [5000, 7000],
-                          heightPercentages: [
-                            0.5 * _waveProgress,
-                            0.52 * _waveProgress,
-                          ],
+                          heightPercentages: [0.5 * _waveProgress, 0.52 * _waveProgress],
                         ),
                         backgroundColor: Colors.white,
                         waveAmplitude: 15,

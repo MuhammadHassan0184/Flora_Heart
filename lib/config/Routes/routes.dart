@@ -2,6 +2,7 @@
 import 'package:floraheart/View/Auth/login_screen.dart';
 import 'package:floraheart/View/Auth/signup_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
+import 'package:floraheart/View/Calendar/today_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';
@@ -19,5 +20,6 @@ class AppRoutes {
     GetPage(name: AppRoutesName.mainScreen, page: ()=> MainScreen()),
     GetPage(name: AppRoutesName.homeScreen, page: ()=> HomeScreen()),
     GetPage(name: AppRoutesName.calendarScreen, page: ()=> CalendarScreen()),
+    GetPage(name: AppRoutesName.todayScreen, page: ()=> TodayScreen()),
   ];
 }

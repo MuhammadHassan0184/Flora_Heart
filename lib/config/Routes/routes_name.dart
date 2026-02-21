@@ -7,4 +7,5 @@ class AppRoutesName {
   static const String mainScreen = "/MainScreen";
   static const String homeScreen = "/HomeScreen";
   static const String calendarScreen = "/CalendarScreen";
+  static const String todayScreen = "/TodayScreen";
 }
