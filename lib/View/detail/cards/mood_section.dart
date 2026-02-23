@@ -14,7 +14,7 @@ class _MoodSectionState extends State<MoodSection> {
   String selectedMood = "";
 
   final List<Map<String, dynamic>> moods = [
-    {"label": "Anxious", "icon": "assets/sad.svg",},
+    {"label": "Anxious", "icon": "assets/anxious.svg"},
     {"label": "Sad", "icon": "assets/sad.svg"},
     {"label": "Happy", "icon": "assets/happy.svg"},
     {"label": "Calm", "icon": "assets/calm.svg"},

@@ -2,6 +2,9 @@
 
 import 'package:floraheart/View/detail/cards/flow_select.dart';
 import 'package:floraheart/View/detail/cards/mood_section.dart';
+import 'package:floraheart/View/detail/cards/sexual_activity.dart';
+import 'package:floraheart/View/detail/cards/symptoms_section.dart';
+import 'package:floraheart/View/detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,192 +75,200 @@ class _TodayScreenState extends State<TodayScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          /// ===== Calendar Container =====
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              children: [
-                /// Month Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            /// ===== Calendar Container =====
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  /// Month Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        /// Left Arrow
+                        GestureDetector(
+                          onTap: () => _changeMonth(-1),
+                          child: _arrowButton(Icons.chevron_left),
+                        ),
+        
+                        /// Month Name
+                        Text(
+                          DateFormat('MMMM yyyy').format(_currentMonth),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+        
+                        /// Right Arrow
+                        GestureDetector(
+                          onTap: () => _changeMonth(1),
+                          child: _arrowButton(Icons.chevron_right),
+                        ),
+                      ],
+                    ),
+                  ),
+        
+                  SizedBox(height: 20),
+        
+                  /// Dates
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 13),
+                    child: SizedBox(
+                      height: 70,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: totalDays,
+                        itemBuilder: (context, index) {
+                          DateTime date = DateTime(
+                            _currentMonth.year,
+                            _currentMonth.month,
+                            index + 1,
+                          );
+        
+                          bool isSelected =
+                              _selectedDate.year == date.year &&
+                              _selectedDate.month == date.month &&
+                              _selectedDate.day == date.day;
+        
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedDate = date;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 14),
+                              child: isSelected
+                                  ? _selectedItem(date)
+                                  : _normalItem(date),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              // height: 120,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Period",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 15),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      /// Left Arrow
-                      GestureDetector(
-                        onTap: () => _changeMonth(-1),
-                        child: _arrowButton(Icons.chevron_left),
-                      ),
-
-                      /// Month Name
-                      Text(
-                        DateFormat('MMMM yyyy').format(_currentMonth),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                      /// START BUTTON
+                      Expanded(
+                        child: Container(
+                          height: 37,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary, // red color
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.play_arrow, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text(
+                                "Start",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-
-                      /// Right Arrow
-                      GestureDetector(
-                        onTap: () => _changeMonth(1),
-                        child: _arrowButton(Icons.chevron_right),
+        
+                      SizedBox(width: 20),
+        
+                      /// END BUTTON
+                      Expanded(
+                        child: Container(
+                          height: 37,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.stop, color: Colors.white, size: 18),
+                              SizedBox(width: 6),
+                              Text(
+                                "End",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-
-                SizedBox(height: 20),
-
-                /// Dates
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 13),
-                  child: SizedBox(
-                    height: 70,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: totalDays,
-                      itemBuilder: (context, index) {
-                        DateTime date = DateTime(
-                          _currentMonth.year,
-                          _currentMonth.month,
-                          index + 1,
-                        );
-
-                        bool isSelected =
-                            _selectedDate.year == date.year &&
-                            _selectedDate.month == date.month &&
-                            _selectedDate.day == date.day;
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedDate = date;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 14),
-                            child: isSelected
-                                ? _selectedItem(date)
-                                : _normalItem(date),
-                          ),
-                        );
-                      },
-                    ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Flow",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                ),
-              ],
+                  SizedBox(height: 8),
+                  FlowSelector(),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            // height: 120,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Period",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    /// START BUTTON
-                    Expanded(
-                      child: Container(
-                        height: 37,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary, // red color
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.play_arrow, color: Colors.white),
-                            SizedBox(width: 6),
-                            Text(
-                              "Start",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(width: 20),
-
-                    /// END BUTTON
-                    Expanded(
-                      child: Container(
-                        height: 37,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.stop, color: Colors.white, size: 18),
-                            SizedBox(width: 6),
-                            Text(
-                              "End",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Flow",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                FlowSelector(),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          MoodSection(),
-        ],
+            SizedBox(height: 10),
+            MoodSection(),
+            SizedBox(height: 10),
+            SymptomsSection(),
+            SizedBox(height: 10),
+            DischargeSection(),
+            SizedBox(height: 10),
+            SexualActivitySection(),
+          ],
+        ),
       ),
     );
   }

@@ -1,0 +1,65 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+import 'package:floraheart/View/Widgets/custom_chip.dart';
+
+class DischargeSection extends StatefulWidget {
+  const DischargeSection({super.key});
+
+  @override
+  State<DischargeSection> createState() => _DischargeSectionState();
+}
+
+class _DischargeSectionState extends State<DischargeSection> {
+  String selectedDischarge = "";
+
+  final List<Map<String, dynamic>> dischargeTypes = [
+    {"label": "Dry", "icon": "assets/discharge.svg"},
+    {"label": "Sticky", "icon": "assets/discharge.svg"},
+    {"label": "Creamy", "icon": "assets/discharge.svg"},
+    {"label": "Watery", "icon": "assets/discharge.svg"},
+    {"label": "Egg White", "icon": "assets/discharge.svg"},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Vaginal Discharge",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+
+          Wrap(
+            spacing: 17,
+            runSpacing: 8,
+            children: dischargeTypes.map((type) {
+              return CustomSelectableChip(
+                label: type["label"],
+                iconPath: type["icon"],
+                isSelected: selectedDischarge == type["label"],
+                onTap: () {
+                  setState(() {
+                    if (selectedDischarge == type["label"]) {
+                      selectedDischarge = "";
+                    } else {
+                      selectedDischarge = type["label"];
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}

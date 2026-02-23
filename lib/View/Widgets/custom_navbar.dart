@@ -1,8 +1,11 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/route_manager.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -78,7 +81,9 @@ class CustomBottomBar extends StatelessWidget {
 
   Widget _centerButton() {
     return GestureDetector(
-      onTap: onCenterTap,
+      onTap: () {
+        Get.toNamed(AppRoutesName.todayScreen);
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 7),
         height: 60,
