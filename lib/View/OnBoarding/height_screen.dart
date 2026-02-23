@@ -120,7 +120,7 @@ class _HeightScreenState extends State<HeightScreen> {
               Spacer(),
 
               /// Continue Button
-              CustomButton(label: "Continue", ontap: widget.onNext),
+              CustomButton(label: "Continue", ontap: widget.onNext,),
               SizedBox(height: 30),
             ],
           ),

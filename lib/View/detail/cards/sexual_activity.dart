@@ -17,18 +17,18 @@ class _SexualActivitySectionState extends State<SexualActivitySection> {
     {"label": "None", "icon": "assets/none.svg"},
     {"label": "Protected", "icon": "assets/protected.svg"},
     {"label": "Unprotected", "icon": "assets/unprotected.svg"},
-    {"label": "Male Orgasm", "icon": "assets/male.svg"},
-    {"label": "Female Orgasm", "icon": "assets/female.svg"},
+    {"label": "Male Orgasm", "icon": "assets/maleorgasm.svg"},
+    {"label": "Female Orgasm", "icon": "assets/femaleorgasm.svg"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 0),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(20),
-        color: Colors.grey.withOpacity(0.05),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,25 +37,20 @@ class _SexualActivitySectionState extends State<SexualActivitySection> {
             "Sexual Activity",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
+          /// Chips Grid
           Wrap(
-            spacing: 20,
-            runSpacing: 10,
+            spacing: 27,
+            runSpacing: 8,
             children: activities.map((activity) {
-              final label = activity["label"];
-
               return CustomSelectableChip(
-                label: label,
+                label: activity["label"],
                 iconPath: activity["icon"],
-                isSelected: selectedActivity == label,
+                isSelected: selectedActivity == activity["label"],
                 onTap: () {
                   setState(() {
-                    if (selectedActivity == label) {
-                      selectedActivity = "";
-                    } else {
-                      selectedActivity = label;
-                    }
+                    selectedActivity = activity["label"];
                   });
                 },
               );

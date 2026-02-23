@@ -1,12 +1,19 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/View/Widgets/custom_card_button.dart';
+import 'package:floraheart/View/detail/BottonSheets/medicine_bottomsheet.dart';
 import 'package:floraheart/View/detail/cards/flow_select.dart';
 import 'package:floraheart/View/detail/cards/mood_section.dart';
 import 'package:floraheart/View/detail/cards/sexual_activity.dart';
 import 'package:floraheart/View/detail/cards/symptoms_section.dart';
 import 'package:floraheart/View/detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 
 class TodayScreen extends StatefulWidget {
@@ -95,7 +102,7 @@ class _TodayScreenState extends State<TodayScreen> {
                           onTap: () => _changeMonth(-1),
                           child: _arrowButton(Icons.chevron_left),
                         ),
-        
+
                         /// Month Name
                         Text(
                           DateFormat('MMMM yyyy').format(_currentMonth),
@@ -104,7 +111,7 @@ class _TodayScreenState extends State<TodayScreen> {
                             fontSize: 16,
                           ),
                         ),
-        
+
                         /// Right Arrow
                         GestureDetector(
                           onTap: () => _changeMonth(1),
@@ -113,9 +120,9 @@ class _TodayScreenState extends State<TodayScreen> {
                       ],
                     ),
                   ),
-        
+
                   SizedBox(height: 20),
-        
+
                   /// Dates
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -132,12 +139,12 @@ class _TodayScreenState extends State<TodayScreen> {
                             _currentMonth.month,
                             index + 1,
                           );
-        
+
                           bool isSelected =
                               _selectedDate.year == date.year &&
                               _selectedDate.month == date.month &&
                               _selectedDate.day == date.day;
-        
+
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -205,9 +212,9 @@ class _TodayScreenState extends State<TodayScreen> {
                           ),
                         ),
                       ),
-        
+
                       SizedBox(width: 20),
-        
+
                       /// END BUTTON
                       Expanded(
                         child: Container(
@@ -266,7 +273,383 @@ class _TodayScreenState extends State<TodayScreen> {
             SizedBox(height: 10),
             DischargeSection(),
             SizedBox(height: 10),
+            CustomCardButton(
+              label: "Basal Body Temperature",
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(25),
+                    ),
+                  ),
+                  builder: (context) {
+                    String selectedUnit = "°C";
+                    double selectedValue = 40.00;
+
+                    // Create full list of temperatures
+                    List<double> celsiusTemps = List.generate(
+                      601,
+                      (index) => 36.00 + index * 0.01,
+                    ); // 36.00 to 42.00
+                    List<double> fahrenheitTemps = celsiusTemps
+                        .map((c) => c * 9 / 5 + 32)
+                        .toList();
+
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        List<double> temps = selectedUnit == "°C"
+                            ? celsiusTemps
+                            : fahrenheitTemps;
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Header
+                                Text(
+                                  "Temperature",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // °C / °F Toggle
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _unitToggle("°C", selectedUnit, () {
+                                      setState(() {
+                                        selectedUnit = "°C";
+                                        selectedValue = 40.00;
+                                      });
+                                    }),
+                                    SizedBox(width: 12),
+                                    _unitToggle("°F", selectedUnit, () {
+                                      setState(() {
+                                        selectedUnit = "°F";
+                                        selectedValue = 104.0; // 40°C in °F
+                                      });
+                                    }),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+
+                                // Display selected temperature
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  width: double.infinity,
+                                  height: 47,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      color: AppColors.primary,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      selectedValue.toStringAsFixed(2),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // Picker
+                                SizedBox(
+                                  height: 150,
+                                  child: ListWheelScrollView.useDelegate(
+                                    itemExtent: 40,
+                                    physics: FixedExtentScrollPhysics(),
+                                    onSelectedItemChanged: (index) {
+                                      setState(() {
+                                        selectedValue = temps[index];
+                                      });
+                                    },
+                                    childDelegate:
+                                        ListWheelChildBuilderDelegate(
+                                          childCount: temps.length,
+                                          builder: (context, index) {
+                                            double temp = temps[index];
+                                            bool isSelected =
+                                                temp.toStringAsFixed(2) ==
+                                                selectedValue.toStringAsFixed(
+                                                  2,
+                                                );
+                                            return Center(
+                                              child: Text(
+                                                temp.toStringAsFixed(2),
+                                                style: TextStyle(
+                                                  fontSize: isSelected
+                                                      ? 20
+                                                      : 16,
+                                                  color: isSelected
+                                                      ? AppColors.primary
+                                                      : Colors.grey,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // Done button
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: CustomButton(
+                                    label: "Done",
+                                    ontap: () {
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "Selected: ${selectedValue.toStringAsFixed(2)} $selectedUnit",
+                                          ),
+                                          backgroundColor: AppColors.primary,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+
+            SizedBox(height: 10),
+            CustomCardButton(
+              label: "Weight",
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(25),
+                    ),
+                  ),
+                  builder: (context) {
+                    String selectedUnit = "Kg";
+                    double selectedValue = 40.00;
+
+                    // Create full list of temperatures
+                    List<double> celsiusTemps = List.generate(
+                      601,
+                      (index) => 36.00 + index * 0.01,
+                    ); // 36.00 to 42.00
+                    List<double> fahrenheitTemps = celsiusTemps
+                        .map((c) => c * 9 / 5 + 32)
+                        .toList();
+
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        List<double> temps = selectedUnit == "Lb"
+                            ? celsiusTemps
+                            : fahrenheitTemps;
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Header
+                                Text(
+                                  "Weight",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // °C / °F Toggle
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _unitToggle("Kg", selectedUnit, () {
+                                      setState(() {
+                                        selectedUnit = "Lb";
+                                        selectedValue = 40.00;
+                                      });
+                                    }),
+                                    SizedBox(width: 12),
+                                    _unitToggle("Lb", selectedUnit, () {
+                                      setState(() {
+                                        selectedUnit = "Lb";
+                                        selectedValue = 88.0; // 40kg in lbs
+                                      });
+                                    }),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+
+                                // Display selected temperature
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  width: double.infinity,
+                                  height: 47,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                      color: AppColors.primary,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      selectedValue.toStringAsFixed(2),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // Picker
+                                SizedBox(
+                                  height: 150,
+                                  child: ListWheelScrollView.useDelegate(
+                                    itemExtent: 40,
+                                    physics: FixedExtentScrollPhysics(),
+                                    onSelectedItemChanged: (index) {
+                                      setState(() {
+                                        selectedValue = temps[index];
+                                      });
+                                    },
+                                    childDelegate:
+                                        ListWheelChildBuilderDelegate(
+                                          childCount: temps.length,
+                                          builder: (context, index) {
+                                            double temp = temps[index];
+                                            bool isSelected =
+                                                temp.toStringAsFixed(2) ==
+                                                selectedValue.toStringAsFixed(
+                                                  2,
+                                                );
+                                            return Center(
+                                              child: Text(
+                                                temp.toStringAsFixed(2),
+                                                style: TextStyle(
+                                                  fontSize: isSelected
+                                                      ? 20
+                                                      : 16,
+                                                  color: isSelected
+                                                      ? AppColors.primary
+                                                      : Colors.grey,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+
+                                // Done button
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  child: CustomButton(
+                                    label: "Done",
+                                    ontap: () {
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "Selected: ${selectedValue.toStringAsFixed(2)} $selectedUnit",
+                                          ),
+                                          backgroundColor: AppColors.primary,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+            SizedBox(height: 10),
             SexualActivitySection(),
+            SizedBox(height: 10),
+            CustomCardButton(
+              label: "Medicine",
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => MedicineBottomSheetExample(),
+                );
+              },
+            ),
+            SizedBox(height: 10),
+            CustomCardButton(label: "Drink Water"),
+            SizedBox(height: 10),
+            CustomCardButton(label: "Tests"),
+            SizedBox(height: 10),
+            CustomCardButton(label: "Note"),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: CustomButton(
+                label: "Done",
+                ontap: () {
+                  Get.toNamed(AppRoutesName.mainScreen);
+                },
+              ),
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -339,4 +722,27 @@ class _TodayScreenState extends State<TodayScreen> {
       ),
     );
   }
+}
+
+// Helper for toggle buttons
+Widget _unitToggle(String unit, String selectedUnit, VoidCallback onTap) {
+  bool isSelected = unit == selectedUnit;
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.primary : Colors.white,
+        border: Border.all(color: AppColors.primary),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Text(
+        unit,
+        style: TextStyle(
+          color: isSelected ? Colors.white : AppColors.primary,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  );
 }

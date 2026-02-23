@@ -141,7 +141,7 @@ class _WeightScreenState extends State<WeightScreen> {
               SizedBox(height: 20),
 
               /// CONTINUE BUTTON
-              CustomButton(label: "Continue", ontap: widget.onNext),
+              CustomButton(label: "Continue", ontap: widget.onNext,),
 
               SizedBox(height: 20),
             ],

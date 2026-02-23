@@ -112,7 +112,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: CustomButton(label: "Sign Up", ontap: () {
                       Get.toNamed(AppRoutesName.loginScreen);
-                    },),
+                    }, ),
                   ),
 
                   SizedBox(height: 20),

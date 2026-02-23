@@ -60,7 +60,7 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
               SizedBox(height: 25),
 
               /// Continue Button
-              CustomButton(label: "Continue", ontap: widget.onNext),
+              CustomButton(label: "Continue", ontap: widget.onNext,),
               SizedBox(height: 30),
             ],
           ),

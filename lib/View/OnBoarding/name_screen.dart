@@ -66,7 +66,7 @@ class NameScreen extends StatelessWidget {
 
               Spacer(),
 
-              CustomButton(label: "Continue", ontap: onNext),
+              CustomButton(label: "Continue", ontap: onNext,),
               SizedBox(height: 30),
             ],
           ),

@@ -104,7 +104,7 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(label: "Continue", ontap: widget.onNext),
+              child: CustomButton(label: "Continue", ontap: widget.onNext,),
             ),
 
             SizedBox(height: 30),

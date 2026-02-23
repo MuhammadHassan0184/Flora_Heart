@@ -122,7 +122,7 @@ Widget build(BuildContext context) {
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: CustomButton(label: "Sign In", ontap: () {
                     Get.offAllNamed(AppRoutesName.onboarding);
-                  },),
+                  }, ),
                 ),
 
                 SizedBox(height: 20),
