@@ -20,7 +20,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     "All",
     "Cycle Syncing",
     "Nutrition & Wellness",
-    "Pain",
+    "Pain & Management",
   ];
 
   final List<Map<String, String>> articles = [
@@ -36,7 +36,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain Management",
+      "tag": "Pain & Management",
       "image": "assets/mountain.png",
     },
     {
@@ -46,7 +46,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain Management",
+      "tag": "Pain & Management",
       "image": "assets/mountain.png",
     },
   ];

@@ -19,7 +19,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
     "All",
     "Cycle Syncing",
     "Nutrition & Wellness",
-    "Pain",
+    "Pain & Management",
   ];
 
   final List<Map<String, String>> articles = [
@@ -35,7 +35,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain Management",
+      "tag": "Pain & Management",
       "image": "assets/mountain.png",
     },
     {
@@ -55,7 +55,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain Management",
+      "tag": "Pain & Management",
       "image": "assets/mountain.png",
     },
     {
@@ -65,7 +65,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain Management",
+      "tag": "Pain & Management",
       "image": "assets/mountain.png",
     },
   ];
