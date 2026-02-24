@@ -2,7 +2,9 @@
 
 import 'package:floraheart/View/Widgets/custom_cycle_card.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 
 class SelfCareScreen extends StatefulWidget {
   const SelfCareScreen({super.key});
@@ -34,7 +36,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain",
+      "tag": "Pain Management",
       "image": "assets/mountain.png",
     },
     {
@@ -44,7 +46,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain",
+      "tag": "Pain Management",
       "image": "assets/mountain.png",
     },
   ];
@@ -83,7 +85,9 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(AppRoutesName.allBlogsScreen);
+                      },
                       child: Text(
                         "View All",
                         style: TextStyle(color: AppColors.white, fontSize: 10),
@@ -198,14 +202,19 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
 Widget _recommendedCard() {
   return Column(
     children: [
-      Container(
-        width: 270,
-        height: 160,
-        decoration: BoxDecoration(
-          color: AppColors.lightgrey,
-          borderRadius: BorderRadius.circular(18),
+      GestureDetector(
+        onTap: () {
+          Get.toNamed(AppRoutesName.blogsDetailScreen);
+        },
+        child: Container(
+          width: 270,
+          height: 160,
+          decoration: BoxDecoration(
+            color: AppColors.lightgrey,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Image.asset("assets/pexelsgirl.jpg", fit: BoxFit.cover),
         ),
-        child: Image.asset("assets/girlbanner.png", fit: BoxFit.contain),
       ),
       SizedBox(height: 10),
       SizedBox(
