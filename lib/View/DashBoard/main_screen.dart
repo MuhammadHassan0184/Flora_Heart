@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:floraheart/View/Blogs/self_care_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/Widgets/custom_navbar.dart';
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
     CalendarScreen(),
-    Center(child: Text("Self Care Screen")),
+    SelfCareScreen(),
     Center(child: Text("Profile Screen")),
   ];
 
