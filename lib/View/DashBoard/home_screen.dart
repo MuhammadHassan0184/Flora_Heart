@@ -6,7 +6,6 @@ import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
-import 'package:get/state_manager.dart';
 import 'dart:math';
 
 // Add the wave package

@@ -4,6 +4,7 @@ import 'package:floraheart/View/Blogs/self_care_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/Widgets/custom_navbar.dart';
+import 'package:floraheart/View/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     CalendarScreen(),
     SelfCareScreen(),
-    Center(child: Text("Profile Screen")),
+    ProfileScreen(),
   ];
 
   void _onItemSelected(int index) {
