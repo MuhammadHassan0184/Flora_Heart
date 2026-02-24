@@ -24,6 +24,8 @@ class _DischargeSectionState extends State<DischargeSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.withOpacity(0.3)),
@@ -39,7 +41,7 @@ class _DischargeSectionState extends State<DischargeSection> {
           const SizedBox(height: 12),
 
           Wrap(
-            spacing: 17,
+            spacing: 8,
             runSpacing: 8,
             children: dischargeTypes.map((type) {
               return CustomSelectableChip(

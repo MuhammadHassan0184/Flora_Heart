@@ -24,7 +24,8 @@ class _SexualActivitySectionState extends State<SexualActivitySection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0),
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.withOpacity(0.3)),
@@ -41,7 +42,7 @@ class _SexualActivitySectionState extends State<SexualActivitySection> {
 
           /// Chips Grid
           Wrap(
-            spacing: 27,
+            spacing: 8,
             runSpacing: 8,
             children: activities.map((activity) {
               return CustomSelectableChip(

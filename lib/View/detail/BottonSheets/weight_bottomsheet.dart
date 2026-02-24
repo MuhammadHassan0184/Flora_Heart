@@ -39,12 +39,22 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            SizedBox(height: 16),
+
             /// Header
-            const Text(
+            Text(
               "Weight",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             /// Unit Toggle
             Row(
@@ -55,7 +65,7 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
                 _unitToggle("Lb"),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             /// Selected Value Box
             Container(
@@ -149,10 +159,13 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        height: 44,
+        width: 120, // important for equal size
+        alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected ? AppColors.primary : AppColors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: AppColors.primary, width: 1.5),
         ),
         child: Text(
           unit,

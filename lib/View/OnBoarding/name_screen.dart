@@ -45,14 +45,14 @@ class NameScreen extends StatelessWidget {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(40),
                             borderSide: BorderSide(
-                              color: AppColors.lightgrey,
+                              color: AppColors.primary,
                               width: 1.5,
                             ),
                           ),
 
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(40),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: Colors.red,
                               width: 1.5,
                             ),
@@ -66,7 +66,7 @@ class NameScreen extends StatelessWidget {
 
               Spacer(),
 
-              CustomButton(label: "Continue", ontap: onNext,),
+              CustomButton(label: "Continue", ontap: onNext),
               SizedBox(height: 30),
             ],
           ),

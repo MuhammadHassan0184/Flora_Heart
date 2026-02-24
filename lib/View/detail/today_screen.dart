@@ -2,8 +2,11 @@
 
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_card_button.dart';
+import 'package:floraheart/View/detail/BottonSheets/drink_water_bottomsheet.dart';
 import 'package:floraheart/View/detail/BottonSheets/medicine_bottomsheet.dart';
+import 'package:floraheart/View/detail/BottonSheets/note_bottomsheet.dart';
 import 'package:floraheart/View/detail/BottonSheets/temperature_bottomsheet.dart';
+import 'package:floraheart/View/detail/BottonSheets/tests_bottomsheet.dart';
 import 'package:floraheart/View/detail/BottonSheets/weight_bottomsheet.dart';
 import 'package:floraheart/View/detail/cards/flow_select.dart';
 import 'package:floraheart/View/detail/cards/mood_section.dart';
@@ -322,11 +325,26 @@ class _TodayScreenState extends State<TodayScreen> {
               },
             ),
             SizedBox(height: 10),
-            CustomCardButton(label: "Drink Water", onTap: () {}),
+            CustomCardButton(
+              label: "Drink Water",
+              onTap: () {
+                DrinkWaterBottomSheet.show(context);
+              },
+            ),
             SizedBox(height: 10),
-            CustomCardButton(label: "Tests"),
+            CustomCardButton(
+              label: "Tests",
+              onTap: () {
+                TestsBottomSheet.show(context);
+              },
+            ),
             SizedBox(height: 10),
-            CustomCardButton(label: "Note"),
+            CustomCardButton(
+              label: "Note",
+              onTap: () {
+                NoteBottomsheet.show(context);
+              },
+            ),
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
