@@ -5,6 +5,7 @@ import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -264,6 +265,12 @@ class ProfileScreen extends StatelessWidget {
                   CustomProfileListtow(
                     image: "assets/share.svg",
                     title: "Share with friends",
+                    onTap: () {
+                      Share.share(
+                        "Check out this amazing app! Download it from: https://yourappstorelink.com",
+                        subject: "Amazing App",
+                      );
+                    },
                   ),
                   Divider(
                     color: AppColors.grey.withOpacity(0.3),
