@@ -9,6 +9,8 @@ import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';
 import 'package:floraheart/View/Splash/splash_screen.dart';
+import 'package:floraheart/View/profile/faq_screen.dart';
+import 'package:floraheart/View/profile/feedback_screen.dart';
 import 'package:floraheart/View/profile/password_screen.dart';
 import 'package:floraheart/View/profile/profile_setting_screen.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
@@ -29,5 +31,7 @@ class AppRoutes {
     GetPage(name: AppRoutesName.blogsDetailScreen, page: ()=> BlogsDetailScreen()),
     GetPage(name: AppRoutesName.profileSettingScreen, page: ()=> ProfileSettingScreen()),
     GetPage(name: AppRoutesName.passwordScreen, page: ()=> PasswordScreen()),
+    GetPage(name: AppRoutesName.faqScreen, page: ()=> FaqScreen()),
+    GetPage(name: AppRoutesName.feedbackScreen, page: ()=> FeedbackScreen()),
   ];
 }

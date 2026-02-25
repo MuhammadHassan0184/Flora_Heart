@@ -231,7 +231,9 @@ class ProfileScreen extends StatelessWidget {
                     color: AppColors.grey.withOpacity(0.3),
                     height: 1, // reduce divider spacing
                   ),
-                  CustomProfileListtow(image: "assets/faq.svg", title: "FAQ"),
+                  CustomProfileListtow(image: "assets/faq.svg", title: "FAQ", onTap: () {
+                    Get.toNamed(AppRoutesName.faqScreen);
+                  },),
                   Divider(
                     color: AppColors.grey.withOpacity(0.3),
                     height: 1, // reduce divider spacing
@@ -239,6 +241,9 @@ class ProfileScreen extends StatelessWidget {
                   CustomProfileListtow(
                     image: "assets/report.svg",
                     title: "Bug report & Feedback",
+                    onTap: () {
+                      Get.toNamed(AppRoutesName.feedbackScreen);
+                    },
                   ),
                   Divider(
                     color: AppColors.grey.withOpacity(0.3),

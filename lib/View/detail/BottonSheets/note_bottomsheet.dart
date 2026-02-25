@@ -40,7 +40,7 @@ class NoteBottomsheet {
                     SizedBox(height: 16),
 
                     /// Title
-                    const Text(
+                    Text(
                       "Note",
                       style: TextStyle(
                         fontSize: 20,
