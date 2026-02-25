@@ -7,12 +7,14 @@ class CustomProfileField extends StatefulWidget {
   final String? label;
   final String hintText;
   final bool isPassword; // optional password
+  final Widget? suffixIcon;
 
   const CustomProfileField({
     super.key,
     this.label,
     required this.hintText,
     this.isPassword = false, // default false
+    this.suffixIcon,
   });
 
   @override
@@ -31,10 +33,7 @@ class _CustomProfileFieldState extends State<CustomProfileField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
         ],
@@ -47,50 +46,41 @@ class _CustomProfileFieldState extends State<CustomProfileField> {
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
               hintText: widget.hintText,
-              hintStyle: TextStyle(
-                color: AppColors.grey,
-                fontSize: 13,
-              ),
+              hintStyle: TextStyle(color: AppColors.grey, fontSize: 13),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 15,
                 vertical: 14,
               ),
-
-              /// Show suffix icon only if password
-              suffixIcon: widget.isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _obscureText
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: AppColors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    )
-                  : null,
+              suffixIcon:
+                  widget.suffixIcon ??
+                  (widget.isPassword
+                      ? IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppColors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        )
+                      : null),
 
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(
-                  color: AppColors.grey.withOpacity(0.3),
-                ),
+                borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(
-                  color: AppColors.grey.withOpacity(0.3),
-                ),
+                borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(
-                  color: AppColors.primary,
-                ),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
             ),
           ),

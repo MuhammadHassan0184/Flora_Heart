@@ -45,7 +45,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "profile setting",
+          "Profile setting",
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
         ),
         centerTitle: true,

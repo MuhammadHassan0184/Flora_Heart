@@ -40,16 +40,16 @@ class CustomProfileListtile extends StatelessWidget {
   }
 }
 
-
-
 // two----------------------------------------------
 class CustomProfileListtow extends StatelessWidget {
   final String image;
   final String title;
+  final VoidCallback? onTap;
   const CustomProfileListtow({
     super.key,
     required this.image,
     required this.title,
+    this.onTap,
   });
 
   @override
@@ -68,7 +68,7 @@ class CustomProfileListtow extends StatelessWidget {
         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
       ),
       trailing: IconButton(
-        onPressed: () {},
+        onPressed: onTap,
         icon: Icon(Icons.arrow_forward_ios, size: 15, color: AppColors.primary),
       ),
     );

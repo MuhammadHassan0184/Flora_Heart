@@ -223,6 +223,9 @@ class ProfileScreen extends StatelessWidget {
                   CustomProfileListtow(
                     image: "assets/password.svg",
                     title: "Password",
+                    onTap: () {
+                      Get.toNamed(AppRoutesName.passwordScreen);
+                    },
                   ),
                   Divider(
                     color: AppColors.grey.withOpacity(0.3),

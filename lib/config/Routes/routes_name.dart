@@ -11,4 +11,5 @@ class AppRoutesName {
   static const String allBlogsScreen = "/AllBlogsScreen";
   static const String blogsDetailScreen = "/BlogsDetailScreen";
   static const String profileSettingScreen = "/ProfileSettingScreen";
+  static const String passwordScreen = "/PasswordScreen";
 }
