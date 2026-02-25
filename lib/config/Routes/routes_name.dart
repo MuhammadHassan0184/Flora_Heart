@@ -14,4 +14,5 @@ class AppRoutesName {
   static const String passwordScreen = "/PasswordScreen";
   static const String faqScreen = "/FaqScreen";
   static const String feedbackScreen = "/FeedbackScreen";
+  static const String privacyPolicyScreen = "/PrivacyPolicyScreen";
 }

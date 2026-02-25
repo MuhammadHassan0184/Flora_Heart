@@ -206,14 +206,14 @@ Widget _recommendedCard() {
         onTap: () {
           Get.toNamed(AppRoutesName.blogsDetailScreen);
         },
-        child: Container(
-          width: 270,
-          height: 160,
-          decoration: BoxDecoration(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            width: 270,
+            height: 160,
             color: AppColors.lightgrey,
-            borderRadius: BorderRadius.circular(18),
+            child: Image.asset("assets/pexelsgirl.jpg", fit: BoxFit.cover),
           ),
-          child: Image.asset("assets/pexelsgirl.jpg", fit: BoxFit.cover),
         ),
       ),
       SizedBox(height: 10),
