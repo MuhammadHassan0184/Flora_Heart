@@ -10,4 +10,5 @@ class AppRoutesName {
   static const String todayScreen = "/TodayScreen";
   static const String allBlogsScreen = "/AllBlogsScreen";
   static const String blogsDetailScreen = "/BlogsDetailScreen";
+  static const String profileSettingScreen = "/ProfileSettingScreen";
 }

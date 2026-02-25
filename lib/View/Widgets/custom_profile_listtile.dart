@@ -56,7 +56,7 @@ class CustomProfileListtow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       dense: true, // reduces vertical space
-      contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.symmetric(vertical: 5),
       minVerticalPadding:
           0, // ensures minimal padding on newer Flutter versions
       leading: CircleAvatar(

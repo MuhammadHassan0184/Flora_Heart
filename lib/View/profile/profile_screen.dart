@@ -2,8 +2,9 @@
 
 import 'package:floraheart/View/Widgets/custom_profile_listtile.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -68,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 2),
                     ),
-                    child: Image.asset("assets/girl.png", fit: BoxFit.fill),
+                    child: Image.asset("assets/image27.png", fit: BoxFit.cover),
                   ),
                   SizedBox(width: 15),
                   // Name & email
@@ -93,24 +94,29 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   // Edit button
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, color: Colors.white, size: 15),
-                        SizedBox(width: 3),
-                        Text(
-                          'Edit',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ],
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(AppRoutesName.profileSettingScreen);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, color: Colors.white, size: 15),
+                          SizedBox(width: 3),
+                          Text(
+                            'Edit',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -133,6 +139,7 @@ class ProfileScreen extends StatelessWidget {
                     "Cycle Information",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+
                   CustomProfileListtile(
                     image: "assets/cycleinfo.svg",
                     title: "Average Cycle Length",
@@ -168,6 +175,7 @@ class ProfileScreen extends StatelessWidget {
                     "Health & Body",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+                  SizedBox(height: 6),
                   CustomProfileListtile(
                     image: "assets/dob.svg",
                     title: "Date of Birth",
@@ -211,6 +219,7 @@ class ProfileScreen extends StatelessWidget {
                     "Settings",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+                  SizedBox(height: 8),
                   CustomProfileListtow(
                     image: "assets/password.svg",
                     title: "Password",
@@ -219,10 +228,7 @@ class ProfileScreen extends StatelessWidget {
                     color: AppColors.grey.withOpacity(0.3),
                     height: 1, // reduce divider spacing
                   ),
-                  CustomProfileListtow(
-                    image: "assets/faq.svg",
-                    title: "FAQ",
-                  ),
+                  CustomProfileListtow(image: "assets/faq.svg", title: "FAQ"),
                   Divider(
                     color: AppColors.grey.withOpacity(0.3),
                     height: 1, // reduce divider spacing
@@ -255,10 +261,36 @@ class ProfileScreen extends StatelessWidget {
                     image: "assets/privacy.svg",
                     title: "Privacy Policy",
                   ),
-                  
                 ],
               ),
             ),
+            SizedBox(height: 15),
+            GestureDetector(
+              onTap: () {
+                Get.toNamed(AppRoutesName.loginScreen);
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                width: double.infinity,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Log Out",
+                      style: TextStyle(color: AppColors.white, fontSize: 16),
+                    ),
+                    SizedBox(width: 7),
+                    Icon(Icons.logout, color: AppColors.white, size: 18),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
           ],
         ),
       ),
