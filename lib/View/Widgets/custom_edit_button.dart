@@ -31,6 +31,17 @@ class CustomEditButton extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Drag Indicator
+                    Container(
+                      height: 4,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+
+                    SizedBox(height: 16),
                     Text(
                       "Edit Period",
                       style: TextStyle(
@@ -58,6 +69,7 @@ class CustomEditButton extends StatelessWidget {
                         },
                       ),
                     ),
+                    SizedBox(height: 15),
                   ],
                 ),
               ),
