@@ -15,9 +15,7 @@ import 'package:floraheart/View/detail/cards/symptoms_section.dart';
 import 'package:floraheart/View/detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 

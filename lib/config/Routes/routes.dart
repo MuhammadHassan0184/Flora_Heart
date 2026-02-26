@@ -18,6 +18,7 @@ import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
 class AppRoutes {
+  // ignore: strict_top_level_inference
   static routes() => [
     GetPage(
       name: AppRoutesName.onboarding, page: () => OnboardingScreen(),),

@@ -6,7 +6,6 @@ import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});

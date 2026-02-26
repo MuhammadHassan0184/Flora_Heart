@@ -1,10 +1,8 @@
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
-import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:get/state_manager.dart';
 
 class PeriodEndScreen extends StatefulWidget {
   final VoidCallback onNext;
