@@ -11,7 +11,7 @@ class SymptomsSection extends StatefulWidget {
 }
 
 class _SymptomsSectionState extends State<SymptomsSection> {
-  final Map<String, String> selectedSymptoms = {};
+  final Map<String, Set<String>> selectedSymptoms = {};
 
   // ====== DATA ======
   final Map<String, List<Map<String, String>>> symptomsData = {
@@ -69,11 +69,11 @@ class _SymptomsSectionState extends State<SymptomsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Symptoms",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           /// ====== Sections ======
           ...symptomsData.entries.map((section) {
@@ -117,7 +117,7 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 if (isExpanded)
                   Wrap(
@@ -125,7 +125,11 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                     runSpacing: 8,
                     children: items.map((symptom) {
                       final label = symptom["label"]!;
-                      final isSelected = selectedSymptoms[title] == label;
+
+                      // Get selected set for this section
+                      final selectedSet = selectedSymptoms[title] ?? {};
+
+                      final isSelected = selectedSet.contains(label);
 
                       return CustomSelectableChip(
                         label: label,
@@ -133,11 +137,21 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                         isSelected: isSelected,
                         onTap: () {
                           setState(() {
+                            // Initialize section if not exists
+                            selectedSymptoms.putIfAbsent(
+                              title,
+                              () => <String>{},
+                            );
+
                             if (isSelected) {
-                              selectedSymptoms.remove(title); // deselect
+                              selectedSymptoms[title]!.remove(label);
                             } else {
-                              selectedSymptoms[title] =
-                                  label; // select only in this section
+                              selectedSymptoms[title]!.add(label);
+                            }
+
+                            // Optional: remove empty section
+                            if (selectedSymptoms[title]!.isEmpty) {
+                              selectedSymptoms.remove(title);
                             }
                           });
                         },
@@ -145,7 +159,7 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                     }).toList(),
                   ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
               ],
             );
           }),

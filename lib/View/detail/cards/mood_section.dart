@@ -11,7 +11,8 @@ class MoodSection extends StatefulWidget {
 }
 
 class _MoodSectionState extends State<MoodSection> {
-  String selectedMood = "";
+  // ✅ Change from String to List
+  List<String> selectedMoods = [];
 
   final List<Map<String, dynamic>> moods = [
     {"label": "Anxious", "icon": "assets/anxious.svg"},
@@ -37,24 +38,30 @@ class _MoodSectionState extends State<MoodSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Mood",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           /// Chips Grid
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: moods.map((mood) {
+              final label = mood["label"];
+
               return CustomSelectableChip(
-                label: mood["label"],
+                label: label,
                 iconPath: mood["icon"],
-                isSelected: selectedMood == mood["label"],
+                isSelected: selectedMoods.contains(label),
                 onTap: () {
                   setState(() {
-                    selectedMood = mood["label"];
+                    if (selectedMoods.contains(label)) {
+                      selectedMoods.remove(label); // ❌ Unselect
+                    } else {
+                      selectedMoods.add(label); // ✅ Select
+                    }
                   });
                 },
               );

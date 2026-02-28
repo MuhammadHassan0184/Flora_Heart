@@ -11,7 +11,8 @@ class DischargeSection extends StatefulWidget {
 }
 
 class _DischargeSectionState extends State<DischargeSection> {
-  String selectedDischarge = "";
+  // ✅ Multiple selection list
+  List<String> selectedDischarge = [];
 
   final List<Map<String, dynamic>> dischargeTypes = [
     {"label": "Dry", "icon": "assets/discharge.svg"},
@@ -44,16 +45,20 @@ class _DischargeSectionState extends State<DischargeSection> {
             spacing: 8,
             runSpacing: 8,
             children: dischargeTypes.map((type) {
+              final label = type["label"];
+
+              final isSelected = selectedDischarge.contains(label);
+
               return CustomSelectableChip(
-                label: type["label"],
+                label: label,
                 iconPath: type["icon"],
-                isSelected: selectedDischarge == type["label"],
+                isSelected: isSelected,
                 onTap: () {
                   setState(() {
-                    if (selectedDischarge == type["label"]) {
-                      selectedDischarge = "";
+                    if (isSelected) {
+                      selectedDischarge.remove(label); // ❌ Unselect
                     } else {
-                      selectedDischarge = type["label"];
+                      selectedDischarge.add(label); // ✅ Select
                     }
                   });
                 },
