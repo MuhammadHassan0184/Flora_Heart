@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 class DateCard extends StatelessWidget {
   final String date;
   final String label;
-  final Color backgroundColor;
-  final Color circleColor;
+  final List<Color> gradientColors;
+  final List<Color> circleGradient;
   final Widget icon;
 
   const DateCard({
     super.key,
     required this.date,
     required this.label,
-    required this.backgroundColor,
-    required this.circleColor,
+    required this.gradientColors,
+    required this.circleGradient,
     required this.icon,
   });
 
@@ -23,7 +23,12 @@ class DateCard extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          // color: backgroundColor,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradientColors,
+          ),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
@@ -50,7 +55,12 @@ class DateCard extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: circleColor,
+                    // color: circleColor,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: circleGradient,
+                    ),
                   ),
                   child: icon,
                 ),
@@ -70,25 +80,34 @@ class DatesRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const DateCard(
-          date: "Jan 8-10",
+        DateCard(
+          date: "Jan 8–13",
           label: "Fertility Window",
-          backgroundColor: Color(0xFFFCC4D6),
-          circleColor: Color(0xFFF59FBC),
-          icon: Image(image: AssetImage("assets/pinkleave.png")),
+          gradientColors: [
+            Color(0xFFFDD7DD), // soft top pink
+            Color(0xFFF28A95), // darker bottom pink
+          ],
+          circleGradient: [Color(0xFFFDE2E6), Color(0xFFF6AAB5)],
+          icon: Image.asset("assets/pinkleave.png"),
         ),
-        const DateCard(
+        DateCard(
           date: "Jan 11",
           label: "Ovulation",
-          backgroundColor: Color(0xFF89E125),
-          circleColor: Color(0xFFDDFDB9),
-          icon: Image(image: AssetImage("assets/greencircle.png")),
+          gradientColors: [
+            Color(0xFFE1FCB9), // light green
+            Color(0xFFA6E63F), // darker green
+          ],
+          circleGradient: [Color(0xFFEFFFCC), Color(0xFFC9F079)],
+          icon: Image.asset("assets/greencircle.png"),
         ),
         DateCard(
           date: "Jan 15",
           label: "Next Period",
-          backgroundColor: const Color(0xFFFB82A8),
-          circleColor: const Color(0xFFF59FBC),
+          gradientColors: [
+            Color(0xFFFDAAB1), // light red
+            Color(0xFFFF3F5E), // darker red
+          ],
+          circleGradient: [Color(0xFFFFC6CD), Color(0xFFFF6B80)],
           icon: Image.asset("assets/drops.png"),
         ),
       ],

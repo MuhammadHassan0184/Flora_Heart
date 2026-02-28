@@ -170,15 +170,18 @@ class _HomeScreenState extends State<HomeScreen>
                           gradients: [
                             [
                               AppColors.primary.withOpacity(0.6),
-                              AppColors.primary.withOpacity(0.4)
+                              AppColors.primary.withOpacity(0.4),
                             ],
                             [
                               AppColors.primary.withOpacity(0.4),
-                              AppColors.primary.withOpacity(0.2)
+                              AppColors.primary.withOpacity(0.2),
                             ],
                           ],
                           durations: [5000, 7000],
-                          heightPercentages: [0.5 * _waveProgress, 0.52 * _waveProgress],
+                          heightPercentages: [
+                            0.5 * _waveProgress,
+                            0.52 * _waveProgress,
+                          ],
                         ),
                         backgroundColor: Colors.white,
                         waveAmplitude: 15,

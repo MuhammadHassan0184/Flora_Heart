@@ -17,13 +17,12 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      // home: SplashScreen(),
-      
-      initialRoute: AppRoutesName.splash, // 👈 start from splash
 
-      
+      // home: SplashScreen(),
+      initialRoute: AppRoutesName.splash, // start from splash
+
       theme: ThemeData(
-         fontFamily: 'Poppins',
+        fontFamily: 'Poppins',
         textTheme: GoogleFonts.poppinsTextTheme(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -32,4 +31,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

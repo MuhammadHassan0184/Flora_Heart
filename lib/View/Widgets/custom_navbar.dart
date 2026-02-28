@@ -38,17 +38,42 @@ class CustomBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _navItem("assets/home.svg", "Home", 0),
-          _navItem("assets/calendar.svg", "Calendar", 1),
+          _navItem(
+            normalIcon: "assets/home.svg",
+            selectedIcon: "assets/homedark.svg",
+            label: "Home",
+            index: 0,
+          ),
+          _navItem(
+            normalIcon: "assets/calendar.svg",
+            selectedIcon: "assets/calendardark.svg",
+            label: "Calendar",
+            index: 1,
+          ),
           _centerButton(),
-          _navItem("assets/selfcare.svg", "Self Care", 2),
-          _navItem("assets/profile.svg", "Profile", 3),
+          _navItem(
+            normalIcon: "assets/selfcare.svg",
+            selectedIcon: "assets/selfcaredark.svg",
+            label: "Self Care",
+            index: 2,
+          ),
+          _navItem(
+            normalIcon: "assets/profile.svg",
+            selectedIcon: "assets/profiledark.svg",
+            label: "Profile",
+            index: 3,
+          ),
         ],
       ),
     );
   }
 
-  Widget _navItem(String iconPath, String label, int index) {
+  Widget _navItem({
+    required String normalIcon,
+    required String selectedIcon,
+    required String label,
+    required int index,
+  }) {
     bool isSelected = selectedIndex == index;
 
     return GestureDetector(
@@ -57,14 +82,14 @@ class CustomBottomBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            iconPath,
+            isSelected ? selectedIcon : normalIcon,
             width: 24,
             height: 24,
             color: isSelected
                 ? Colors.black
                 : Colors.grey, // optional color tint
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
