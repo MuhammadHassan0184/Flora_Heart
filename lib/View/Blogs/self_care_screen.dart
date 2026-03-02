@@ -80,7 +80,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   SizedBox(
-                    height: 26,
+                    height: 30,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,

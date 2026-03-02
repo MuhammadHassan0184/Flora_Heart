@@ -32,6 +32,8 @@ class _TodayScreenState extends State<TodayScreen> {
 
   final ScrollController _scrollController = ScrollController();
 
+  int selectedIndex = 0; // 0 = Start, 1 = End
+
   @override
   void initState() {
     super.initState();
@@ -192,54 +194,72 @@ class _TodayScreenState extends State<TodayScreen> {
                     children: [
                       /// START BUTTON
                       Expanded(
-                        child: Container(
-                          height: 37,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary, // red color
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.play_arrow, color: Colors.white),
-                              SizedBox(width: 6),
-                              Text(
-                                "Start",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = 0;
+                            });
+                          },
+                          child: Container(
+                            height: 37,
+                            decoration: BoxDecoration(
+                              color: selectedIndex == 0
+                                  ? AppColors.primary
+                                  : Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.play_arrow, color: Colors.white),
+                                SizedBox(width: 6),
+                                Text(
+                                  "Start",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
 
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
 
                       /// END BUTTON
                       Expanded(
-                        child: Container(
-                          height: 37,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.stop, color: Colors.white, size: 18),
-                              SizedBox(width: 6),
-                              Text(
-                                "End",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = 1;
+                            });
+                          },
+                          child: Container(
+                            height: 37,
+                            decoration: BoxDecoration(
+                              color: selectedIndex == 1
+                                  ? AppColors.primary
+                                  : Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.stop, color: Colors.white, size: 18),
+                                SizedBox(width: 6),
+                                Text(
+                                  "End",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
