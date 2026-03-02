@@ -1,3 +1,4 @@
+import 'package:floraheart/Controllers/signup_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_form_field.dart';
 import 'package:floraheart/View/Widgets/custom_google_login.dart';
@@ -15,8 +16,12 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-   final emailController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  // final SignupController controller = SignupController();
+  final SignupController controller = Get.put(SignupController());
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   SizedBox(height: 40),
 
+                  // Email
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: CustomTextFormField(
@@ -82,9 +88,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
 
-
                   SizedBox(height: 15),
 
+                  // Password
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: CustomTextFormField(
@@ -94,24 +100,39 @@ class _SignupScreenState extends State<SignupScreen> {
                       isPassword: true,
                     ),
                   ),
+
                   SizedBox(height: 15),
 
+                  // Confirm Password
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: CustomTextFormField(
                       label: "Confirm Password",
                       hintText: "••••••••",
-                      controller: passwordController,
+                      controller: confirmPasswordController,
                       isPassword: true,
                     ),
                   ),
+
                   SizedBox(height: 25),
 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: CustomButton(label: "Sign Up", ontap: () {
-                      Get.toNamed(AppRoutesName.loginScreen);
-                    }, ),
+                    child: CustomButton(
+                      label: "Sign Up",
+                      ontap: () {
+                        controller.emailController.text = emailController.text
+                            .trim();
+
+                        controller.passwordController.text = passwordController
+                            .text
+                            .trim();
+
+                        controller.signup(
+                          confirmPasswordController.text.trim(),
+                        );
+                      },
+                    ),
                   ),
 
                   SizedBox(height: 20),

@@ -1,3 +1,4 @@
+import 'package:floraheart/Controllers/login_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_form_field.dart';
 import 'package:floraheart/View/Widgets/custom_google_login.dart';
@@ -5,7 +6,7 @@ import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,190 +16,188 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final LoginController controller = LoginController();
 
- @override
-Widget build(BuildContext context) {
-  final size = MediaQuery.of(context).size;
+  @override
+  void initState() {
+    super.initState();
 
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: Stack(
-      children: [
+    // connect UI controllers to LoginController
+    controller.emailController = TextEditingController();
+    controller.passwordController = TextEditingController();
+  }
 
-        /// 🌸 Top Left Pink Drops
-        Positioned(
-          top: size.height * 0.06,
-          left: size.width * 0.05,
-          child: SvgPicture.asset(
-            "assets/PinkDrops.svg",
-            width: size.width * 0.16,
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          Positioned(
+            top: size.height * 0.06,
+            left: size.width * 0.05,
+            child: SvgPicture.asset(
+              "assets/PinkDrops.svg",
+              width: size.width * 0.16,
+            ),
           ),
-        ),
 
-        /// 🌸 Bottom Right Pink Flower
-        Positioned(
-          bottom: -25,
-          right: 0,
-          child: SvgPicture.asset(
-            "assets/PinkFlower.svg",
-            width: size.width * 0.40,
+          Positioned(
+            bottom: -25,
+            right: 0,
+            child: SvgPicture.asset(
+              "assets/PinkFlower.svg",
+              width: size.width * 0.40,
+            ),
           ),
-        ),
 
-        /// 🔹 Your Existing UI
-        SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 50),
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 50),
 
-                Center(
-                  child: Text(
-                    "Sign In",
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                  Center(
+                    child: Text(
+                      "Sign In",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
                     ),
                   ),
-                ),
 
-                SizedBox(height: 7),
+                  SizedBox(height: 7),
 
-                Text(
-                  "Sign In to access your profile",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  Text(
+                    "Sign In to access your profile",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                ),
 
-                SizedBox(height: 40),
+                  SizedBox(height: 40),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: CustomTextFormField(
-                    label: "Email Address",
-                    hintText: "Enter Your Email",
-                    controller: emailController,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomTextFormField(
+                      label: "Email Address",
+                      hintText: "Enter Your Email",
+                      controller: controller.emailController,
+                    ),
                   ),
-                ),
 
-                SizedBox(height: 15),
+                  SizedBox(height: 15),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: CustomTextFormField(
-                    label: "Password",
-                    hintText: "••••••••",
-                    controller: passwordController,
-                    isPassword: true,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomTextFormField(
+                      label: "Password",
+                      hintText: "••••••••",
+                      controller: controller.passwordController,
+                      isPassword: true,
+                    ),
                   ),
-                ),
 
-                SizedBox(height: 10),
+                  SizedBox(height: 10),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Forgot your password?",
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 25),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomButton(
+                      label: "Sign In",
+                      ontap: () {
+                        controller.login(context);
+                      },
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Forgot your password?",
+                        "Don’t have an account? ",
                         style: TextStyle(
-                          color: AppColors.grey,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 25),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: CustomButton(label: "Sign In", ontap: () {
-                    Get.offAllNamed(AppRoutesName.onboarding);
-                  }, ),
-                ),
-
-                SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don’t have an account? ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(AppRoutesName.signupScreen);
-                      },
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 20),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                      GestureDetector(
+                        onTap: () {
+                          Get.toNamed(AppRoutesName.signupScreen);
+                        },
                         child: Text(
-                          "Or Sign in with",
+                          "Sign Up",
                           style: TextStyle(
-                            color: AppColors.grey,
                             fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                      ),
                     ],
                   ),
-                ),
 
-                SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: CustomGoogleLogin(label: "Google"),
-                ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(thickness: 1, color: Colors.grey),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "Or Sign in with",
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(thickness: 1, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
 
-                SizedBox(height: 50),
-              ],
+                  SizedBox(height: 20),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomGoogleLogin(label: "Google"),
+                  ),
+
+                  SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }

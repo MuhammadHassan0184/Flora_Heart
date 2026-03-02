@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1052396341164",
+    "project_id": "floraheart-79578",
+    "storage_bucket": "floraheart-79578.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052396341164:android:9e342ff523268051609c09",
+        "android_client_info": {
+          "package_name": "com.example.floraheart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxKdYRKxAGRk-iRoo_Eeoi9uLOSUbTTJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
