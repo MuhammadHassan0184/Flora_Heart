@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 class SignupController extends GetxController {
   final AuthService _authService = AuthService();
   // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 

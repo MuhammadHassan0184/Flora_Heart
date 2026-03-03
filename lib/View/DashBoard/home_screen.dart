@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'dart:math';
-
 // Add the wave package
 import 'package:wave/wave.dart';
 import 'package:wave/config.dart';
@@ -161,31 +160,66 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
 
                   // Inner wave circle using wave package
+                  // ClipOval(
+                  //   child: SizedBox(
+                  //     width: 150,
+                  //     height: 150,
+                  //     child: WaveWidget(
+                  //       config: CustomConfig(
+                  //         gradients: [
+                  //           [
+                  //             AppColors.primary.withOpacity(0.6),
+                  //             AppColors.primary.withOpacity(0.4),
+                  //           ],
+                  //           [
+                  //             AppColors.primary.withOpacity(0.4),
+                  //             AppColors.primary.withOpacity(0.2),
+                  //           ],
+                  //         ],
+                  //         durations: [5000, 7000],
+                  //         heightPercentages: [
+                  //           0.5 * _waveProgress,
+                  //           0.52 * _waveProgress,
+                  //         ],
+                  //       ),
+                  //       backgroundColor: Colors.white,
+                  //       waveAmplitude: 15,
+                  //       size: Size(double.infinity, double.infinity),
+                  //     ),
+                  //   ),
+                  // ),
                   ClipOval(
                     child: SizedBox(
                       width: 150,
                       height: 150,
-                      child: WaveWidget(
-                        config: CustomConfig(
-                          gradients: [
-                            [
-                              AppColors.primary.withOpacity(0.6),
-                              AppColors.primary.withOpacity(0.4),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: 1),
+                        duration: const Duration(seconds: 2),
+                        curve: Curves.easeOut,
+                        builder: (context, value, child) {
+                          return Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Container(color: Colors.white),
+                              FractionallySizedBox(
+                                heightFactor: 0.5 * value, // 50% fill
+                                widthFactor: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppColors.primary.withOpacity(0.6),
+                                        AppColors.primary.withOpacity(0.3),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
-                            [
-                              AppColors.primary.withOpacity(0.4),
-                              AppColors.primary.withOpacity(0.2),
-                            ],
-                          ],
-                          durations: [5000, 7000],
-                          heightPercentages: [
-                            0.5 * _waveProgress,
-                            0.52 * _waveProgress,
-                          ],
-                        ),
-                        backgroundColor: Colors.white,
-                        waveAmplitude: 15,
-                        size: Size(double.infinity, double.infinity),
+                          );
+                        },
                       ),
                     ),
                   ),
