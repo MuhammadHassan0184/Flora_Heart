@@ -1,7 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class SymptomsSection extends StatefulWidget {
   const SymptomsSection({super.key});
@@ -135,25 +139,45 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                         label: label,
                         iconPath: symptom["icon"]!,
                         isSelected: isSelected,
+                        // onTap: () {
+                        //   setState(() {
+                        //     // Initialize section if not exists
+                        //     selectedSymptoms.putIfAbsent(
+                        //       title,
+                        //       () => <String>{},
+                        //     );
+
+                        //     if (isSelected) {
+                        //       selectedSymptoms[title]!.remove(label);
+                        //     } else {
+                        //       selectedSymptoms[title]!.add(label);
+                        //     }
+
+                        //     // Optional: remove empty section
+                        //     if (selectedSymptoms[title]!.isEmpty) {
+                        //       selectedSymptoms.remove(title);
+                        //     }
+                        //   });
+                        // },
                         onTap: () {
                           setState(() {
-                            // Initialize section if not exists
                             selectedSymptoms.putIfAbsent(
                               title,
                               () => <String>{},
                             );
-
-                            if (isSelected) {
+                            if (selectedSet.contains(label)) {
                               selectedSymptoms[title]!.remove(label);
                             } else {
                               selectedSymptoms[title]!.add(label);
                             }
-
-                            // Optional: remove empty section
-                            if (selectedSymptoms[title]!.isEmpty) {
+                            if (selectedSymptoms[title]!.isEmpty)
                               selectedSymptoms.remove(title);
-                            }
                           });
+
+                          final controller = Get.find<TodayDataController>();
+                          controller.symptoms.assignAll(
+                            selectedSymptoms,
+                          ); // ✅ Save symptoms
                         },
                       );
                     }).toList(),

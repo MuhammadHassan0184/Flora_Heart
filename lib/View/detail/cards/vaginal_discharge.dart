@@ -1,7 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class DischargeSection extends StatefulWidget {
   const DischargeSection({super.key});
@@ -53,14 +57,27 @@ class _DischargeSectionState extends State<DischargeSection> {
                 label: label,
                 iconPath: type["icon"],
                 isSelected: isSelected,
+                // onTap: () {
+                //   setState(() {
+                //     if (isSelected) {
+                //       selectedDischarge.remove(label); // ❌ Unselect
+                //     } else {
+                //       selectedDischarge.add(label); // ✅ Select
+                //     }
+                //   });
+                // },
                 onTap: () {
                   setState(() {
-                    if (isSelected) {
-                      selectedDischarge.remove(label); // ❌ Unselect
+                    if (selectedDischarge.contains(label)) {
+                      selectedDischarge.remove(label);
                     } else {
-                      selectedDischarge.add(label); // ✅ Select
+                      selectedDischarge.add(label);
                     }
                   });
+                  final controller = Get.find<TodayDataController>();
+                  controller.discharge.assignAll(
+                    selectedDischarge,
+                  ); // ✅ Save discharge
                 },
               );
             }).toList(),

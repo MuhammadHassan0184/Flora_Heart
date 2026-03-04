@@ -1,6 +1,9 @@
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class FlowSelector extends StatefulWidget {
   const FlowSelector({super.key});
@@ -20,10 +23,17 @@ class _FlowSelectorState extends State<FlowSelector> {
     final bool isSelected = selectedIndex == index;
 
     return GestureDetector(
+      // onTap: () {
+      //   setState(() {
+      //     selectedIndex = index;
+      //   });
+      // },
       onTap: () {
         setState(() {
           selectedIndex = index;
         });
+        final controller = Get.find<TodayDataController>();
+        controller.flow.value = index; // ✅ Save flow
       },
       child: Column(
         children: [
@@ -33,27 +43,19 @@ class _FlowSelectorState extends State<FlowSelector> {
             height: 55,
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected
-                    ? AppColors.primary
-                    : Colors.grey.shade300,
+                color: isSelected ? AppColors.primary : Colors.grey.shade300,
               ),
               shape: BoxShape.circle,
             ),
-            child: SvgPicture.asset(
-              asset,
-              fit: BoxFit.contain,
-            ),
+            child: SvgPicture.asset(asset, fit: BoxFit.contain),
           ),
           SizedBox(height: 8),
           Text(
             title,
             style: TextStyle(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.grey,
+              color: isSelected ? AppColors.primary : AppColors.grey,
               fontSize: 11,
-              fontWeight:
-                  isSelected ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
         ],
@@ -66,21 +68,9 @@ class _FlowSelectorState extends State<FlowSelector> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        buildItem(
-          index: 0,
-          title: "Light",
-          asset: "assets/lightdrop.svg",
-        ),
-        buildItem(
-          index: 1,
-          title: "Medium",
-          asset: "assets/mediumdrop.svg",
-        ),
-        buildItem(
-          index: 2,
-          title: "Heavy",
-          asset: "assets/heavydrops.svg",
-        ),
+        buildItem(index: 0, title: "Light", asset: "assets/lightdrop.svg"),
+        buildItem(index: 1, title: "Medium", asset: "assets/mediumdrop.svg"),
+        buildItem(index: 2, title: "Heavy", asset: "assets/heavydrops.svg"),
         buildItem(
           index: 3,
           title: "Disaster",

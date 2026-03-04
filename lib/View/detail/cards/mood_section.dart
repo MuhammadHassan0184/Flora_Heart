@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/View/Widgets/custom_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MoodSection extends StatefulWidget {
   const MoodSection({super.key});
@@ -55,14 +57,26 @@ class _MoodSectionState extends State<MoodSection> {
                 label: label,
                 iconPath: mood["icon"],
                 isSelected: selectedMoods.contains(label),
+                // onTap: () {
+                //   setState(() {
+                //     if (selectedMoods.contains(label)) {
+                //       selectedMoods.remove(label); // ❌ Unselect
+                //     } else {
+                //       selectedMoods.add(label); // ✅ Select
+                //     }
+                //   });
+                // },
                 onTap: () {
                   setState(() {
                     if (selectedMoods.contains(label)) {
-                      selectedMoods.remove(label); // ❌ Unselect
+                      selectedMoods.remove(label);
                     } else {
-                      selectedMoods.add(label); // ✅ Select
+                      selectedMoods.add(label);
                     }
                   });
+
+                  final controller = Get.find<TodayDataController>();
+                  controller.moods.assignAll(selectedMoods); // ✅ Save moods
                 },
               );
             }).toList(),

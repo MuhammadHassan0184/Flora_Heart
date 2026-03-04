@@ -5,8 +5,10 @@ import 'package:floraheart/config/Routes/routes.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:floraheart/firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+// final todayDataController = Get.put(TodayDataController());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
