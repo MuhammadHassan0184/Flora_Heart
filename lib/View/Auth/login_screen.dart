@@ -1,3 +1,4 @@
+import 'package:floraheart/Controllers/google_controller.dart';
 import 'package:floraheart/Controllers/login_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_form_field.dart';
@@ -186,9 +187,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   SizedBox(height: 20),
 
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 20),
+                  //   child: CustomGoogleLogin(label: "Google"),
+                  // ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: CustomGoogleLogin(label: "Google"),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomGoogleLogin(
+                      label: "Google",
+                      onTap: () {
+                        GoogleLoginController().signInWithGoogle(context);
+                      },
+                    ),
                   ),
 
                   SizedBox(height: 50),
