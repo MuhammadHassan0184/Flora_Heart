@@ -104,15 +104,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 10),
 
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          "Forgot your password?",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: () {
+                            Get.toNamed(AppRoutesName.forgotPasswordScreen);
+                            // GetPage(
+                            //   name: '/forgot-password',
+                            //   page: () => ForgotPasswordScreen(),
+                            // );
+                          },
+                          child: Text(
+                            "Forgot your password?",
+                            style: TextStyle(
+                              color: AppColors.grey, // use primary instead of grey
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],

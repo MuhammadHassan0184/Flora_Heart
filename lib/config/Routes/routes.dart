@@ -1,4 +1,5 @@
 
+import 'package:floraheart/View/Auth/Forget_Password/forgot_password_screen.dart';
 import 'package:floraheart/View/Auth/login_screen.dart';
 import 'package:floraheart/View/Auth/signup_screen.dart';
 import 'package:floraheart/View/Blogs/all_blogs_screen.dart';
@@ -36,5 +37,6 @@ class AppRoutes {
     GetPage(name: AppRoutesName.faqScreen, page: ()=> FaqScreen()),
     GetPage(name: AppRoutesName.feedbackScreen, page: ()=> FeedbackScreen()),
     GetPage(name: AppRoutesName.privacyPolicyScreen, page: ()=> PrivacyPolicyScreen()),
+    GetPage(name: AppRoutesName.forgotPasswordScreen, page: ()=> ForgotPasswordScreen()),
   ];
 }

@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/View/Widgets/custom_profile_listtile.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
@@ -289,7 +290,113 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: 15),
             GestureDetector(
               onTap: () {
-                Get.toNamed(AppRoutesName.loginScreen);
+                Get.dialog(
+                  Center(
+                    child: Container(
+                      width: 300,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.white, // popup background color
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.logout,
+                            size: 50,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "Logout",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "Are you sure you want to logout?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // Cancel Button
+                              TextButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.lightgrey,
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Get.back(); // close popup
+                                },
+                                child: const Text("Cancel"),
+                              ),
+
+                              // Logout Button
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  // Firebase logout
+                                  await FirebaseAuth.instance.signOut();
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (user == null) {
+                                    print(
+                                      "No user logged in — logout successful",
+                                    );
+                                  } else {
+                                    print(
+                                      "User is still logged in: ${user.email}",
+                                    );
+                                  }
+                                  // Then navigate to login screen
+                                  Get.offAllNamed(AppRoutesName.loginScreen);
+                                },
+                                child: const Text(
+                                  "Logout",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  barrierDismissible: true, // tap outside to close
+                );
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -306,7 +413,7 @@ class ProfileScreen extends StatelessWidget {
                       "Log Out",
                       style: TextStyle(color: AppColors.white, fontSize: 16),
                     ),
-                    SizedBox(width: 7),
+                    const SizedBox(width: 7),
                     Icon(Icons.logout, color: AppColors.white, size: 18),
                   ],
                 ),
