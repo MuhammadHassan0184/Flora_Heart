@@ -8,8 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +78,14 @@ class ProfileScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 2),
                     ),
-                    child: Image.asset("assets/image27.png", fit: BoxFit.cover),
+                    child: ClipOval(
+                      child: user?.photoURL != null
+                          ? Image.asset(user!.photoURL!, fit: BoxFit.cover)
+                          : Image.asset(
+                              "assets/image27.png",
+                              fit: BoxFit.cover,
+                            ),
+                    ),
                   ),
                   SizedBox(width: 15),
                   // Name & email
@@ -81,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Sara Hoseini',
+                          user?.displayName ?? 'Your Name',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -89,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 2), // smaller space
                         Text(
-                          'sarahoseini@gmail.com',
+                          user?.email ?? 'email@example.com',
                           style: TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                       ],

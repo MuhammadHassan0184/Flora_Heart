@@ -71,7 +71,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     "Children’s Privacy\n"
                     "FloraHeart is not intended for users under the age of 13.\n\n"
                     "Contact Us\n"
-                    "Developer: TheWebConcept\n"
+                    "Develop By: TheWebConcept\n"
                     "Email: info@thewebconcept.com\n"
                     "Website: thewebconcept.com",
                     style: TextStyle(

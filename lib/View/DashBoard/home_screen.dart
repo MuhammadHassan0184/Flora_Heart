@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'dart:math';
-// Add the wave package
-import 'package:wave/wave.dart';
-import 'package:wave/config.dart';
 
 // ---------------- HOME SCREEN ----------------
 class HomeScreen extends StatefulWidget {

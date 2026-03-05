@@ -23,9 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    // connect UI controllers to LoginController
-    controller.emailController = TextEditingController();
-    controller.passwordController = TextEditingController();
+    // // connect UI controllers to LoginController
+    // controller.emailController = TextEditingController();
+    // controller.passwordController = TextEditingController();
   }
 
   @override

@@ -1,9 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_profile_field.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProfileSettingScreen extends StatefulWidget {
   const ProfileSettingScreen({super.key});
@@ -14,6 +17,10 @@ class ProfileSettingScreen extends StatefulWidget {
 
 class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   int selectedIndex = 0;
+  late String displayName;
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
 
   final List<String> avatars = [
     "assets/image27.png",
@@ -30,9 +37,34 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
     "assets/image24.png",
   ];
 
-  TextEditingController? get lastNameController => null;
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
 
-  TextEditingController? get firstNameController => null;
+  void _loadUserData() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      displayName = user.displayName ?? '';
+
+      // Split display name into first and last name
+      final nameParts = displayName.split(' ');
+      if (nameParts.isNotEmpty) {
+        firstNameController.text = nameParts[0];
+        if (nameParts.length > 1) {
+          lastNameController.text = nameParts.sublist(1).join(' ');
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +188,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
               child: CustomProfileField(
                 label: "First Name",
                 hintText: "Enter your first name",
+                controller: firstNameController,
               ),
             ),
             SizedBox(height: 10),
@@ -164,12 +197,57 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
               child: CustomProfileField(
                 label: "Last Name",
                 hintText: "Enter your last name",
+                controller: lastNameController,
               ),
             ),
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(label: "Update", ontap: () {}),
+              child: CustomButton(
+                label: "Update",
+                ontap: () async {
+                  final firstName = firstNameController.text.trim();
+                  final lastName = lastNameController.text.trim();
+
+                  if (firstName.isEmpty) {
+                    Get.snackbar(
+                      "Error",
+                      "Please enter your first name",
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+
+                  try {
+                    String fullName = '$firstName $lastName'.trim();
+                    final user = FirebaseAuth.instance.currentUser;
+
+                    await user?.updateDisplayName(fullName);
+
+                    // Save selected avatar path as photoURL
+                    await user?.updatePhotoURL(avatars[selectedIndex]);
+
+                    Get.snackbar(
+                      "Success",
+                      "Profile updated successfully",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+
+                    // Navigate back
+                    Get.offNamed(AppRoutesName.mainScreen);
+                    // Get.back();
+                  } catch (e) {
+                    Get.snackbar(
+                      "Error",
+                      "Failed to update profile: $e",
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+              ),
             ),
             SizedBox(height: 30),
           ],
