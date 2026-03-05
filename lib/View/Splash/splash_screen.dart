@@ -1,9 +1,9 @@
-import 'package:floraheart/View/Auth/login_screen.dart';
 import 'package:floraheart/config/Colors/Colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// import your next screen here
-// import 'package:floraheart/views/home/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -23,14 +22,13 @@ class _SplashScreenState extends State<SplashScreen> {
   void _navigateToNext() async {
     await Future.delayed(const Duration(seconds: 3));
 
-    if (!mounted) return;
+    final user = FirebaseAuth.instance.currentUser;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(), // change to your screen
-      ),
-    );
+    if (user != null) {
+      Get.offAllNamed(AppRoutesName.mainScreen);
+    } else {
+      Get.offAllNamed(AppRoutesName.loginScreen);
+    }
   }
 
   @override
