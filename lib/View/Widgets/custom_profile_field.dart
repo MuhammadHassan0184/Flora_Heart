@@ -8,6 +8,7 @@ class CustomProfileField extends StatefulWidget {
   final String hintText;
   final bool isPassword; // optional password
   final Widget? suffixIcon;
+  final TextEditingController? controller;
 
   const CustomProfileField({
     super.key,
@@ -15,6 +16,7 @@ class CustomProfileField extends StatefulWidget {
     required this.hintText,
     this.isPassword = false, // default false
     this.suffixIcon,
+    this.controller,
   });
 
   @override
@@ -42,6 +44,7 @@ class _CustomProfileFieldState extends State<CustomProfileField> {
         SizedBox(
           height: 50,
           child: TextFormField(
+            controller: widget.controller,
             obscureText: widget.isPassword ? _obscureText : false,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(

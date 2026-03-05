@@ -14,6 +14,7 @@ import 'package:floraheart/View/profile/faq_screen.dart';
 import 'package:floraheart/View/profile/feedback_screen.dart';
 import 'package:floraheart/View/profile/password_screen.dart';
 import 'package:floraheart/View/profile/privacy_policy_screen.dart';
+import 'package:floraheart/View/profile/profile_screen.dart';
 import 'package:floraheart/View/profile/profile_setting_screen.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
@@ -33,6 +34,7 @@ class AppRoutes {
     GetPage(name: AppRoutesName.allBlogsScreen, page: ()=> AllBlogsScreen()),
     GetPage(name: AppRoutesName.blogsDetailScreen, page: ()=> BlogsDetailScreen()),
     GetPage(name: AppRoutesName.profileSettingScreen, page: ()=> ProfileSettingScreen()),
+    GetPage(name: AppRoutesName.profileScreen, page: ()=> ProfileScreen()),
     GetPage(name: AppRoutesName.passwordScreen, page: ()=> PasswordScreen()),
     GetPage(name: AppRoutesName.faqScreen, page: ()=> FaqScreen()),
     GetPage(name: AppRoutesName.feedbackScreen, page: ()=> FeedbackScreen()),
