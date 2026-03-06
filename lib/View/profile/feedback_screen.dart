@@ -19,34 +19,18 @@ class FeedbackScreen extends StatelessWidget {
     final String email = emailController.text.trim();
     final String message = messageController.text.trim();
 
-    // Encode subject and body
-    final String subject = Uri.encodeComponent("App Feedback");
-    final String body = Uri.encodeComponent(
-      "Name: $name\nEmail: $email\n\nMessage:\n$message",
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'info@thewebconcept.com',
+      query: Uri.encodeFull(
+        'subject=App Feedback&body=Name: $name\nEmail: $email\n\nMessage:\n$message',
+      ),
     );
-
-    final Uri emailUri = Uri.parse(
-      "mailto:info@thewebconcept.com?subject=$subject&body=$body",
-    );
-
-    debugPrint("Attempting to send email...");
-    debugPrint("Email URI: $emailUri");
 
     try {
-      final canLaunchResult = await canLaunchUrl(emailUri);
-      debugPrint("Can launch email URI? $canLaunchResult");
-
-      if (canLaunchResult) {
-        final launchResult = await launchUrl(
-          emailUri,
-          mode: LaunchMode.externalApplication,
-        );
-        debugPrint("Email launch result: $launchResult");
-      } else {
-        debugPrint("Could not launch the email app.");
-      }
+      await launchUrl(emailUri);
     } catch (e) {
-      debugPrint("Error while launching email: $e");
+      debugPrint("Error: $e");
     }
   }
 
@@ -54,9 +38,7 @@ class FeedbackScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Bug Report & Feedback"
-        ),
+      appBar: CustomAppBar(title: "Bug Report & Feedback"),
       body: SingleChildScrollView(
         child: Column(
           children: [
