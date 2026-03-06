@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_profile_field.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -53,19 +54,9 @@ class FeedbackScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => Navigator.pop(context),
+      appBar: CustomAppBar(
+        title: "Bug Report & Feedback"
         ),
-        title: const Text(
-          "Bug Report & Feedback",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

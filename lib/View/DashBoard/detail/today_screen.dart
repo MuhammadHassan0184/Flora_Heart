@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_card_button.dart';
 import 'package:floraheart/View/DashBoard/detail/BottonSheets/drink_water_bottomsheet.dart';
@@ -74,19 +75,9 @@ class _TodayScreenState extends State<TodayScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => Navigator.pop(context),
+      appBar: CustomAppBar(
+        title: "Today"
         ),
-        title: Text(
-          "Today",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

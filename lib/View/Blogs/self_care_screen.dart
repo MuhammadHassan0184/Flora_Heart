@@ -1,5 +1,6 @@
 // ignore_for_file: sized_box_for_whitespace, deprecated_member_use, avoid_print
 
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_cycle_card.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
@@ -55,14 +56,10 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Self Care",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+      appBar: CustomAppBar(
+        title: "Self Care", 
+        showBackButton: false
         ),
-        centerTitle: true,
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

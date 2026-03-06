@@ -233,6 +233,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:floraheart/Controllers/today_data_controller.dart';
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_calendar.dart';
 import 'package:floraheart/View/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -260,14 +261,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          "Calendar",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+      appBar: CustomAppBar(
+        title: "Calendar",
+        showBackButton: false,
         ),
-        centerTitle: true,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

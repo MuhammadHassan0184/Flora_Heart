@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_cycle_card.dart';
 import 'package:floraheart/View/Widgets/custom_search_bar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -74,19 +75,9 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => Navigator.pop(context),
+      appBar: CustomAppBar(
+        title: "All Blogs"
         ),
-        title: Text(
-          "All Blogs",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: Column(
         children: [
           SizedBox(height: 10),

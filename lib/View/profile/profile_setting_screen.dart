@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_profile_field.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -70,19 +71,9 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => Navigator.pop(context),
+      appBar: CustomAppBar(
+        title: "Profile Setting"
         ),
-        title: Text(
-          "Profile setting",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

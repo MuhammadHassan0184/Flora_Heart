@@ -1,3 +1,4 @@
+import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -8,19 +9,9 @@ class BlogsDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => Navigator.pop(context),
+      appBar: CustomAppBar(
+        title: "All Detail"
         ),
-        title: Text(
-          "All Blogs",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
