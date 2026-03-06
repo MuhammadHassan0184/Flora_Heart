@@ -59,6 +59,7 @@ class CustomEditButton extends StatelessWidget {
                         label: "Done",
                         ontap: () {
                           Navigator.pop(context);
+                          // Get.offAllNamed(AppRoutesName.calendarScreen);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Period updated successfully!"),

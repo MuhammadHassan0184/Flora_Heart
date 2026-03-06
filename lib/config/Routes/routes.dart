@@ -5,7 +5,7 @@ import 'package:floraheart/View/Auth/signup_screen.dart';
 import 'package:floraheart/View/Blogs/all_blogs_screen.dart';
 import 'package:floraheart/View/Blogs/blogs_detail_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
-import 'package:floraheart/View/DashBoard/detail/today_screen.dart';
+import 'package:floraheart/View/Add_Detail/today_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';

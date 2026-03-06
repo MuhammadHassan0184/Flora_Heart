@@ -1,11 +1,10 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:floraheart/View/Widgets/custom_date_card.dart';
+import 'package:floraheart/View/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
-import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
 import 'dart:math';
 
 // ---------------- HOME SCREEN ----------------
@@ -18,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  double _waveProgress = 0.0;
+  // double _waveProgress = 0.0;
   late AnimationController _waveController;
 
   @override
@@ -33,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _waveController.addListener(() {
       setState(() {
-        _waveProgress = _waveController.value;
+        // _waveProgress = _waveController.value;
       });
     });
 
@@ -96,33 +95,34 @@ class _HomeScreenState extends State<HomeScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Get.toNamed(AppRoutesName.todayScreen);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6),
-                      width: 71,
-                      height: 29,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.grey.withOpacity(0.3),
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          SvgPicture.asset(
-                            "assets/PinkDrops.svg",
-                            width: 21,
-                            height: 21,
-                          ),
-                          Text("Edit", style: TextStyle(color: AppColors.grey)),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Get.toNamed(AppRoutesName.todayScreen);
+                  //   },
+                  //   child: Container(
+                  //     padding: EdgeInsets.symmetric(horizontal: 6),
+                  //     width: 71,
+                  //     height: 29,
+                  //     decoration: BoxDecoration(
+                  //       border: Border.all(
+                  //         color: AppColors.grey.withOpacity(0.3),
+                  //       ),
+                  //       borderRadius: BorderRadius.circular(20),
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //       children: [
+                  //         SvgPicture.asset(
+                  //           "assets/PinkDrops.svg",
+                  //           width: 21,
+                  //           height: 21,
+                  //         ),
+                  //         Text("Edit", style: TextStyle(color: AppColors.grey)),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  CustomEditButton(),
                 ],
               ),
             ),
