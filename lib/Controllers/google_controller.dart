@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:floraheart/Services/auth_service.dart';
-import 'package:floraheart/View/DashBoard/main_screen.dart';
+import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class GoogleLoginController {
     if (user != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
+        MaterialPageRoute(builder: (_) => OnboardingScreen()),
       );
     } else {
       // ScaffoldMessenger.of(context).showSnackBar(

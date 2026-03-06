@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
+import 'package:floraheart/View/OnBoarding/Wrapper/onboarding_wrapper.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -64,7 +65,7 @@ class LoginController {
         // Navigate to MainScreen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => MainScreen()),
+          MaterialPageRoute(builder: (_) => OnboardingScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {

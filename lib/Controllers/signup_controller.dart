@@ -61,7 +61,7 @@ class SignupController extends GetxController {
         print("User created successfully: ${user.uid}");
 
         // ✅ NAVIGATE IMMEDIATELY
-        Get.offAllNamed(AppRoutesName.mainScreen);
+        Get.offAllNamed(AppRoutesName.onboarding);
       } else {
         // Get.snackbar("Error", "Signup failed.");
         Get.snackbar(
