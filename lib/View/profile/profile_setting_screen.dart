@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/View/Widgets/custom_appbar.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
@@ -71,9 +72,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Profile Setting"
-        ),
+      appBar: CustomAppBar(title: "Profile Setting"),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -214,10 +213,20 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     String fullName = '$firstName $lastName'.trim();
                     final user = FirebaseAuth.instance.currentUser;
 
-                    await user?.updateDisplayName(fullName);
+                    final uid = user!.uid;
 
-                    // Save selected avatar path as photoURL
-                    await user?.updatePhotoURL(avatars[selectedIndex]);
+                    // Update FirebaseAuth
+                    await user.updateDisplayName(fullName);
+                    await user.updatePhotoURL(avatars[selectedIndex]);
+
+                    // Update Firestore
+                    await FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(uid)
+                        .update({
+                          "name": fullName,
+                          "avatar": avatars[selectedIndex],
+                        });
 
                     Get.snackbar(
                       "Success",
@@ -226,9 +235,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                       colorText: Colors.white,
                     );
 
-                    // Navigate back
                     Get.offNamed(AppRoutesName.mainScreen);
-                    // Get.back();
                   } catch (e) {
                     Get.snackbar(
                       "Error",
@@ -238,6 +245,48 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     );
                   }
                 },
+                // ontap: () async {
+                //   final firstName = firstNameController.text.trim();
+                //   final lastName = lastNameController.text.trim();
+
+                //   if (firstName.isEmpty) {
+                //     Get.snackbar(
+                //       "Error",
+                //       "Please enter your first name",
+                //       backgroundColor: Colors.red,
+                //       colorText: Colors.white,
+                //     );
+                //     return;
+                //   }
+
+                //   try {
+                //     String fullName = '$firstName $lastName'.trim();
+                //     final user = FirebaseAuth.instance.currentUser;
+
+                //     await user?.updateDisplayName(fullName);
+
+                //     // Save selected avatar path as photoURL
+                //     await user?.updatePhotoURL(avatars[selectedIndex]);
+
+                //     Get.snackbar(
+                //       "Success",
+                //       "Profile updated successfully",
+                //       backgroundColor: AppColors.primary,
+                //       colorText: Colors.white,
+                //     );
+
+                //     // Navigate back
+                //     Get.offNamed(AppRoutesName.mainScreen);
+                //     // Get.back();
+                //   } catch (e) {
+                //     Get.snackbar(
+                //       "Error",
+                //       "Failed to update profile: $e",
+                //       backgroundColor: Colors.red,
+                //       colorText: Colors.white,
+                //     );
+                //   }
+                // },
               ),
             ),
             SizedBox(height: 30),

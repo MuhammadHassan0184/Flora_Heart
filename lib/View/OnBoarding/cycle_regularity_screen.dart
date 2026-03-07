@@ -1,6 +1,10 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class CycleRegularityScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -64,7 +68,47 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
             /// Continue Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(label: "Continue", ontap: widget.onNext,),
+              child: CustomButton(
+                label: "Continue",
+                ontap: () {
+                  final onboarding = Get.find<OnboardingController>();
+                  if (isRegular && selectedRegular <= 0) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your cycle length",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  if (!isRegular && (selectedMin <= 0 || selectedMax <= 0)) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your cycle range",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  onboarding.cycleLength = isRegular
+                      ? selectedRegular
+                      : selectedMax;
+                  widget.onNext();
+                },
+              ),
+              // CustomButton(
+              //   label: "Continue",
+              //   // ontap: widget.onNext,
+              //   ontap: () {
+              //     final onboarding = Get.find<OnboardingController>();
+
+              //     onboarding.cycleLength = isRegular
+              //         ? selectedRegular
+              //         : selectedMax;
+
+              //     widget.onNext();
+              //   },
+              // ),
             ),
 
             SizedBox(height: 20),

@@ -1,6 +1,8 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PeriodLengthScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -60,7 +62,34 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
               SizedBox(height: 25),
 
               /// Continue Button
-              CustomButton(label: "Continue", ontap: widget.onNext,),
+              // CustomButton(
+              //   label: "Continue",
+              //   // ontap: widget.onNext,
+              //   ontap: () {
+              //     final onboarding = Get.find<OnboardingController>();
+
+              //     onboarding.periodLength = selectedLength;
+
+              //     widget.onNext();
+              //   },
+              // ),
+              CustomButton(
+                label: "Continue",
+                ontap: () {
+                  final onboarding = Get.find<OnboardingController>();
+                  if (selectedLength <= 0) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your period length",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  onboarding.periodLength = selectedLength;
+                  widget.onNext();
+                },
+              ),
               SizedBox(height: 30),
             ],
           ),

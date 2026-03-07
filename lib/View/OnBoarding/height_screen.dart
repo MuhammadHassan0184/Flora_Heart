@@ -1,6 +1,8 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:get/get.dart';
 
 class HeightScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -120,7 +122,34 @@ class _HeightScreenState extends State<HeightScreen> {
               Spacer(),
 
               /// Continue Button
-              CustomButton(label: "Continue", ontap: widget.onNext,),
+              // CustomButton(
+              //   label: "Continue",
+              //   // ontap: widget.onNext,
+              //   ontap: () {
+              //     final onboarding = Get.find<OnboardingController>();
+
+              //     onboarding.height = "$selectedFeet.$selectedInches";
+
+              //     widget.onNext();
+              //   },
+              // ),
+              CustomButton(
+                label: "Continue",
+                ontap: () {
+                  final onboarding = Get.find<OnboardingController>();
+                  if (selectedFeet <= 0 || selectedInches < 0) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your height",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  onboarding.height = "$selectedFeet.$selectedInches";
+                  widget.onNext();
+                },
+              ),
               SizedBox(height: 30),
             ],
           ),

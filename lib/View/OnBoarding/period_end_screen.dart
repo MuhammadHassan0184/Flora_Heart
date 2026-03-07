@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 
 class PeriodEndScreen extends StatefulWidget {
@@ -223,7 +227,29 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CustomButton(
                 label: "Continue",
-                ontap: () {
+                // ontap: () {
+                //   Get.offAll(() => MainScreen());
+                // },
+                ontap: () async {
+                  final onboarding = Get.find<OnboardingController>();
+                  final user = FirebaseAuth.instance.currentUser;
+
+                  onboarding.lastPeriodEnd =
+                      "${endDate?.day}-${endDate?.month}-${endDate?.year}";
+
+                  await FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(user!.uid)
+                      .set({
+                        "name": onboarding.name,
+                        "dob": onboarding.dob,
+                        "height": onboarding.height,
+                        "weight": onboarding.weight,
+                        "periodLength": onboarding.periodLength,
+                        "cycleLength": onboarding.cycleLength,
+                        "lastPeriodEnd": onboarding.lastPeriodEnd,
+                      });
+
                   Get.offAll(() => MainScreen());
                 },
               ),

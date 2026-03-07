@@ -1,6 +1,8 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:get/get.dart';
 
 class WeightScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -141,7 +143,33 @@ class _WeightScreenState extends State<WeightScreen> {
               SizedBox(height: 20),
 
               /// CONTINUE BUTTON
-              CustomButton(label: "Continue", ontap: widget.onNext,),
+              // CustomButton(
+              //   label: "Continue",
+              //   ontap: () {
+              //     final onboarding = Get.find<OnboardingController>();
+
+              //     onboarding.weight = "$selectedWeight ${isKg ? "kg" : "lb"}";
+
+              //     widget.onNext();
+              //   },
+              // ),
+              CustomButton(
+                label: "Continue",
+                ontap: () {
+                  if (selectedWeight <= 0) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your weight",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  final onboarding = Get.find<OnboardingController>();
+                  onboarding.weight = "$selectedWeight ${isKg ? "kg" : "lb"}";
+                  widget.onNext();
+                },
+              ),
 
               SizedBox(height: 20),
             ],

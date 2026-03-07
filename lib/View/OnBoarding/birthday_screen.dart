@@ -1,6 +1,8 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BirthdayScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -104,7 +106,38 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(label: "Continue", ontap: widget.onNext,),
+              child: CustomButton(
+                label: "Continue",
+                ontap: () {
+                  if (selectedDay < 0 ||
+                      selectedMonth < 0 ||
+                      selectedYear < 0) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your birthday",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  final onboarding = Get.find<OnboardingController>();
+                  onboarding.dob =
+                      "${selectedDay + 1}-${selectedMonth + 1}-${1965 + selectedYear}";
+                  widget.onNext();
+                },
+              ),
+              //  CustomButton(
+              //   label: "Continue",
+              //   // ontap: widget.onNext,
+              //   ontap: () {
+              //     final onboarding = Get.find<OnboardingController>();
+
+              //     onboarding.dob =
+              //         "${selectedDay + 1}-${selectedMonth + 1}-${1965 + selectedYear}";
+
+              //     widget.onNext();
+              //   },
+              // ),
             ),
 
             SizedBox(height: 30),
@@ -186,7 +219,6 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
             ),
           ),
 
-          
           Positioned(
             bottom: 92,
             left: 20,

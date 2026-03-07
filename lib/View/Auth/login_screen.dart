@@ -1,5 +1,5 @@
-import 'package:floraheart/Controllers/google_controller.dart';
-import 'package:floraheart/Controllers/login_controller.dart';
+import 'package:floraheart/Controllers/Auth_controller/google_controller.dart';
+import 'package:floraheart/Controllers/Auth_controller/login_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/View/Widgets/custom_form_field.dart';
 import 'package:floraheart/View/Widgets/custom_google_login.dart';

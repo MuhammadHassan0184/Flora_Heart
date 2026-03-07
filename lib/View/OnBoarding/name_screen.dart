@@ -1,11 +1,21 @@
+import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class NameScreen extends StatelessWidget {
+class NameScreen extends StatefulWidget {
   final VoidCallback onNext;
 
   const NameScreen({super.key, required this.onNext});
+
+  @override
+  State<NameScreen> createState() => _NameScreenState();
+}
+
+class _NameScreenState extends State<NameScreen> {
+  final controller = Get.put(OnboardingController());
+  final onboarding = Get.find<OnboardingController>();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +76,30 @@ class NameScreen extends StatelessWidget {
 
               Spacer(),
 
-              CustomButton(label: "Continue", ontap: onNext),
+              // CustomButton(label: "Continue", ontap: widget.onNext),
+              // CustomButton(
+              //   label: "Continue",
+              //   ontap: () {
+              //     onboarding.name = controller.text;
+              //     widget.onNext();
+              //   },
+              // ),
+              CustomButton(
+                label: "Continue",
+                ontap: () {
+                  if (controller.text.trim().isEmpty) {
+                    Get.snackbar(
+                      "Error",
+                      "Please enter your name",
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  onboarding.name = controller.text.trim();
+                  widget.onNext();
+                },
+              ),
               SizedBox(height: 30),
             ],
           ),
