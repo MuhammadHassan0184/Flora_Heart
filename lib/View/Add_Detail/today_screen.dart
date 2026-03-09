@@ -1,8 +1,9 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, avoid_print
 
-import 'package:floraheart/View/Widgets/custom_appbar.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
-import 'package:floraheart/View/Widgets/custom_card_button.dart';
+import 'package:floraheart/Controllers/today_data_controller.dart';
+import 'package:floraheart/Widgets/custom_appbar.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_card_button.dart';
 import 'package:floraheart/View/Add_Detail/BottonSheets/drink_water_bottomsheet.dart';
 import 'package:floraheart/View/Add_Detail/BottonSheets/medicine_bottomsheet.dart';
 import 'package:floraheart/View/Add_Detail/BottonSheets/note_bottomsheet.dart';
@@ -17,6 +18,7 @@ import 'package:floraheart/View/Add_Detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 
@@ -34,10 +36,14 @@ class _TodayScreenState extends State<TodayScreen> {
   final ScrollController _scrollController = ScrollController();
 
   int selectedIndex = 0; // 0 = Start, 1 = End
+  late TodayDataController controller;
 
   @override
   void initState() {
     super.initState();
+    controller = Get.put(TodayDataController(), permanent: true);
+
+    controller.loadTodayData(); // 🔥 LOAD DATA
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
@@ -75,9 +81,7 @@ class _TodayScreenState extends State<TodayScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Today"
-        ),
+      appBar: CustomAppBar(title: "Today"),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -359,8 +363,21 @@ class _TodayScreenState extends State<TodayScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CustomButton(
                 label: "Done",
-                ontap: () {
-                  Get.toNamed(AppRoutesName.mainScreen);
+                ontap: () async {
+                  try {
+                    final controller = Get.find<TodayDataController>();
+
+                    await controller.saveTodayData();
+ 
+                    Get.offAllNamed(AppRoutesName.mainScreen);
+                  } catch (e) {
+                    print("SAVE ERROR FULL: $e");
+
+                    Get.snackbar(
+                      "Error",
+                      e.toString(), // show real error
+                    );
+                  }
                 },
               ),
             ),

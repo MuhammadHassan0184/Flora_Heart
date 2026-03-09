@@ -1,6 +1,11 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class BasalTemperatureBottomSheet extends StatefulWidget {
   const BasalTemperatureBottomSheet({super.key});
@@ -67,7 +72,7 @@ class _BasalTemperatureBottomSheetState
                 _unitToggle("°F"),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             /// Selected Value Box
             Container(
@@ -131,9 +136,23 @@ class _BasalTemperatureBottomSheetState
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CustomButton(
                 label: "Done",
-                ontap: () {
+                ontap: () async {
+                  final controller = Get.find<TodayDataController>();
+
+                  // 🔥 Save the selected temperature to the controller
+                  controller.temperature.value = selectedValue;
+
+                  try {
+                    // Optional: save to Firebase immediately
+                    await controller.saveTodayData();
+                  } catch (e) {
+                    print("Temperature save error: $e");
+                  }
+
+                  // Close BottomSheet
                   Navigator.pop(context);
 
+                  // Optional: show SnackBar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -146,7 +165,7 @@ class _BasalTemperatureBottomSheetState
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -157,11 +176,24 @@ class _BasalTemperatureBottomSheetState
     bool isSelected = selectedUnit == unit;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedUnit = unit;
-          selectedValue = unit == "°C" ? 36.00 : 96.80; // 36°C in °F
-        });
+      // onTap: () {
+      //   setState(() {
+      //     selectedUnit = unit;
+      //     selectedValue = unit == "°C" ? 36.00 : 96.80; // 36°C in °F
+      //   });
+      // },
+      onTap: () async {
+        final controller = Get.find<TodayDataController>();
+
+        controller.temperature.value = selectedValue;
+
+        try {
+          await controller.saveTodayData(); // 🔥 Auto-save
+        } catch (e) {
+          print("Auto-save error: $e");
+        }
+
+        Navigator.pop(context);
       },
       child: Container(
         height: 44,

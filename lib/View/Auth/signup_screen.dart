@@ -1,8 +1,8 @@
 import 'package:floraheart/Controllers/Auth_controller/google_controller.dart';
 import 'package:floraheart/Controllers/Auth_controller/signup_controller.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
-import 'package:floraheart/View/Widgets/custom_form_field.dart';
-import 'package:floraheart/View/Widgets/custom_google_login.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_form_field.dart';
+import 'package:floraheart/Widgets/custom_google_login.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';

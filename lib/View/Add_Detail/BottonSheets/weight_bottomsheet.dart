@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 
 class WeightBottomSheet extends StatefulWidget {
   const WeightBottomSheet({super.key});
@@ -128,7 +133,15 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CustomButton(
                 label: "Done",
-                ontap: () {
+                ontap: () async {
+                  final controller = Get.find<TodayDataController>();
+                  controller.weight.value =
+                      selectedValue; // 🔥 save reactive value
+                  try {
+                    await controller.saveTodayData(); // 🔥 persist to Firebase
+                  } catch (e) {
+                    print("Weight save error: $e");
+                  }
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

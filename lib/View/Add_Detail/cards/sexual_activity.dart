@@ -69,7 +69,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
-import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:floraheart/Widgets/custom_chip.dart';
 
 class SexualActivitySection extends StatefulWidget {
   const SexualActivitySection({super.key});
@@ -119,9 +119,14 @@ class _SexualActivitySectionState extends State<SexualActivitySection> {
                   iconPath: activity["icon"],
                   isSelected:
                       controller.sexualActivity.value == activity["label"],
-                  onTap: () {
+                  onTap: () async {
                     controller.sexualActivity.value =
                         activity["label"]; // ✅ Save to controller
+                    try {
+                      await controller.saveTodayData(); // 🔥 Auto-save
+                    } catch (e) {
+                      print("Auto-save error: $e");
+                    }
                   },
                 ),
               );

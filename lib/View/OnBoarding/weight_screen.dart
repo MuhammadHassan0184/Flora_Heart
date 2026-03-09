@@ -1,7 +1,7 @@
 import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:get/get.dart';
 
 class WeightScreen extends StatefulWidget {

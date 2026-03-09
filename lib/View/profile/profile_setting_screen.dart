@@ -2,9 +2,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:floraheart/View/Widgets/custom_appbar.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
-import 'package:floraheart/View/Widgets/custom_profile_field.dart';
+import 'package:floraheart/Widgets/custom_appbar.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_profile_field.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';

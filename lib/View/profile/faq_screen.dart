@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_string_interpolations, deprecated_member_use
 
-import 'package:floraheart/View/Widgets/custom_appbar.dart';
+import 'package:floraheart/Widgets/custom_appbar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 

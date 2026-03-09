@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
-import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

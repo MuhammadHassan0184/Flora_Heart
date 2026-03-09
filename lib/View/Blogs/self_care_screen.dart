@@ -1,7 +1,7 @@
 // ignore_for_file: sized_box_for_whitespace, deprecated_member_use, avoid_print
 
-import 'package:floraheart/View/Widgets/custom_appbar.dart';
-import 'package:floraheart/View/Widgets/custom_cycle_card.dart';
+import 'package:floraheart/Widgets/custom_appbar.dart';
+import 'package:floraheart/Widgets/custom_cycle_card.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';

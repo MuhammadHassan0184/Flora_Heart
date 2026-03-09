@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/Controllers/onboarding_controller.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_instance/get_instance.dart';

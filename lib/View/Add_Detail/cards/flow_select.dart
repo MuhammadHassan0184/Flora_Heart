@@ -2,18 +2,17 @@ import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get.dart';
 
-class FlowSelector extends StatefulWidget {
+class FlowSelector extends StatelessWidget {
   const FlowSelector({super.key});
 
   @override
-  State<FlowSelector> createState() => _FlowSelectorState();
-}
+  Widget build(BuildContext context) {
+    final controller = Get.find<TodayDataController>();
 
-class _FlowSelectorState extends State<FlowSelector> {
-  int selectedIndex = -1; // nothing selected initially
+    return Obx(() {
+      final selectedIndex = controller.flow.value;
 
   Widget buildItem({
     required int index,
@@ -28,12 +27,13 @@ class _FlowSelectorState extends State<FlowSelector> {
       //     selectedIndex = index;
       //   });
       // },
-      onTap: () {
-        setState(() {
-          selectedIndex = index;
-        });
-        final controller = Get.find<TodayDataController>();
+      onTap: () async {
         controller.flow.value = index; // ✅ Save flow
+        try {
+          await controller.saveTodayData(); // 🔥 Auto-save to Firebase
+        } catch (e) {
+          print("Auto-save error: $e");
+        }
       },
       child: Column(
         children: [
@@ -63,20 +63,19 @@ class _FlowSelectorState extends State<FlowSelector> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        buildItem(index: 0, title: "Light", asset: "assets/lightdrop.svg"),
-        buildItem(index: 1, title: "Medium", asset: "assets/mediumdrop.svg"),
-        buildItem(index: 2, title: "Heavy", asset: "assets/heavydrops.svg"),
-        buildItem(
-          index: 3,
-          title: "Disaster",
-          asset: "assets/disasterdrops.svg",
-        ),
-      ],
-    );
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          buildItem(index: 0, title: "Light", asset: "assets/lightdrop.svg"),
+          buildItem(index: 1, title: "Medium", asset: "assets/mediumdrop.svg"),
+          buildItem(index: 2, title: "Heavy", asset: "assets/heavydrops.svg"),
+          buildItem(
+            index: 3,
+            title: "Disaster",
+            asset: "assets/disasterdrops.svg",
+          ),
+        ],
+      );
+    });
   }
 }

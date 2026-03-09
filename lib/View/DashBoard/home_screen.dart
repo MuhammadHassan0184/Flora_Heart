@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
-import 'package:floraheart/View/Widgets/custom_date_card.dart';
-import 'package:floraheart/View/Widgets/custom_edit_button.dart';
+import 'package:floraheart/Widgets/custom_date_card.dart';
+import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

@@ -3,7 +3,7 @@
 import 'package:floraheart/View/Blogs/self_care_screen.dart';
 import 'package:floraheart/View/Calendar/calendar_screen.dart';
 import 'package:floraheart/View/DashBoard/home_screen.dart';
-import 'package:floraheart/View/Widgets/custom_navbar.dart';
+import 'package:floraheart/Widgets/custom_navbar.dart';
 import 'package:floraheart/View/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 

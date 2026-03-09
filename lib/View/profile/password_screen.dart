@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
-import 'package:floraheart/View/Widgets/custom_appbar.dart';
-import 'package:floraheart/View/Widgets/custom_button.dart';
-import 'package:floraheart/View/Widgets/custom_profile_field.dart';
+import 'package:floraheart/Widgets/custom_appbar.dart';
+import 'package:floraheart/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_profile_field.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';

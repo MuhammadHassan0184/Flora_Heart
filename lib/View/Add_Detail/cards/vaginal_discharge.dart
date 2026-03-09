@@ -2,21 +2,20 @@
 
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:floraheart/Widgets/custom_chip.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
 
-class DischargeSection extends StatefulWidget {
+class DischargeSection extends StatelessWidget {
   const DischargeSection({super.key});
 
   @override
-  State<DischargeSection> createState() => _DischargeSectionState();
-}
+  Widget build(BuildContext context) {
+    final controller = Get.find<TodayDataController>();
 
-class _DischargeSectionState extends State<DischargeSection> {
-  // ✅ Multiple selection list
-  List<String> selectedDischarge = [];
+    return Obx(() {
+      final selectedDischarge = controller.discharge.toList();
 
   final List<Map<String, dynamic>> dischargeTypes = [
     {"label": "Dry", "icon": "assets/discharge.svg"},
@@ -26,9 +25,7 @@ class _DischargeSectionState extends State<DischargeSection> {
     {"label": "Egg White", "icon": "assets/discharge.svg"},
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
+  return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
@@ -66,18 +63,20 @@ class _DischargeSectionState extends State<DischargeSection> {
                 //     }
                 //   });
                 // },
-                onTap: () {
-                  setState(() {
-                    if (selectedDischarge.contains(label)) {
-                      selectedDischarge.remove(label);
-                    } else {
-                      selectedDischarge.add(label);
-                    }
-                  });
-                  final controller = Get.find<TodayDataController>();
+                onTap: () async {
+                  if (selectedDischarge.contains(label)) {
+                    selectedDischarge.remove(label);
+                  } else {
+                    selectedDischarge.add(label);
+                  }
                   controller.discharge.assignAll(
                     selectedDischarge,
                   ); // ✅ Save discharge
+                  try {
+                    await controller.saveTodayData(); // 🔥 Auto-save
+                  } catch (e) {
+                    print("Auto-save error: $e");
+                  }
                 },
               );
             }).toList(),
@@ -85,5 +84,6 @@ class _DischargeSectionState extends State<DischargeSection> {
         ],
       ),
     );
+    });
   }
 }

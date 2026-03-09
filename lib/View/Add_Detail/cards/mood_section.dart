@@ -1,20 +1,19 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:floraheart/Controllers/today_data_controller.dart';
-import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:floraheart/Widgets/custom_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MoodSection extends StatefulWidget {
+class MoodSection extends StatelessWidget {
   const MoodSection({super.key});
 
   @override
-  State<MoodSection> createState() => _MoodSectionState();
-}
+  Widget build(BuildContext context) {
+    final controller = Get.find<TodayDataController>();
 
-class _MoodSectionState extends State<MoodSection> {
-  // ✅ Change from String to List
-  List<String> selectedMoods = [];
+    return Obx(() {
+      final selectedMoods = controller.moods.toList();
 
   final List<Map<String, dynamic>> moods = [
     {"label": "Anxious", "icon": "assets/anxious.svg"},
@@ -27,9 +26,7 @@ class _MoodSectionState extends State<MoodSection> {
     {"label": "Depressed", "icon": "assets/depressed.svg"},
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
+  return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
@@ -66,17 +63,19 @@ class _MoodSectionState extends State<MoodSection> {
                 //     }
                 //   });
                 // },
-                onTap: () {
-                  setState(() {
-                    if (selectedMoods.contains(label)) {
-                      selectedMoods.remove(label);
-                    } else {
-                      selectedMoods.add(label);
-                    }
-                  });
+                onTap: () async {
+                  if (selectedMoods.contains(label)) {
+                    selectedMoods.remove(label);
+                  } else {
+                    selectedMoods.add(label);
+                  }
 
-                  final controller = Get.find<TodayDataController>();
                   controller.moods.assignAll(selectedMoods); // ✅ Save moods
+                  try {
+                    await controller.saveTodayData(); // 🔥 Auto-save
+                  } catch (e) {
+                    print("Auto-save error: $e");
+                  }
                 },
               );
             }).toList(),
@@ -84,5 +83,6 @@ class _MoodSectionState extends State<MoodSection> {
         ],
       ),
     );
+    });
   }
 }

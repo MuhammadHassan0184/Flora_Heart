@@ -2,7 +2,7 @@
 
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:floraheart/View/Widgets/custom_chip.dart';
+import 'package:floraheart/Widgets/custom_chip.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
@@ -15,43 +15,6 @@ class SymptomsSection extends StatefulWidget {
 }
 
 class _SymptomsSectionState extends State<SymptomsSection> {
-  final Map<String, Set<String>> selectedSymptoms = {};
-
-  // ====== DATA ======
-  final Map<String, List<Map<String, String>>> symptomsData = {
-    "Pain & Pelvic": [
-      {"label": "Cramps", "icon": "assets/cramp.svg"},
-      {"label": "Ovulation Pain", "icon": "assets/ovulationpain.svg"},
-      {"label": "Lower Back Pain", "icon": "assets/lowerbackpain.svg"},
-      {"label": "Pelvic Pain", "icon": "assets/pelvicpain.svg"},
-    ],
-    "Digestive & Gut": [
-      {"label": "Bloating", "icon": "assets/bloating.svg"},
-      {"label": "Nausea", "icon": "assets/nausea.svg"},
-      {"label": "Diarrhea", "icon": "assets/diarrhea.svg"},
-      {"label": "Constipation", "icon": "assets/constipation.svg"},
-      {"label": "Cravings", "icon": "assets/cravings.svg"},
-    ],
-    "Energy & Sleep": [
-      {"label": "Fatigue", "icon": "assets/fatigue.svg"},
-      {"label": "Brain Fog", "icon": "assets/brainfog.svg"},
-      {"label": "Insomnia", "icon": "assets/insomnia.svg"},
-      {"label": "High Energy", "icon": "assets/highenergy.svg"},
-    ],
-    "Skin & Body": [
-      {"label": "Acne", "icon": "assets/acne.svg"},
-      {"label": "Tender Breasts", "icon": "assets/tenderbreasts.svg"},
-      {"label": "Headache", "icon": "assets/headache.svg"},
-      {"label": "Oily Skin/Hair", "icon": "assets/oilyskinhair.svg"},
-      {"label": "Chills/Hot Flashes", "icon": "assets/chillshotflashes.svg"},
-    ],
-    "Vaginal & Fertility": [
-      {"label": "Cervical Mucus", "icon": "assets/cervicalmucus.svg"},
-      {"label": "Spotting", "icon": "assets/spotting.svg"},
-      {"label": "Itching", "icon": "assets/itching.svg"},
-    ],
-  };
-
   final Set<String> expandedSections = {
     "Pain & Pelvic",
     "Digestive & Gut",
@@ -62,7 +25,47 @@ class _SymptomsSectionState extends State<SymptomsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final controller = Get.find<TodayDataController>();
+
+    return Obx(() {
+      final selectedSymptoms = Map<String, Set<String>>.from(controller.symptoms);
+
+      // ====== DATA ======
+      final Map<String, List<Map<String, String>>> symptomsData = {
+        "Pain & Pelvic": [
+          {"label": "Cramps", "icon": "assets/cramp.svg"},
+          {"label": "Ovulation Pain", "icon": "assets/ovulationpain.svg"},
+          {"label": "Lower Back Pain", "icon": "assets/lowerbackpain.svg"},
+          {"label": "Pelvic Pain", "icon": "assets/pelvicpain.svg"},
+        ],
+        "Digestive & Gut": [
+          {"label": "Bloating", "icon": "assets/bloating.svg"},
+          {"label": "Nausea", "icon": "assets/nausea.svg"},
+          {"label": "Diarrhea", "icon": "assets/diarrhea.svg"},
+          {"label": "Constipation", "icon": "assets/constipation.svg"},
+          {"label": "Cravings", "icon": "assets/cravings.svg"},
+        ],
+        "Energy & Sleep": [
+          {"label": "Fatigue", "icon": "assets/fatigue.svg"},
+          {"label": "Brain Fog", "icon": "assets/brainfog.svg"},
+          {"label": "Insomnia", "icon": "assets/insomnia.svg"},
+          {"label": "High Energy", "icon": "assets/highenergy.svg"},
+        ],
+        "Skin & Body": [
+          {"label": "Acne", "icon": "assets/acne.svg"},
+          {"label": "Tender Breasts", "icon": "assets/tenderbreasts.svg"},
+          {"label": "Headache", "icon": "assets/headache.svg"},
+          {"label": "Oily Skin/Hair", "icon": "assets/oilyskinhair.svg"},
+          {"label": "Chills/Hot Flashes", "icon": "assets/chillshotflashes.svg"},
+        ],
+        "Vaginal & Fertility": [
+          {"label": "Cervical Mucus", "icon": "assets/cervicalmucus.svg"},
+          {"label": "Spotting", "icon": "assets/spotting.svg"},
+          {"label": "Itching", "icon": "assets/itching.svg"},
+        ],
+      };
+
+      return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(15),
@@ -91,13 +94,11 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                 /// Section Header
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      if (isExpanded) {
-                        expandedSections.remove(title);
-                      } else {
-                        expandedSections.add(title);
-                      }
-                    });
+                    if (expandedSections.contains(title)) {
+                      expandedSections.remove(title);
+                    } else {
+                      expandedSections.add(title);
+                    }
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -159,25 +160,27 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                         //     }
                         //   });
                         // },
-                        onTap: () {
-                          setState(() {
-                            selectedSymptoms.putIfAbsent(
-                              title,
-                              () => <String>{},
-                            );
-                            if (selectedSet.contains(label)) {
-                              selectedSymptoms[title]!.remove(label);
-                            } else {
-                              selectedSymptoms[title]!.add(label);
-                            }
-                            if (selectedSymptoms[title]!.isEmpty)
-                              selectedSymptoms.remove(title);
-                          });
+                        onTap: () async {
+                          selectedSymptoms.putIfAbsent(
+                            title,
+                            () => <String>{},
+                          );
+                          if (selectedSet.contains(label)) {
+                            selectedSymptoms[title]!.remove(label);
+                          } else {
+                            selectedSymptoms[title]!.add(label);
+                          }
+                          if (selectedSymptoms[title]!.isEmpty)
+                            selectedSymptoms.remove(title);
 
-                          final controller = Get.find<TodayDataController>();
                           controller.symptoms.assignAll(
                             selectedSymptoms,
                           ); // ✅ Save symptoms
+                          try {
+                            await controller.saveTodayData(); // 🔥 Auto-save
+                          } catch (e) {
+                            print("Auto-save error: $e");
+                          }
                         },
                       );
                     }).toList(),
@@ -190,5 +193,6 @@ class _SymptomsSectionState extends State<SymptomsSection> {
         ],
       ),
     );
+    });
   }
 }
