@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Routes/routes.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:floraheart/firebase_options.dart';
@@ -10,6 +11,22 @@ import 'package:google_fonts/google_fonts.dart';
 
 // final todayDataController = Get.put(TodayDataController());
 
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   print("Starting Firebase init...");
+
+//   try {
+//     await Firebase.initializeApp(
+//       options: DefaultFirebaseOptions.currentPlatform,
+//     );
+//     print("Firebase initialized SUCCESSFULLY!");
+//   } catch (e) {
+//     print("Firebase Init Error: $e");
+//   }
+
+//   runApp(const MyApp());
+// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -23,6 +40,10 @@ void main() async {
   } catch (e) {
     print("Firebase Init Error: $e");
   }
+
+  // Initialize PeriodController and load period data before running app
+  final periodCtrl = Get.put(PeriodController(), permanent: true);
+  await periodCtrl.loadPeriod(); // ensures periodEnd is loaded for DatesRow
 
   runApp(const MyApp());
 }

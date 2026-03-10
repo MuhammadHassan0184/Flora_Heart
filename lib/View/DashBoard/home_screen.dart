@@ -1,11 +1,16 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Widgets/custom_date_card.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:math';
+
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 // ---------------- HOME SCREEN ----------------
 class HomeScreen extends StatefulWidget {
@@ -44,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen>
     _waveController.dispose();
     super.dispose();
   }
+
+  final PeriodController periodCtrl = Get.find<PeriodController>();
 
   @override
   Widget build(BuildContext context) {
@@ -274,10 +281,20 @@ class _HomeScreenState extends State<HomeScreen>
             ),
 
             SizedBox(height: 35),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: DatesRow(),
-            ),
+            Obx(() {
+              if (!periodCtrl.isLoaded.value ||
+                  periodCtrl.periodEnd.value == null) {
+                return SizedBox(); // or CircularProgressIndicator()
+              }
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: DatesRow(endDate: periodCtrl.periodEnd.value!),
+              );
+            }),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 10),
+            //   child: DatesRow(endDate: periodCtrl.periodEnd.value),
+            // ),
             SizedBox(height: 20),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 14),

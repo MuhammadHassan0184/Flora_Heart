@@ -49,7 +49,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
               () => CustomCalendar(
                 initialStartDate: periodCtrl.periodStart.value,
                 initialEndDate: periodCtrl.periodEnd.value,
+                ovulationDate: periodCtrl.ovulationDate,
+                nextPeriodDate: periodCtrl.nextPeriodDate,
+                fertilityWindow: periodCtrl.fertilityWindow,
                 enabled: false,
+                showPredictedColors: true, // ✅ show predicted colors
               ),
             ),
             SizedBox(height: 1),
