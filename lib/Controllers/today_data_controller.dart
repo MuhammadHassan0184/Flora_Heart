@@ -20,7 +20,6 @@ class TodayDataController extends GetxController {
   String get today => DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   /// SAVE DATA
-  /// SAVE DATA
   Future<void> saveTodayData() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -57,9 +56,12 @@ class TodayDataController extends GetxController {
 
   /// LOAD DATA
   Future<void> loadTodayData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
     final doc = await FirebaseFirestore.instance
         .collection("users")
-        .doc(uid)
+        .doc(user.uid)
         .collection("logs")
         .doc(today)
         .get();
