@@ -4,6 +4,7 @@ import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_appbar.dart';
 import 'package:floraheart/Widgets/custom_calendar.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
+  late PeriodController periodCtrl;
 
   // @override
   // void initState() {
@@ -28,9 +30,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     controller = Get.put(TodayDataController(), permanent: true);
-
-    // 🔥 Load today's data immediately so UI shows saved info
+    periodCtrl = Get.put(PeriodController(), permanent: true);
+    // load persisted info
     controller.loadTodayData();
+    periodCtrl.loadPeriod();
   }
 
   @override
@@ -41,7 +44,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            CustomCalendar(),
+            // show range from controller
+            Obx(
+              () => CustomCalendar(
+                initialStartDate: periodCtrl.periodStart.value,
+                initialEndDate: periodCtrl.periodEnd.value,
+                enabled: false,
+              ),
+            ),
             SizedBox(height: 1),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -5,6 +5,9 @@ class UserModel {
   int periodLength;
   int cycleLength;
   String lastPeriodEnd;
+  // ISO strings for the most recent cycle range (start/end)
+  String? periodStart;
+  String? periodEnd;
 
   UserModel({
     required this.name,
@@ -13,6 +16,8 @@ class UserModel {
     required this.periodLength,
     required this.cycleLength,
     required this.lastPeriodEnd,
+    this.periodStart,
+    this.periodEnd,
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +28,8 @@ class UserModel {
       "periodLength": periodLength,
       "cycleLength": cycleLength,
       "lastPeriodEnd": lastPeriodEnd,
+      if (periodStart != null) "periodStart": periodStart,
+      if (periodEnd != null) "periodEnd": periodEnd,
     };
   }
 
@@ -34,6 +41,8 @@ class UserModel {
       periodLength: map['periodLength'] ?? 0,
       cycleLength: map['cycleLength'] ?? 0,
       lastPeriodEnd: map['lastPeriodEnd'] ?? "",
+      periodStart: map['periodStart'],
+      periodEnd: map['periodEnd'],
     );
   }
 }

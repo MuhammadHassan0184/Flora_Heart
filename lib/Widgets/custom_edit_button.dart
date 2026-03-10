@@ -2,9 +2,11 @@
 
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/Widgets/custom_calendar.dart';
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class CustomEditButton extends StatelessWidget {
   const CustomEditButton({super.key});
@@ -21,59 +23,79 @@ class CustomEditButton extends StatelessWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
           ),
           builder: (context) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              // ignore: avoid_unnecessary_containers
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Drag Indicator
-                    Container(
-                      height: 4,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+            final ctrl = Get.find<PeriodController>();
+            DateTime? tempStart = ctrl.periodStart.value;
+            DateTime? tempEnd = ctrl.periodEnd.value;
 
-                    SizedBox(height: 16),
-                    Text(
-                      "Edit Period",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+            return StatefulBuilder(
+              builder: (context, setModalState) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Drag Indicator
+                        Container(
+                          height: 4,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade400,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+                        Text(
+                          "Edit Period",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        CustomCalendar(
+                          initialStartDate: tempStart,
+                          initialEndDate: tempEnd,
+                          onRangeSelected: (s, e) {
+                            setModalState(() {
+                              tempStart = s;
+                              tempEnd = e;
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: CustomButton(
+                            label: "Done",
+                            ontap: () async {
+                              if (tempStart != null && tempEnd != null) {
+                                ctrl.setRange(tempStart!, tempEnd!);
+                                await ctrl.savePeriod();
+                              }
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Period updated successfully!"),
+                                  backgroundColor: AppColors.primary,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                      ],
                     ),
-                    SizedBox(height: 16),
-                    // Your custom calendar widget
-                    CustomCalendar(),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomButton(
-                        label: "Done",
-                        ontap: () {
-                          Navigator.pop(context);
-                          // Get.offAllNamed(AppRoutesName.calendarScreen);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Period updated successfully!"),
-                              backgroundColor: AppColors.primary,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );

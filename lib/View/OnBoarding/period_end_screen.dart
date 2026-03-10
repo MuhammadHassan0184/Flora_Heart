@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/Controllers/onboarding_controller.dart';
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/View/DashBoard/main_screen.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
+import 'package:floraheart/Widgets/custom_calendar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 
@@ -18,11 +21,14 @@ class PeriodEndScreen extends StatefulWidget {
 }
 
 class _PeriodEndScreenState extends State<PeriodEndScreen> {
-  DateTime currentMonth = DateTime.now();
-  DateTime? startDate;
-  DateTime? endDate;
+  late PeriodController periodCtrl;
 
-  final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
+  @override
+  void initState() {
+    super.initState();
+    periodCtrl = Get.put(PeriodController(), permanent: true);
+    periodCtrl.loadPeriod();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,185 +45,14 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
 
             const SizedBox(height: 40),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Column(
-                  children: [
-                    /// Month Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _arrowButton(Icons.chevron_left, () {
-                          setState(() {
-                            currentMonth = DateTime(
-                              currentMonth.year,
-                              currentMonth.month - 1,
-                            );
-                          });
-                        }),
-                        Text(
-                          "${_monthName(currentMonth.month)} ${currentMonth.year}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        _arrowButton(Icons.chevron_right, () {
-                          setState(() {
-                            currentMonth = DateTime(
-                              currentMonth.year,
-                              currentMonth.month + 1,
-                            );
-                          });
-                        }),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    /// Week Days
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: weekDays
-                          .map(
-                            (e) => Text(
-                              e,
-                              style: TextStyle(
-                                color: Colors.grey.shade500,
-                                fontSize: 13,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    /// Dates Grid
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 42,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 7,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                          ),
-                      itemBuilder: (context, index) {
-                        final firstDayOfMonth = DateTime(
-                          currentMonth.year,
-                          currentMonth.month,
-                          1,
-                        );
-
-                        int startWeekday =
-                            firstDayOfMonth.weekday % 7; // make Monday first
-
-                        final daysInMonth = DateTime(
-                          currentMonth.year,
-                          currentMonth.month + 1,
-                          0,
-                        ).day;
-
-                        final daysInPrevMonth = DateTime(
-                          currentMonth.year,
-                          currentMonth.month,
-                          0,
-                        ).day;
-
-                        int dayNumber = index - startWeekday + 1;
-
-                        DateTime cellDate;
-
-                        bool isCurrentMonth = true;
-
-                        if (dayNumber < 1) {
-                          cellDate = DateTime(
-                            currentMonth.year,
-                            currentMonth.month - 1,
-                            daysInPrevMonth + dayNumber,
-                          );
-                          isCurrentMonth = false;
-                        } else if (dayNumber > daysInMonth) {
-                          cellDate = DateTime(
-                            currentMonth.year,
-                            currentMonth.month + 1,
-                            dayNumber - daysInMonth,
-                          );
-                          isCurrentMonth = false;
-                        } else {
-                          cellDate = DateTime(
-                            currentMonth.year,
-                            currentMonth.month,
-                            dayNumber,
-                          );
-                        }
-
-                        bool isSelected = false;
-
-                        if (startDate != null && endDate != null) {
-                          isSelected =
-                              cellDate.isAfter(
-                                startDate!.subtract(const Duration(days: 1)),
-                              ) &&
-                              cellDate.isBefore(
-                                endDate!.add(const Duration(days: 1)),
-                              );
-                        }
-
-                        return GestureDetector(
-                          onTap: isCurrentMonth
-                              ? () {
-                                  setState(() {
-                                    if (startDate == null ||
-                                        (startDate != null &&
-                                            endDate != null)) {
-                                      startDate = cellDate;
-                                      endDate = null;
-                                    } else {
-                                      if (cellDate.isBefore(startDate!)) {
-                                        endDate = startDate;
-                                        startDate = cellDate;
-                                      } else {
-                                        endDate = cellDate;
-                                      }
-                                    }
-                                  });
-                                }
-                              : null,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "${cellDate.day}",
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : isCurrentMonth
-                                    ? Colors.black
-                                    : Colors.grey.shade300,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+            // calendar widget replaced by shared CustomCalendar
+            Obx(
+              () => CustomCalendar(
+                initialStartDate: periodCtrl.periodStart.value,
+                initialEndDate: periodCtrl.periodEnd.value,
+                onRangeSelected: (s, e) {
+                  periodCtrl.setRange(s, e);
+                },
               ),
             ),
 
@@ -234,9 +69,26 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
                   final onboarding = Get.find<OnboardingController>();
                   final user = FirebaseAuth.instance.currentUser;
 
-                  onboarding.lastPeriodEnd =
-                      "${endDate?.day}-${endDate?.month}-${endDate?.year}";
+                  if (periodCtrl.periodStart.value == null ||
+                      periodCtrl.periodEnd.value == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Please select your period dates."),
+                        backgroundColor: AppColors.primary,
+                      ),
+                    );
+                    return;
+                  }
 
+                  onboarding.lastPeriodEnd =
+                      "${periodCtrl.periodEnd.value!.day}-${periodCtrl.periodEnd.value!.month}-${periodCtrl.periodEnd.value!.year}";
+                  onboarding.periodLength =
+                      periodCtrl.periodEnd.value!
+                          .difference(periodCtrl.periodStart.value!)
+                          .inDays +
+                      1;
+
+                  // save onboarding user info plus range fields
                   await FirebaseFirestore.instance
                       .collection("users")
                       .doc(user!.uid)
@@ -248,7 +100,14 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
                         "periodLength": onboarding.periodLength,
                         "cycleLength": onboarding.cycleLength,
                         "lastPeriodEnd": onboarding.lastPeriodEnd,
+                        "periodStart": periodCtrl.periodStart.value!
+                            .toIso8601String(),
+                        "periodEnd": periodCtrl.periodEnd.value!
+                            .toIso8601String(),
                       });
+
+                  // also persist via controller (merge)
+                  await periodCtrl.savePeriod();
 
                   Get.offAll(() => MainScreen());
                 },
@@ -260,38 +119,5 @@ class _PeriodEndScreenState extends State<PeriodEndScreen> {
         ),
       ),
     );
-  }
-
-  Widget _arrowButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 35,
-        width: 35,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, size: 20),
-      ),
-    );
-  }
-
-  String _monthName(int month) {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    return months[month - 1];
   }
 }

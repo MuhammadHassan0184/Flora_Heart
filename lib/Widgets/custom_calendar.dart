@@ -1,10 +1,31 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomCalendar extends StatefulWidget {
-  const CustomCalendar({super.key});
+  /// Optional initial date range to be displayed/highlighted when the calendar
+  /// appears. Parents can update these values and the widget will adjust
+  /// accordingly via `didUpdateWidget`.
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+
+  /// When true (default) the user can tap to select a range. When false the
+  /// calendar is read-only and taps are ignored.
+  final bool enabled;
+
+  /// Called once the user has selected both a start and an end date that fit
+  /// within the allowed range. The callback may be used by parents to persist
+  /// or react to the selection.
+  final void Function(DateTime start, DateTime end)? onRangeSelected;
+
+  const CustomCalendar({
+    super.key,
+    this.initialStartDate,
+    this.initialEndDate,
+    this.onRangeSelected,
+    this.enabled = true,
+  });
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -15,7 +36,68 @@ class _CustomCalendarState extends State<CustomCalendar> {
   DateTime? startDate;
   DateTime? endDate;
 
+  static const int maxRangeDays = 5;
   final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
+
+  @override
+  void initState() {
+    super.initState();
+    startDate = widget.initialStartDate;
+    endDate = widget.initialEndDate;
+    if (startDate != null) {
+      currentMonth = DateTime(startDate!.year, startDate!.month);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialStartDate != oldWidget.initialStartDate ||
+        widget.initialEndDate != oldWidget.initialEndDate) {
+      startDate = widget.initialStartDate;
+      endDate = widget.initialEndDate;
+      if (startDate != null) {
+        setState(() {
+          currentMonth = DateTime(startDate!.year, startDate!.month);
+        });
+      }
+    }
+  }
+
+  void _handleCellTap(DateTime cellDate) {
+    if (!widget.enabled) return;
+
+    setState(() {
+      if (startDate == null || (startDate != null && endDate != null)) {
+        // begin new range
+        startDate = cellDate;
+        endDate = null;
+      } else {
+        // choosing the end date
+        DateTime newStart = startDate!;
+        DateTime newEnd = cellDate;
+        if (newEnd.isBefore(newStart)) {
+          final tmp = newStart;
+          newStart = newEnd;
+          newEnd = tmp;
+        }
+        final days = newEnd.difference(newStart).inDays + 1;
+        if (days > maxRangeDays) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Period cannot exceed $maxRangeDays days."),
+              backgroundColor: AppColors.primary,
+            ),
+          );
+          return;
+        }
+        startDate = newStart;
+        endDate = newEnd;
+        widget.onRangeSelected?.call(startDate!, endDate!);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -150,24 +232,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 }
 
                 return GestureDetector(
-                  onTap: isCurrentMonth
-                      ? () {
-                          setState(() {
-                            if (startDate == null ||
-                                (startDate != null && endDate != null)) {
-                              startDate = cellDate;
-                              endDate = null;
-                            } else {
-                              if (cellDate.isBefore(startDate!)) {
-                                endDate = startDate;
-                                startDate = cellDate;
-                              } else {
-                                endDate = cellDate;
-                              }
-                            }
-                          });
-                        }
-                      : null,
+                  onTap: isCurrentMonth ? () => _handleCellTap(cellDate) : null,
                   child: Container(
                     decoration: BoxDecoration(
                       color: isSelected
