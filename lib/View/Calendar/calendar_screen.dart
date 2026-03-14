@@ -53,7 +53,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ovulationDate: periodCtrl.ovulationDate,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
-                enabled: true,
+                enabled: false,
                 showPredictedColors: periodCtrl.periodEnd.value != null,
                 onRangeSelected: (start, end) async {
                   await periodCtrl.startPeriod(start);
