@@ -45,6 +45,11 @@ void main() async {
   final periodCtrl = Get.put(PeriodController(), permanent: true);
   await periodCtrl.loadPeriod(); // ensures periodEnd is loaded for DatesRow
 
+  // await FirebaseFirestore.instance
+  //     .collection("users")
+  //     .doc(FirebaseAuth.instance.currentUser!.uid)
+  //     .update({"periodStart": null, "periodEnd": null});
+
   runApp(const MyApp());
 }
 

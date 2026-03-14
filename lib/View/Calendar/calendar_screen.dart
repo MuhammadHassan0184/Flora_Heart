@@ -8,6 +8,7 @@ import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -52,29 +53,50 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ovulationDate: periodCtrl.ovulationDate,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
-                enabled: false,
-                showPredictedColors: true, // ✅ show predicted colors
+                enabled: true,
+                showPredictedColors: periodCtrl.periodEnd.value != null,
+                onRangeSelected: (start, end) async {
+                  await periodCtrl.startPeriod(start);
+                },
               ),
             ),
             SizedBox(height: 1),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListTile(
-                title: Text(
-                  "Feb 14",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  "Cycle Day 3",
-                  style: TextStyle(
-                    color: AppColors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+            // current date--
+            
+            Obx(() {
+              String subtitle = "Cycle Day 3"; // Default or fallback
+              
+              if (periodCtrl.periodStart.value != null) {
+                final start = periodCtrl.periodStart.value!;
+                final today = DateTime.now();
+                final diff = today.difference(start).inDays + 1;
+                
+                if (periodCtrl.periodEnd.value == null) {
+                  subtitle = "Period Day $diff";
+                } else {
+                  subtitle = "Cycle Day $diff";
+                }
+              }
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListTile(
+                  title: Text(
+                    DateFormat('MMM d').format(DateTime.now()),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
+                  subtitle: Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.grey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: CustomEditButton(),
                 ),
-                trailing: CustomEditButton(),
-              ),
-            ),
+              );
+            }),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Divider(

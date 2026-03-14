@@ -8,8 +8,6 @@ import 'package:floraheart/Widgets/custom_calendar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/route_manager.dart';
 
 class PeriodEndScreen extends StatefulWidget {
   final VoidCallback onNext;

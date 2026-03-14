@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_appbar.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
@@ -18,8 +19,7 @@ import 'package:floraheart/View/Add_Detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TodayScreen extends StatefulWidget {
@@ -166,103 +166,128 @@ class _TodayScreenState extends State<TodayScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
-              // height: 120,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Period",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      /// START BUTTON
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = 0;
-                            });
-                          },
-                          child: Container(
-                            height: 37,
-                            decoration: BoxDecoration(
-                              color: selectedIndex == 0
-                                  ? AppColors.primary
-                                  : Colors.grey,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.play_arrow, color: Colors.white),
-                                SizedBox(width: 6),
-                                Text(
-                                  "Start",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
+            Obx(() {
+              final periodCtrl = Get.find<PeriodController>();
+              bool isRunning =
+                  periodCtrl.periodStart.value != null &&
+                  periodCtrl.periodEnd.value == null;
+
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Period",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        /// START BUTTON
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: isRunning
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      selectedIndex = 0;
+                                    });
+                                    await periodCtrl.startPeriod(_selectedDate);
+                                  },
+                            child: Opacity(
+                              opacity: isRunning ? 0.4 : 1.0,
+                              child: Container(
+                                height: 37,
+                                decoration: BoxDecoration(
+                                  color: selectedIndex == 0
+                                      ? AppColors.primary
+                                      : Colors.grey,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              ],
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(Icons.play_arrow, color: Colors.white),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      "Start",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(width: 20),
+                        const SizedBox(width: 20),
 
-                      /// END BUTTON
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = 1;
-                            });
-                          },
-                          child: Container(
-                            height: 37,
-                            decoration: BoxDecoration(
-                              color: selectedIndex == 1
-                                  ? AppColors.primary
-                                  : Colors.grey,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.stop, color: Colors.white, size: 18),
-                                SizedBox(width: 6),
-                                Text(
-                                  "End",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
+                        /// END BUTTON
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: !isRunning
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      selectedIndex = 1;
+                                    });
+                                    await periodCtrl.endPeriod(DateTime.now());
+                                  },
+                            child: Opacity(
+                              opacity: !isRunning ? 0.4 : 1.0,
+                              child: Container(
+                                height: 37,
+                                decoration: BoxDecoration(
+                                  color: selectedIndex == 1
+                                      ? AppColors.primary
+                                      : Colors.grey,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              ],
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.stop,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      "End",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
             SizedBox(height: 10),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -368,7 +393,7 @@ class _TodayScreenState extends State<TodayScreen> {
                     final controller = Get.find<TodayDataController>();
 
                     await controller.saveTodayData();
- 
+
                     Get.offAllNamed(AppRoutesName.mainScreen);
                   } catch (e) {
                     print("SAVE ERROR FULL: $e");
