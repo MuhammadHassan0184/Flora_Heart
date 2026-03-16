@@ -195,9 +195,14 @@ class PeriodController extends GetxController {
   /// DATA LOAD FLAG
   final RxBool isLoaded = false.obs;
 
+  /// MANUAL OVULATION DATES
+  final RxList<DateTime> manualOvulationDates = <DateTime>[].obs;
+
   /// PERIOD HISTORY (for smarter predictions)
   final RxList<DateTime> periodHistory = <DateTime>[].obs;
 
+  /// MANUAL OVULATION DATES (already exists, but ensuring it's used)
+  
   /// DEFAULT VALUES
   final int defaultCycleLength = 28;
   final int defaultPeriodLength = 5;
@@ -397,9 +402,42 @@ class PeriodController extends GetxController {
   /// CHECK IF DATE IS WITHIN PERIOD
   bool isInPeriod(DateTime date) {
     if (periodStart.value == null) return false;
-    final start = periodStart.value!;
-    final end = periodEnd.value ?? start;
-    return !date.isBefore(start) && !date.isAfter(end);
+    final start = DateTime(
+      periodStart.value!.year,
+      periodStart.value!.month,
+      periodStart.value!.day,
+    );
+    final end = periodEnd.value != null
+        ? DateTime(
+            periodEnd.value!.year,
+            periodEnd.value!.month,
+            periodEnd.value!.day,
+          )
+        : start.add(const Duration(days: 5)); // Highlight 6 days (start + 5)
+
+    final check = DateTime(date.year, date.month, date.day);
+    return !check.isBefore(start) && !check.isAfter(end);
+  }
+
+  /// REFRESH MANUAL OVULATION DATES
+  Future<void> refreshManualOvulationDates() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("logs")
+          .where("ovulationTest", isEqualTo: "Positive")
+          .get();
+
+      final dates = snapshot.docs.map((doc) => DateTime.parse(doc.id)).toList();
+      manualOvulationDates.assignAll(dates);
+      print("Manual ovulation dates refreshed: ${dates.length}");
+    } catch (e) {
+      print("REFRESH MANUAL OVULATION ERROR $e");
+    }
   }
 
   /// CHECK IF DATE IS IN PREDICTED FERTILITY WINDOW

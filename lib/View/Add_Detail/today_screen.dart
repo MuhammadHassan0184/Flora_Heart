@@ -42,8 +42,16 @@ class _TodayScreenState extends State<TodayScreen> {
   void initState() {
     super.initState();
     controller = Get.put(TodayDataController(), permanent: true);
+    final periodCtrl = Get.find<PeriodController>();
 
     controller.loadTodayData(); // 🔥 LOAD DATA
+    
+    // Set selected date to period start if it's running
+    if (periodCtrl.periodStart.value != null && periodCtrl.periodEnd.value == null) {
+      _selectedDate = periodCtrl.periodStart.value!;
+      _currentMonth = DateTime(_selectedDate.year, _selectedDate.month);
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
@@ -145,6 +153,9 @@ class _TodayScreenState extends State<TodayScreen> {
                               _selectedDate.month == date.month &&
                               _selectedDate.day == date.day;
 
+                          final periodCtrl = Get.find<PeriodController>();
+                          bool isInPeriod = periodCtrl.isInPeriod(date);
+
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -154,8 +165,8 @@ class _TodayScreenState extends State<TodayScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(right: 14),
                               child: isSelected
-                                  ? _selectedItem(date)
-                                  : _normalItem(date),
+                                  ? _selectedItem(date, isInPeriod)
+                                  : _normalItem(date, isInPeriod),
                             ),
                           );
                         },
@@ -196,45 +207,65 @@ class _TodayScreenState extends State<TodayScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         /// START BUTTON
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: isRunning
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      selectedIndex = 0;
-                                    });
-                                    await periodCtrl.startPeriod(_selectedDate);
-                                  },
-                            child: Opacity(
-                              opacity: isRunning ? 0.4 : 1.0,
-                              child: Container(
-                                height: 37,
-                                decoration: BoxDecoration(
-                                  color: selectedIndex == 0
-                                      ? AppColors.primary
-                                      : Colors.grey,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(Icons.play_arrow, color: Colors.white),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      "Start",
-                                      style: TextStyle(
+                        () {
+                          bool isStartDate = false;
+                          if (periodCtrl.periodStart.value != null) {
+                            final ps = periodCtrl.periodStart.value!;
+                            isStartDate = _selectedDate.year == ps.year &&
+                                _selectedDate.month == ps.month &&
+                                _selectedDate.day == ps.day;
+                          }
+
+                          // If period is running, only enable "Start" if on the start date
+                          // If period is not running, allow starting on any date
+                          bool isStartButtonEnabled =
+                              !isRunning || (isRunning && isStartDate);
+
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: !isStartButtonEnabled
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        selectedIndex = 0;
+                                      });
+                                      await periodCtrl.startPeriod(
+                                        _selectedDate,
+                                      );
+                                    },
+                              child: Opacity(
+                                opacity: isStartButtonEnabled ? 1.0 : 0.4,
+                                child: Container(
+                                  height: 37,
+                                  decoration: BoxDecoration(
+                                    color: selectedIndex == 0
+                                        ? AppColors.primary
+                                        : Colors.grey,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        Icons.play_arrow,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 6),
+                                      Text(
+                                        "Start",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        }(),
 
                         const SizedBox(width: 20),
 
@@ -391,8 +422,14 @@ class _TodayScreenState extends State<TodayScreen> {
                 ontap: () async {
                   try {
                     final controller = Get.find<TodayDataController>();
+                    final periodCtrl = Get.find<PeriodController>();
 
                     await controller.saveTodayData();
+
+                    // Refresh manual ovulation dates in case it changed
+                    if (controller.ovulationTest.value == "Positive") {
+                      await periodCtrl.refreshManualOvulationDates();
+                    }
 
                     Get.offAllNamed(AppRoutesName.mainScreen);
                   } catch (e) {
@@ -426,13 +463,26 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
-  Widget _normalItem(DateTime date) {
+  Widget _normalItem(DateTime date, bool isInPeriod) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          date.day.toString(),
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Container(
+          width: 32,
+          height: 32,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isInPeriod ? const Color(0xffF8D7DA) : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          child: Text(
+            date.day.toString(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isInPeriod ? AppColors.primary : Colors.black,
+            ),
+          ),
         ),
         SizedBox(height: 4),
         Text(
@@ -447,13 +497,14 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
-  Widget _selectedItem(DateTime date) {
+  Widget _selectedItem(DateTime date, bool isInPeriod) {
     return Container(
       width: 50,
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xffF8D7DA),
         borderRadius: BorderRadius.circular(12),
+        border: isInPeriod ? Border.all(color: AppColors.primary, width: 1) : null,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

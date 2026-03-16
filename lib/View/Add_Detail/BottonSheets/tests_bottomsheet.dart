@@ -1,14 +1,13 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class TestsBottomSheet {
   static void show(BuildContext context) {
-    String ovulationResult = "";
-    String pregnancyResult = "";
+    final controller = Get.find<TodayDataController>();
 
     showModalBottomSheet(
       context: context,
@@ -37,27 +36,27 @@ class TestsBottomSheet {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 14),
+                    const SizedBox(height: 14),
                     Row(
                       children: [
                         Expanded(
                           child: _buildOption(
                             label: "Positive",
-                            iconPath: "assets/positive.svg", // 👈 your svg
+                            iconPath: "assets/positive.svg",
                             isSelected: selectedValue == "Positive",
                             onTap: () => onSelect("Positive"),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: _buildOption(
                             label: "Negative",
-                            iconPath: "assets/negative.svg", // 👈 your svg
+                            iconPath: "assets/negative.svg",
                             isSelected: selectedValue == "Negative",
                             onTap: () => onSelect("Negative"),
                           ),
@@ -74,7 +73,6 @@ class TestsBottomSheet {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  /// Drag indicator
                   Container(
                     height: 4,
                     width: 40,
@@ -83,50 +81,34 @@ class TestsBottomSheet {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-
-                  SizedBox(height: 16),
-
-                  /// Title
-                  Text(
+                  const SizedBox(height: 16),
+                  const Text(
                     "Tests",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-
-                  SizedBox(height: 20),
-
-                  /// Ovulation Section
-                  buildTestSection(
+                  const SizedBox(height: 20),
+                  Obx(() => buildTestSection(
                     title: "Ovulation Test",
-                    selectedValue: ovulationResult,
+                    selectedValue: controller.ovulationTest.value,
                     onSelect: (value) {
-                      setModalState(() {
-                        ovulationResult = value;
-                      });
+                      controller.ovulationTest.value = value;
                     },
-                  ),
-
-                  /// Pregnancy Section
-                  buildTestSection(
+                  )),
+                  Obx(() => buildTestSection(
                     title: "Pregnancy Test",
-                    selectedValue: pregnancyResult,
+                    selectedValue: controller.pregnancyTest.value,
                     onSelect: (value) {
-                      setModalState(() {
-                        pregnancyResult = value;
-                      });
+                      controller.pregnancyTest.value = value;
                     },
-                  ),
-
-                  SizedBox(height: 10),
-
-                  /// Done Button
+                  )),
+                  const SizedBox(height: 10),
                   CustomButton(
                     label: "Done",
                     ontap: () {
                       Navigator.pop(context);
                     },
                   ),
-
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             );

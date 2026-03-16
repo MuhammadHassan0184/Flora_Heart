@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class CustomCalendar extends StatefulWidget {
   final DateTime? ovulationDate;
+  final List<DateTime>? manualOvulationDates; // NEW
   final DateTime? nextPeriodDate;
   final List<DateTime>? fertilityWindow;
   final DateTime? initialStartDate;
@@ -23,6 +24,7 @@ class CustomCalendar extends StatefulWidget {
     this.onDateTap,
     this.selectedDate,
     this.ovulationDate,
+    this.manualOvulationDates,
     this.nextPeriodDate,
     this.fertilityWindow,
     this.enabled = true,
@@ -55,15 +57,17 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
   void _syncSelectedDatesFromRange() {
     selectedDates.clear();
-    if (startDate != null && endDate != null) {
-      DateTime current = DateTime(startDate!.year, startDate!.month, startDate!.day);
-      DateTime last = DateTime(endDate!.year, endDate!.month, endDate!.day);
-      while (!current.isAfter(last)) {
+    if (startDate != null) {
+      DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+      DateTime end = endDate != null
+          ? DateTime(endDate!.year, endDate!.month, endDate!.day)
+          : start.add(const Duration(days: 5)); // Default to 6 days
+
+      DateTime current = start;
+      while (!current.isAfter(end)) {
         selectedDates.add(current);
         current = current.add(const Duration(days: 1));
       }
-    } else if (startDate != null) {
-      selectedDates.add(DateTime(startDate!.year, startDate!.month, startDate!.day));
     }
   }
 
@@ -296,6 +300,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   DateTime(cellDate.year, cellDate.month, cellDate.day),
                 );
 
+                // If period is running (endDate is null) and this cell is within the 6-day window
+                if (!isSelected && startDate != null && endDate == null) {
+                  DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+                  DateTime end = start.add(const Duration(days: 5));
+                  DateTime cell = DateTime(cellDate.year, cellDate.month, cellDate.day);
+                  if (!cell.isBefore(start) && !cell.isAfter(end)) {
+                    isSelected = true;
+                  }
+                }
+
                 bool isTappedSelection = widget.selectedDate != null &&
                     cellDate.year == widget.selectedDate!.year &&
                     cellDate.month == widget.selectedDate!.month &&
@@ -323,6 +337,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       cellDate.month == widget.ovulationDate!.month &&
                       cellDate.day == widget.ovulationDate!.day) {
                     predictedColor = const Color(0xFFA6E63F);
+                  }
+
+                  if (widget.manualOvulationDates != null) {
+                    for (var d in widget.manualOvulationDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFA6E63F);
+                      }
+                    }
                   }
 
                   if (widget.nextPeriodDate != null &&

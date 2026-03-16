@@ -6,6 +6,8 @@ import 'package:floraheart/Widgets/custom_calendar.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -31,6 +33,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // load persisted info
     controller.loadTodayData();
     periodCtrl.loadPeriod();
+    _loadManualOvulationDates();
+  }
+
+  Future<void> _loadManualOvulationDates() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("logs")
+        .where("ovulationTest", isEqualTo: "Positive")
+        .get();
+
+    final dates = snapshot.docs.map((doc) => DateTime.parse(doc.id)).toList();
+    periodCtrl.manualOvulationDates.assignAll(dates);
   }
 
   @override
@@ -47,9 +65,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 initialStartDate: periodCtrl.periodStart.value,
                 initialEndDate: periodCtrl.periodEnd.value,
                 ovulationDate: periodCtrl.ovulationDate,
+                manualOvulationDates: periodCtrl.manualOvulationDates,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
-                enabled: false,
+                enabled: true, // Allow selecting dates in calendar screen too? 
+                               // User said "also same behavioor show in the calender screen"
+                               // "select 5 more days highlight by red color"
                 selectedDate: selectedDate.value,
                 onDateTap: (date) {
                   selectedDate.value = date;
