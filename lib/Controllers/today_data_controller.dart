@@ -55,18 +55,31 @@ class TodayDataController extends GetxController {
   }
 
   /// LOAD DATA
-  Future<void> loadTodayData() async {
+  Future<void> loadTodayData([String? date]) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    final targetDate = date ?? today;
 
     final doc = await FirebaseFirestore.instance
         .collection("users")
         .doc(user.uid)
         .collection("logs")
-        .doc(today)
+        .doc(targetDate)
         .get();
 
-    if (!doc.exists) return;
+    if (!doc.exists) {
+      // Clear data if not found for the specific date
+      flow.value = -1;
+      period.value = "";
+      moods.clear();
+      discharge.clear();
+      sexualActivity.value = "";
+      temperature.value = 0.0;
+      weight.value = 0.0;
+      symptoms.clear();
+      return;
+    }
 
     final data = doc.data()!;
 

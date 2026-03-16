@@ -11,6 +11,8 @@ class CustomCalendar extends StatefulWidget {
   final DateTime? initialEndDate;
   final bool enabled;
   final void Function(DateTime start, DateTime end)? onRangeSelected;
+  final void Function(DateTime date)? onDateTap; // NEW
+  final DateTime? selectedDate; // NEW
   final bool showPredictedColors; // NEW
 
   const CustomCalendar({
@@ -18,6 +20,8 @@ class CustomCalendar extends StatefulWidget {
     this.initialStartDate,
     this.initialEndDate,
     this.onRangeSelected,
+    this.onDateTap,
+    this.selectedDate,
     this.ovulationDate,
     this.nextPeriodDate,
     this.fertilityWindow,
@@ -91,9 +95,12 @@ class _CustomCalendarState extends State<CustomCalendar> {
   }
 
   void _handleCellTap(DateTime cellDate) {
-    if (!widget.enabled) return;
-
     final normalizedDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
+
+    if (!widget.enabled) {
+      widget.onDateTap?.call(normalizedDate);
+      return;
+    }
 
     setState(() {
       if (selectedDates.contains(normalizedDate)) {
@@ -112,6 +119,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       }
 
       _updateRangeFromSelectedDates();
+      widget.onDateTap?.call(normalizedDate);
     });
 
     if (startDate != null && endDate != null) {
@@ -288,6 +296,11 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   DateTime(cellDate.year, cellDate.month, cellDate.day),
                 );
 
+                bool isTappedSelection = widget.selectedDate != null &&
+                    cellDate.year == widget.selectedDate!.year &&
+                    cellDate.month == widget.selectedDate!.month &&
+                    cellDate.day == widget.selectedDate!.day;
+
                 /// ✅ Prediction Colors
                 Color? predictedColor;
 
@@ -361,8 +374,13 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : predictedColor ?? Colors.transparent,
+                          : isTappedSelection
+                              ? AppColors.primary.withOpacity(0.5)
+                              : predictedColor ?? Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
+                      border: isTappedSelection
+                          ? Border.all(color: Colors.blue, width: 2)
+                          : null,
                     ),
                     alignment: Alignment.center,
                     child: Text(

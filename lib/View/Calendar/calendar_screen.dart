@@ -21,12 +21,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
   late PeriodController periodCtrl;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // ✅ Ensure controller exists
-  //   controller = Get.put(TodayDataController(), permanent: true);
-  // }
+  final Rx<DateTime> selectedDate = DateTime.now().obs;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +50,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
                 enabled: false,
+                selectedDate: selectedDate.value,
+                onDateTap: (date) {
+                  selectedDate.value = date;
+                  controller.loadTodayData(DateFormat('yyyy-MM-dd').format(date));
+                },
                 showPredictedColors: periodCtrl.periodEnd.value != null,
                 onRangeSelected: (start, end) async {
                   await periodCtrl.startPeriod(start);
@@ -65,13 +66,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
             
             Obx(() {
               String subtitle = "Cycle Day 3"; // Default or fallback
+              final activeDate = selectedDate.value;
               
               if (periodCtrl.periodStart.value != null) {
                 final start = periodCtrl.periodStart.value!;
-                final today = DateTime.now();
-                final diff = today.difference(start).inDays + 1;
+                final diff = activeDate.difference(start).inDays + 1;
                 
                 if (periodCtrl.periodEnd.value == null) {
+                  subtitle = "Period Day $diff";
+                } else if (!activeDate.isBefore(start) && !activeDate.isAfter(periodCtrl.periodEnd.value!)) {
                   subtitle = "Period Day $diff";
                 } else {
                   subtitle = "Cycle Day $diff";
@@ -82,7 +85,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   title: Text(
-                    DateFormat('MMM d').format(DateTime.now()),
+                    DateFormat('MMM d').format(activeDate),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
