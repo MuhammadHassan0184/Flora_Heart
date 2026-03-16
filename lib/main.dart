@@ -9,24 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// final todayDataController = Get.put(TodayDataController());
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   print("Starting Firebase init...");
-
-//   try {
-//     await Firebase.initializeApp(
-//       options: DefaultFirebaseOptions.currentPlatform,
-//     );
-//     print("Firebase initialized SUCCESSFULLY!");
-//   } catch (e) {
-//     print("Firebase Init Error: $e");
-//   }
-
-//   runApp(const MyApp());
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -44,11 +26,6 @@ void main() async {
   // Initialize PeriodController and load period data before running app
   final periodCtrl = Get.put(PeriodController(), permanent: true);
   await periodCtrl.loadPeriod(); // ensures periodEnd is loaded for DatesRow
-
-  // await FirebaseFirestore.instance
-  //     .collection("users")
-  //     .doc(FirebaseAuth.instance.currentUser!.uid)
-  //     .update({"periodStart": null, "periodEnd": null});
 
   runApp(const MyApp());
 }

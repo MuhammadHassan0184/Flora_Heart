@@ -21,12 +21,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
   late PeriodController periodCtrl;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // ✅ Ensure controller exists
-  //   controller = Get.put(TodayDataController(), permanent: true);
-  // }
   @override
   void initState() {
     super.initState();
