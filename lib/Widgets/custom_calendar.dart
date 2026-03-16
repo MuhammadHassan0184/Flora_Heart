@@ -33,6 +33,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
   DateTime currentMonth = DateTime.now();
   DateTime? startDate;
   DateTime? endDate;
+  Set<DateTime> selectedDates = {};
 
   static const int maxRangeDays = 5;
   final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
@@ -42,8 +43,23 @@ class _CustomCalendarState extends State<CustomCalendar> {
     super.initState();
     startDate = widget.initialStartDate;
     endDate = widget.initialEndDate;
+    _syncSelectedDatesFromRange();
     if (startDate != null) {
       currentMonth = DateTime(startDate!.year, startDate!.month);
+    }
+  }
+
+  void _syncSelectedDatesFromRange() {
+    selectedDates.clear();
+    if (startDate != null && endDate != null) {
+      DateTime current = DateTime(startDate!.year, startDate!.month, startDate!.day);
+      DateTime last = DateTime(endDate!.year, endDate!.month, endDate!.day);
+      while (!current.isAfter(last)) {
+        selectedDates.add(current);
+        current = current.add(const Duration(days: 1));
+      }
+    } else if (startDate != null) {
+      selectedDates.add(DateTime(startDate!.year, startDate!.month, startDate!.day));
     }
   }
 
@@ -54,6 +70,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         widget.initialEndDate != oldWidget.initialEndDate) {
       startDate = widget.initialStartDate;
       endDate = widget.initialEndDate;
+      _syncSelectedDatesFromRange();
       if (startDate != null) {
         setState(() {
           currentMonth = DateTime(startDate!.year, startDate!.month);
@@ -62,15 +79,46 @@ class _CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
+  void _updateRangeFromSelectedDates() {
+    if (selectedDates.isEmpty) {
+      startDate = null;
+      endDate = null;
+    } else {
+      final sorted = selectedDates.toList()..sort();
+      startDate = sorted.first;
+      endDate = sorted.last;
+    }
+  }
+
   void _handleCellTap(DateTime cellDate) {
     if (!widget.enabled) return;
 
+    final normalizedDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
+
     setState(() {
-      startDate = cellDate;
-      endDate = null;
+      if (selectedDates.contains(normalizedDate)) {
+        // One-by-one deselection
+        selectedDates.remove(normalizedDate);
+      } else {
+        if (selectedDates.isEmpty) {
+          // Select 6 days (tapped date + 5 more)
+          for (int i = 0; i < 6; i++) {
+            selectedDates.add(normalizedDate.add(Duration(days: i)));
+          }
+        } else {
+          // Manual addition
+          selectedDates.add(normalizedDate);
+        }
+      }
+
+      _updateRangeFromSelectedDates();
     });
 
-    widget.onRangeSelected?.call(cellDate, cellDate);
+    if (startDate != null && endDate != null) {
+      widget.onRangeSelected?.call(startDate!, endDate!);
+    } else if (startDate != null) {
+      widget.onRangeSelected?.call(startDate!, startDate!);
+    }
   }
 
   // void _handleCellTap(DateTime cellDate) {
@@ -236,35 +284,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   );
                 }
 
-                bool isSelected = false;
-
-                DateTime now = DateTime.now();
-                DateTime todayDate = DateTime(now.year, now.month, now.day);
-
-                if (startDate != null) {
-                  final s = DateTime(
-                    startDate!.year,
-                    startDate!.month,
-                    startDate!.day,
-                  );
-                  if (endDate == null) {
-                    // ACTIVE PERIOD: Highlight from start until today (inclusive)
-                    isSelected =
-                        (cellDate.isAtSameMomentAs(s) || cellDate.isAfter(s)) &&
-                        (cellDate.isAtSameMomentAs(todayDate) ||
-                            cellDate.isBefore(todayDate));
-                  } else {
-                    // COMPLETED PERIOD: Highlight specific range
-                    final e = DateTime(
-                      endDate!.year,
-                      endDate!.month,
-                      endDate!.day,
-                    );
-                    isSelected =
-                        (cellDate.isAtSameMomentAs(s) || cellDate.isAfter(s)) &&
-                        (cellDate.isAtSameMomentAs(e) || cellDate.isBefore(e));
-                  }
-                }
+                bool isSelected = selectedDates.contains(
+                  DateTime(cellDate.year, cellDate.month, cellDate.day),
+                );
 
                 /// ✅ Prediction Colors
                 Color? predictedColor;
