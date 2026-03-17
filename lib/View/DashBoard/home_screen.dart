@@ -283,12 +283,12 @@ class _HomeScreenState extends State<HomeScreen>
             SizedBox(height: 35),
             Obx(() {
               if (!periodCtrl.isLoaded.value ||
-                  periodCtrl.periodEnd.value == null) {
+                  periodCtrl.periodStart.value == null) {
                 return SizedBox(); // or CircularProgressIndicator()
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: DatesRow(endDate: periodCtrl.periodEnd.value!),
+                child: DatesRow(startDate: periodCtrl.periodStart.value!),
               );
             }),
             // Padding(

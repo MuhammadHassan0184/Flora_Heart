@@ -188,23 +188,25 @@ class DateCard extends StatelessWidget {
 }
 
 class DatesRow extends StatelessWidget {
-  final DateTime? endDate; // last day of current period
+  final DateTime? startDate; // first day of current period
 
-  const DatesRow({super.key, required this.endDate});
+  const DatesRow({super.key, required this.startDate});
 
   @override
   Widget build(BuildContext context) {
-    if (endDate == null) return const SizedBox.shrink();
+    if (startDate == null) return const SizedBox.shrink();
 
-    // Calculate predicted dates
-    final fertilityStart = endDate!.add(const Duration(days: 1));
+    // Calculate predicted dates based on standard cycle
+    // Fertility window typically starts around day 10 for a 28-day cycle (approx 9 days after start)
+    // Here we'll use a standard offset from start date
+    final fertilityStart = startDate!.add(const Duration(days: 9));
     final fertilityEnd = fertilityStart.add(
       const Duration(days: 5),
     ); // 6 days window
-    final ovulationDate = fertilityStart.add(
-      const Duration(days: 3),
-    ); // middle day
-    final nextPeriodDate = endDate!.add(
+    final ovulationDate = startDate!.add(
+      const Duration(days: 14),
+    ); // standard ovulation day (Day 14)
+    final nextPeriodDate = startDate!.add(
       const Duration(days: 28),
     ); // assuming 28-day cycle
 

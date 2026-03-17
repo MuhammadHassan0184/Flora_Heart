@@ -1,3 +1,4 @@
+import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -90,8 +91,13 @@ class TestsBottomSheet {
                   Obx(() => buildTestSection(
                     title: "Ovulation Test",
                     selectedValue: controller.ovulationTest.value,
-                    onSelect: (value) {
+                    onSelect: (value) async {
                       controller.ovulationTest.value = value;
+                      // 🔥 If positive, save and refresh manual dates immediately for visual feedback
+                      if (value == "Positive") {
+                        await controller.saveTodayData();
+                        Get.find<PeriodController>().refreshManualOvulationDates();
+                      }
                     },
                   )),
                   Obx(() => buildTestSection(
