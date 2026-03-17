@@ -318,10 +318,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 /// ✅ Prediction Colors
                 Color? predictedColor;
 
-                // ONLY show predicted colors if period is NOT active (i.e. endDate is set)
-                bool isPeriodEnded = endDate != null;
-
-                if (widget.showPredictedColors && isPeriodEnded) {
+                // Predictions should show if showPredictedColors is true (which is now based on periodStart)
+                if (widget.showPredictedColors) {
                   if (widget.fertilityWindow != null) {
                     for (var d in widget.fertilityWindow!) {
                       if (d.year == cellDate.year &&

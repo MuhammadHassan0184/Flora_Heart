@@ -68,18 +68,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 manualOvulationDates: periodCtrl.manualOvulationDates,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
-                enabled: true, // Allow selecting dates in calendar screen too? 
-                               // User said "also same behavioor show in the calender screen"
-                               // "select 5 more days highlight by red color"
+                enabled: false, // Set to false to disable direct editing
                 selectedDate: selectedDate.value,
                 onDateTap: (date) {
                   selectedDate.value = date;
                   controller.loadTodayData(DateFormat('yyyy-MM-dd').format(date));
                 },
-                showPredictedColors: periodCtrl.periodEnd.value != null,
-                onRangeSelected: (start, end) async {
-                  await periodCtrl.startPeriod(start);
-                },
+                showPredictedColors: periodCtrl.periodStart.value != null,
               ),
             ),
             SizedBox(height: 1),
