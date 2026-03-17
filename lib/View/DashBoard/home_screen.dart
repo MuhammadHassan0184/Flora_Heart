@@ -288,7 +288,11 @@ class _HomeScreenState extends State<HomeScreen>
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: DatesRow(startDate: periodCtrl.periodStart.value!),
+                child: DatesRow(
+                  fertilityWindow: periodCtrl.fertilityWindow,
+                  ovulationDate: periodCtrl.ovulationDate,
+                  nextPeriodDate: periodCtrl.nextPeriodDate,
+                ),
               );
             }),
             // Padding(
