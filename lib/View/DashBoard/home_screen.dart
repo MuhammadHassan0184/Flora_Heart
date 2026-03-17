@@ -137,148 +137,127 @@ class _HomeScreenState extends State<HomeScreen>
 
             // ---------------- PERIOD TRACKER ----------------
             SizedBox(height: 30),
-            Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Outer soft pink border
-                  Container(
-                    width: 210,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.1),
-                        width: 12,
+            Obx(() {
+              int day = periodCtrl.cycleDay;
+              bool isRunning = periodCtrl.isPeriodRunning;
+              int highlighted = isRunning ? day : 0;
+              if (highlighted > 28) highlighted = 28;
+
+              return Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Outer soft pink border
+                    Container(
+                      width: 210,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.1),
+                          width: 12,
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Dots on border
-                  CustomPaint(
-                    size: Size(213, 210),
-                    painter: DotCirclePainter(
-                      totalDots: 28,
-                      highlightedDots: 4,
+                    // Dots on border
+                    CustomPaint(
+                      size: Size(213, 210),
+                      painter: DotCirclePainter(
+                        totalDots: 28,
+                        highlightedDots: highlighted,
+                      ),
                     ),
-                  ),
 
-                  // Inner wave circle using wave package
-                  // ClipOval(
-                  //   child: SizedBox(
-                  //     width: 150,
-                  //     height: 150,
-                  //     child: WaveWidget(
-                  //       config: CustomConfig(
-                  //         gradients: [
-                  //           [
-                  //             AppColors.primary.withOpacity(0.6),
-                  //             AppColors.primary.withOpacity(0.4),
-                  //           ],
-                  //           [
-                  //             AppColors.primary.withOpacity(0.4),
-                  //             AppColors.primary.withOpacity(0.2),
-                  //           ],
-                  //         ],
-                  //         durations: [5000, 7000],
-                  //         heightPercentages: [
-                  //           0.5 * _waveProgress,
-                  //           0.52 * _waveProgress,
-                  //         ],
-                  //       ),
-                  //       backgroundColor: Colors.white,
-                  //       waveAmplitude: 15,
-                  //       size: Size(double.infinity, double.infinity),
-                  //     ),
-                  //   ),
-                  // ),
-                  ClipOval(
-                    child: SizedBox(
-                      width: 150,
-                      height: 150,
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0, end: 1),
-                        duration: const Duration(seconds: 2),
-                        curve: Curves.easeOut,
-                        builder: (context, value, child) {
-                          return Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              Container(color: Colors.white),
-                              FractionallySizedBox(
-                                heightFactor: 0.5 * value, // 50% fill
-                                widthFactor: 1,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        AppColors.primary.withOpacity(0.6),
-                                        AppColors.primary.withOpacity(0.3),
-                                      ],
+                    ClipOval(
+                      child: SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: 1),
+                          duration: const Duration(seconds: 2),
+                          curve: Curves.easeOut,
+                          builder: (context, value, child) {
+                            double fillFactor = isRunning ? 0.6 : 0.3;
+                            return Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                Container(color: Colors.white),
+                                FractionallySizedBox(
+                                  heightFactor: fillFactor * value,
+                                  widthFactor: 1,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          AppColors.primary.withOpacity(0.6),
+                                          AppColors.primary.withOpacity(0.3),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Center text
-                  Container(
-                    width: 150,
-                    height: 160,
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Period",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.darkbrown,
-                            fontWeight: FontWeight.bold,
+                    // Center text
+                    Container(
+                      width: 150,
+                      height: 160,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            isRunning ? "Period" : "Cycle",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.darkbrown,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "Day $day",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.darkbrown,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Current day indicator
+                    Positioned(
+                      right: 25,
+                      top: 30,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primary),
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            "$day",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          "Day 3",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.darkbrown,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Current day indicator
-                  Positioned(
-                    right: 25,
-                    top: 30,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primary),
-                        shape: BoxShape.circle,
-                      ),
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.white,
-                        child: Text(
-                          "4",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            }),
 
             SizedBox(height: 35),
             Obx(() {

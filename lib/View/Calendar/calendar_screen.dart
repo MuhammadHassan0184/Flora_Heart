@@ -68,6 +68,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 manualOvulationDates: periodCtrl.manualOvulationDates,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
+                predictedPeriodDates: periodCtrl.predictedPeriodRange,
+                predictedFertilityDates: periodCtrl.predictedFertilityWindow,
+                predictedOvulationDates: periodCtrl.predictedOvulationDates,
                 enabled: false, // Set to false to disable direct editing
                 selectedDate: selectedDate.value,
                 onDateTap: (date) {

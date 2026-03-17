@@ -14,6 +14,9 @@ class CustomCalendar extends StatefulWidget {
   final void Function(DateTime start, DateTime end)? onRangeSelected;
   final void Function(DateTime date)? onDateTap; // NEW
   final DateTime? selectedDate; // NEW
+  final List<DateTime>? predictedPeriodDates; // NEW
+  final List<DateTime>? predictedFertilityDates; // NEW
+  final List<DateTime>? predictedOvulationDates; // NEW
   final bool showPredictedColors; // NEW
 
   const CustomCalendar({
@@ -27,6 +30,9 @@ class CustomCalendar extends StatefulWidget {
     this.manualOvulationDates,
     this.nextPeriodDate,
     this.fertilityWindow,
+    this.predictedPeriodDates,
+    this.predictedFertilityDates,
+    this.predictedOvulationDates,
     this.enabled = true,
     this.showPredictedColors = false, // default false
   });
@@ -352,6 +358,37 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       cellDate.month == widget.nextPeriodDate!.month &&
                       cellDate.day == widget.nextPeriodDate!.day) {
                     predictedColor = const Color(0xFFE57373);
+                  }
+
+                  // Multi-cycle predictions
+                  if (widget.predictedPeriodDates != null) {
+                    for (var d in widget.predictedPeriodDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFE57373);
+                      }
+                    }
+                  }
+
+                  if (widget.predictedFertilityDates != null) {
+                    for (var d in widget.predictedFertilityDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFFDD7DD);
+                      }
+                    }
+                  }
+
+                  if (widget.predictedOvulationDates != null) {
+                    for (var d in widget.predictedOvulationDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFA6E63F);
+                      }
+                    }
                   }
                 }
 

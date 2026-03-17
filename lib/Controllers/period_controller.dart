@@ -240,8 +240,9 @@ class PeriodController extends GetxController {
         periodEnd.value = DateTime.parse(data['periodEnd']);
       }
 
-      /// Save start date in history
+      /// Load start date in history
       if (periodStart.value != null) {
+        periodHistory.clear();
         periodHistory.add(periodStart.value!);
       }
 
@@ -264,8 +265,10 @@ class PeriodController extends GetxController {
         "periodEnd": null,
       }, SetOptions(merge: true));
 
-      /// Save to history
-      periodHistory.add(start);
+      /// Save to history if not already there
+      if (!periodHistory.contains(start)) {
+        periodHistory.add(start);
+      }
 
       print("Period started: $start");
     } catch (e) {
@@ -390,13 +393,56 @@ class PeriodController extends GetxController {
     );
   }
 
-  /// PREDICTED PERIOD RANGE (5 days after period end)
+  /// PREDICTED PERIOD RANGE (Next 6 months)
   List<DateTime> get predictedPeriodRange {
-    if (periodEnd.value == null) return [];
-    return List.generate(
-      averagePeriodLength,
-      (index) => nextPeriodDate!.add(Duration(days: index)),
-    );
+    if (periodStart.value == null) return [];
+    
+    List<DateTime> allPredictions = [];
+    int cycleLen = averageCycleLength;
+    int periodLen = averagePeriodLength;
+    
+    // Predict for next 6 cycles
+    for (int i = 1; i <= 6; i++) {
+      DateTime nextStart = periodStart.value!.add(Duration(days: cycleLen * i));
+      for (int j = 0; j < periodLen; j++) {
+        allPredictions.add(nextStart.add(Duration(days: j)));
+      }
+    }
+    return allPredictions;
+  }
+
+  /// PREDICTED FERTILITY WINDOW (Next 6 months)
+  List<DateTime> get predictedFertilityWindow {
+    if (periodStart.value == null) return [];
+    
+    List<DateTime> allFertility = [];
+    int cycleLen = averageCycleLength;
+    
+    // Predict for next 6 cycles
+    for (int i = 1; i <= 6; i++) {
+      DateTime nextStart = periodStart.value!.add(Duration(days: cycleLen * i));
+      DateTime ovulation = nextStart.subtract(const Duration(days: 14));
+      
+      for (int j = -3; j <= 2; j++) {
+        allFertility.add(ovulation.add(Duration(days: j)));
+      }
+    }
+    return allFertility;
+  }
+
+  /// PREDICTED OVULATION DATES (Next 6 months)
+  List<DateTime> get predictedOvulationDates {
+    if (periodStart.value == null) return [];
+    
+    List<DateTime> allOvulation = [];
+    int cycleLen = averageCycleLength;
+    
+    // Predict for next 6 cycles
+    for (int i = 1; i <= 6; i++) {
+      DateTime nextStart = periodStart.value!.add(Duration(days: cycleLen * i));
+      allOvulation.add(nextStart.subtract(const Duration(days: 14)));
+    }
+    return allOvulation;
   }
 
   /// CHECK IF DATE IS WITHIN PERIOD
