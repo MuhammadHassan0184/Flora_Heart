@@ -23,11 +23,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
   late PeriodController periodCtrl;
 
-// <<<<<<< HEAD
-// =======
+  // <<<<<<< HEAD
+  // =======
   final Rx<DateTime> selectedDate = DateTime.now().obs;
 
-// >>>>>>> b2aa1a00cc967926c530041926d75938bda48978
+  // >>>>>>> b2aa1a00cc967926c530041926d75938bda48978
   @override
   void initState() {
     super.initState();
@@ -78,25 +78,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 selectedDate: selectedDate.value,
                 onDateTap: (date) {
                   selectedDate.value = date;
-                  controller.loadTodayData(DateFormat('yyyy-MM-dd').format(date));
+                  controller.loadTodayData(
+                    DateFormat('yyyy-MM-dd').format(date),
+                  );
                 },
                 showPredictedColors: periodCtrl.periodStart.value != null,
               ),
             ),
             SizedBox(height: 1),
+
             // current date--
-            
             Obx(() {
               String subtitle = "Cycle Day 3"; // Default or fallback
               final activeDate = selectedDate.value;
-              
+
               if (periodCtrl.periodStart.value != null) {
                 final start = periodCtrl.periodStart.value!;
                 final diff = activeDate.difference(start).inDays + 1;
-                
+
                 if (periodCtrl.periodEnd.value == null) {
                   subtitle = "Period Day $diff";
-                } else if (!activeDate.isBefore(start) && !activeDate.isAfter(periodCtrl.periodEnd.value!)) {
+                } else if (!activeDate.isBefore(start) &&
+                    !activeDate.isAfter(periodCtrl.periodEnd.value!)) {
                   subtitle = "Period Day $diff";
                 } else {
                   subtitle = "Cycle Day $diff";
@@ -192,7 +195,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               ? "Heavy"
                               : controller.flow.value == 3
                               ? "Disaster"
-                              : "-",
+                              : "",
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 11,
@@ -332,7 +335,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         Text(
                           controller.sexualActivity.value.isNotEmpty
                               ? controller.sexualActivity.value
-                              : "-",
+                              : "",
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 11,

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/Widgets/custom_calendar.dart';
@@ -65,7 +65,10 @@ class CustomEditButton extends StatelessWidget {
                             setModalState(() {
                               tempStart = s;
                               tempEnd = e;
-                              ctrl.setRange(s, e); // Update controller in real-time
+                              ctrl.setRange(
+                                s,
+                                e,
+                              ); // Update controller in real-time
                             });
                           },
                         ),

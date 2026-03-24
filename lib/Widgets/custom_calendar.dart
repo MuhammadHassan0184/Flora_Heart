@@ -64,7 +64,11 @@ class _CustomCalendarState extends State<CustomCalendar> {
   void _syncSelectedDatesFromRange() {
     selectedDates.clear();
     if (startDate != null) {
-      DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+      DateTime start = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+      );
       DateTime end = endDate != null
           ? DateTime(endDate!.year, endDate!.month, endDate!.day)
           : start.add(const Duration(days: 5)); // Default to 6 days
@@ -105,7 +109,11 @@ class _CustomCalendarState extends State<CustomCalendar> {
   }
 
   void _handleCellTap(DateTime cellDate) {
-    final normalizedDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
+    final normalizedDate = DateTime(
+      cellDate.year,
+      cellDate.month,
+      cellDate.day,
+    );
 
     if (!widget.enabled) {
       widget.onDateTap?.call(normalizedDate);
@@ -308,15 +316,24 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
                 // If period is running (endDate is null) and this cell is within the 6-day window
                 if (!isSelected && startDate != null && endDate == null) {
-                  DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+                  DateTime start = DateTime(
+                    startDate!.year,
+                    startDate!.month,
+                    startDate!.day,
+                  );
                   DateTime end = start.add(const Duration(days: 5));
-                  DateTime cell = DateTime(cellDate.year, cellDate.month, cellDate.day);
+                  DateTime cell = DateTime(
+                    cellDate.year,
+                    cellDate.month,
+                    cellDate.day,
+                  );
                   if (!cell.isBefore(start) && !cell.isAfter(end)) {
                     isSelected = true;
                   }
                 }
 
-                bool isTappedSelection = widget.selectedDate != null &&
+                bool isTappedSelection =
+                    widget.selectedDate != null &&
                     cellDate.year == widget.selectedDate!.year &&
                     cellDate.month == widget.selectedDate!.month &&
                     cellDate.day == widget.selectedDate!.day;
@@ -366,7 +383,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       if (d.year == cellDate.year &&
                           d.month == cellDate.month &&
                           d.day == cellDate.day) {
-                        predictedColor = const Color(0xFFE57373);
+                        predictedColor = AppColors.primary.withOpacity(0.7);
                       }
                     }
                   }
@@ -434,8 +451,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       color: isSelected
                           ? AppColors.primary
                           : isTappedSelection
-                              ? AppColors.primary.withOpacity(0.5)
-                              : predictedColor ?? Colors.transparent,
+                          ? AppColors.primary.withOpacity(0.5)
+                          : predictedColor ?? Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                       border: isTappedSelection
                           ? Border.all(color: Colors.blue, width: 2)
