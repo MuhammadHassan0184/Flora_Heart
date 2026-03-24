@@ -369,6 +369,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 // ---------------- HOME SCREEN ----------------
 class HomeScreen extends StatefulWidget {
@@ -381,6 +383,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _waveController;
+
+  double get _waveProgress => _waveController.value;
 
   /// ✅ Controllers (SAFE INIT)
   late TodayDataController todayCtrl;
@@ -470,7 +474,6 @@ class _HomeScreenState extends State<HomeScreen>
 
             const SizedBox(height: 20),
 
-            /// ---------------- PERIOD TRACKER ----------------
             // ---------------- PERIOD TRACKER ----------------
             SizedBox(height: 30),
             Obx(() {
@@ -509,38 +512,67 @@ class _HomeScreenState extends State<HomeScreen>
                       child: SizedBox(
                         width: 150,
                         height: 150,
-                        child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: 1),
-                          duration: const Duration(seconds: 2),
-                          curve: Curves.easeOut,
-                          builder: (context, value, child) {
-                            double fillFactor = isRunning ? 0.6 : 0.3;
-                            return Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: [
-                                Container(color: Colors.white),
-                                FractionallySizedBox(
-                                  heightFactor: fillFactor * value,
-                                  widthFactor: 1,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          AppColors.primary.withOpacity(0.6),
-                                          AppColors.primary.withOpacity(0.3),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                        child: WaveWidget(
+                          config: CustomConfig(
+                            gradients: [
+                              [
+                                AppColors.primary.withOpacity(0.6),
+                                AppColors.primary.withOpacity(0.4),
                               ],
-                            );
-                          },
+                              [
+                                AppColors.primary.withOpacity(0.4),
+                                AppColors.primary.withOpacity(0.2),
+                              ],
+                            ],
+                            durations: [5000, 7000],
+                            heightPercentages: [
+                              0.5 * _waveProgress,
+                              0.52 * _waveProgress,
+                            ],
+                          ),
+                          backgroundColor: Colors.white,
+                          waveAmplitude: 15,
+                          size: Size(double.infinity, double.infinity),
                         ),
                       ),
                     ),
+
+                    // ClipOval(
+                    //   child: SizedBox(
+                    //     width: 150,
+                    //     height: 150,
+                    //     child: TweenAnimationBuilder<double>(
+                    //       tween: Tween(begin: 0, end: 1),
+                    //       duration: const Duration(seconds: 2),
+                    //       curve: Curves.easeOut,
+                    //       builder: (context, value, child) {
+                    //         double fillFactor = isRunning ? 0.6 : 0.3;
+                    //         return Stack(
+                    //           alignment: Alignment.bottomCenter,
+                    //           children: [
+                    //             Container(color: Colors.white),
+                    //             FractionallySizedBox(
+                    //               heightFactor: fillFactor * value,
+                    //               widthFactor: 1,
+                    //               child: Container(
+                    //                 decoration: BoxDecoration(
+                    //                   gradient: LinearGradient(
+                    //                     begin: Alignment.topCenter,
+                    //                     end: Alignment.bottomCenter,
+                    //                     colors: [
+                    //                       AppColors.primary.withOpacity(0.6),
+                    //                       AppColors.primary.withOpacity(0.3),
+                    //                     ],
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         );
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
 
                     // Center text
                     Container(
