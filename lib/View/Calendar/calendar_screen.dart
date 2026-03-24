@@ -6,6 +6,8 @@ import 'package:floraheart/Widgets/custom_calendar.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -21,6 +23,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
   late PeriodController periodCtrl;
 
+// <<<<<<< HEAD
+// =======
+  final Rx<DateTime> selectedDate = DateTime.now().obs;
+
+// >>>>>>> b2aa1a00cc967926c530041926d75938bda48978
   @override
   void initState() {
     super.initState();
@@ -29,6 +36,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // load persisted info
     controller.loadTodayData();
     periodCtrl.loadPeriod();
+    _loadManualOvulationDates();
+  }
+
+  Future<void> _loadManualOvulationDates() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("logs")
+        .where("ovulationTest", isEqualTo: "Positive")
+        .get();
+
+    final dates = snapshot.docs.map((doc) => DateTime.parse(doc.id)).toList();
+    periodCtrl.manualOvulationDates.assignAll(dates);
   }
 
   @override
@@ -45,13 +68,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 initialStartDate: periodCtrl.periodStart.value,
                 initialEndDate: periodCtrl.periodEnd.value,
                 ovulationDate: periodCtrl.ovulationDate,
+                manualOvulationDates: periodCtrl.manualOvulationDates,
                 nextPeriodDate: periodCtrl.nextPeriodDate,
                 fertilityWindow: periodCtrl.fertilityWindow,
-                enabled: false,
-                showPredictedColors: periodCtrl.periodEnd.value != null,
-                onRangeSelected: (start, end) async {
-                  await periodCtrl.startPeriod(start);
+                predictedPeriodDates: periodCtrl.predictedPeriodRange,
+                predictedFertilityDates: periodCtrl.predictedFertilityWindow,
+                predictedOvulationDates: periodCtrl.predictedOvulationDates,
+                enabled: false, // Set to false to disable direct editing
+                selectedDate: selectedDate.value,
+                onDateTap: (date) {
+                  selectedDate.value = date;
+                  controller.loadTodayData(DateFormat('yyyy-MM-dd').format(date));
                 },
+                showPredictedColors: periodCtrl.periodStart.value != null,
               ),
             ),
             SizedBox(height: 1),
@@ -59,13 +88,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
             
             Obx(() {
               String subtitle = "Cycle Day 3"; // Default or fallback
+              final activeDate = selectedDate.value;
               
               if (periodCtrl.periodStart.value != null) {
                 final start = periodCtrl.periodStart.value!;
-                final today = DateTime.now();
-                final diff = today.difference(start).inDays + 1;
+                final diff = activeDate.difference(start).inDays + 1;
                 
                 if (periodCtrl.periodEnd.value == null) {
+                  subtitle = "Period Day $diff";
+                } else if (!activeDate.isBefore(start) && !activeDate.isAfter(periodCtrl.periodEnd.value!)) {
                   subtitle = "Period Day $diff";
                 } else {
                   subtitle = "Cycle Day $diff";
@@ -76,7 +107,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   title: Text(
-                    DateFormat('MMM d').format(DateTime.now()),
+                    DateFormat('MMM d').format(activeDate),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(

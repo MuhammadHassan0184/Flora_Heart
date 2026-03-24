@@ -42,8 +42,17 @@ class _TodayScreenState extends State<TodayScreen> {
   void initState() {
     super.initState();
     controller = Get.put(TodayDataController(), permanent: true);
+    final periodCtrl = Get.find<PeriodController>();
 
     controller.loadTodayData(); // 🔥 LOAD DATA
+    periodCtrl.refreshManualOvulationDates(); // 🔥 LOAD OVULATION DATES
+    
+    // Set selected date to period start if it's running
+    if (periodCtrl.periodStart.value != null && periodCtrl.periodEnd.value == null) {
+      _selectedDate = periodCtrl.periodStart.value!;
+      _currentMonth = DateTime(_selectedDate.year, _selectedDate.month);
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
@@ -78,6 +87,7 @@ class _TodayScreenState extends State<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     int totalDays = _daysInMonth(_currentMonth);
+    final periodCtrl = Get.find<PeriodController>(); // 🔥 Define once for the whole build
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -140,22 +150,49 @@ class _TodayScreenState extends State<TodayScreen> {
                             index + 1,
                           );
 
-                          bool isSelected =
-                              _selectedDate.year == date.year &&
-                              _selectedDate.month == date.month &&
-                              _selectedDate.day == date.day;
-
                           return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedDate = date;
-                              });
+                            onTap: () async {
+                              try {
+                                // 🔥 Save current date data before switching
+                                await controller.saveTodayData();
+
+                                // Refresh manual dates if a positive test was just saved
+                                if (controller.ovulationTest.value == "Positive") {
+                                  await periodCtrl.refreshManualOvulationDates();
+                                }
+
+                                setState(() {
+                                  _selectedDate = date;
+                                });
+
+                                // 🔥 Reload data for the new selected date
+                                await controller.loadTodayData(
+                                  DateFormat('yyyy-MM-dd').format(date),
+                                );
+                              } catch (e) {
+                                print("SWITCH DATE ERROR: $e");
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(right: 14),
-                              child: isSelected
-                                  ? _selectedItem(date)
-                                  : _normalItem(date),
+                              child: Obx(() {
+                                // Wrap in Obx to react to manualOvulationDates changes
+                                bool isSelected =
+                                    _selectedDate.year == date.year &&
+                                    _selectedDate.month == date.month &&
+                                    _selectedDate.day == date.day;
+
+                                bool isInPeriod = periodCtrl.isInPeriod(date);
+                                
+                                // Check if this date has a positive ovulation test
+                                bool isOvulationPos = periodCtrl.manualOvulationDates.any(
+                                  (d) => d.year == date.year && d.month == date.month && d.day == date.day
+                                );
+
+                                return isSelected
+                                    ? _selectedItem(date, isInPeriod, isOvulationPos)
+                                    : _normalItem(date, isInPeriod, isOvulationPos);
+                              }),
                             ),
                           );
                         },
@@ -167,7 +204,6 @@ class _TodayScreenState extends State<TodayScreen> {
             ),
             SizedBox(height: 10),
             Obx(() {
-              final periodCtrl = Get.find<PeriodController>();
               bool isRunning =
                   periodCtrl.periodStart.value != null &&
                   periodCtrl.periodEnd.value == null;
@@ -196,45 +232,65 @@ class _TodayScreenState extends State<TodayScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         /// START BUTTON
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: isRunning
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      selectedIndex = 0;
-                                    });
-                                    await periodCtrl.startPeriod(_selectedDate);
-                                  },
-                            child: Opacity(
-                              opacity: isRunning ? 0.4 : 1.0,
-                              child: Container(
-                                height: 37,
-                                decoration: BoxDecoration(
-                                  color: selectedIndex == 0
-                                      ? AppColors.primary
-                                      : Colors.grey,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(Icons.play_arrow, color: Colors.white),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      "Start",
-                                      style: TextStyle(
+                        () {
+                          bool isStartDate = false;
+                          if (periodCtrl.periodStart.value != null) {
+                            final ps = periodCtrl.periodStart.value!;
+                            isStartDate = _selectedDate.year == ps.year &&
+                                _selectedDate.month == ps.month &&
+                                _selectedDate.day == ps.day;
+                          }
+
+                          // If period is running, only enable "Start" if on the start date
+                          // If period is not running, allow starting on any date
+                          bool isStartButtonEnabled =
+                              !isRunning || (isRunning && isStartDate);
+
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: !isStartButtonEnabled
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        selectedIndex = 0;
+                                      });
+                                      await periodCtrl.startPeriod(
+                                        _selectedDate,
+                                      );
+                                    },
+                              child: Opacity(
+                                opacity: isStartButtonEnabled ? 1.0 : 0.4,
+                                child: Container(
+                                  height: 37,
+                                  decoration: BoxDecoration(
+                                    color: selectedIndex == 0
+                                        ? AppColors.primary
+                                        : Colors.grey,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        Icons.play_arrow,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 6),
+                                      Text(
+                                        "Start",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        }(),
 
                         const SizedBox(width: 20),
 
@@ -391,8 +447,14 @@ class _TodayScreenState extends State<TodayScreen> {
                 ontap: () async {
                   try {
                     final controller = Get.find<TodayDataController>();
+                    final periodCtrl = Get.find<PeriodController>();
 
                     await controller.saveTodayData();
+
+                    // Refresh manual ovulation dates in case it changed
+                    if (controller.ovulationTest.value == "Positive") {
+                      await periodCtrl.refreshManualOvulationDates();
+                    }
 
                     Get.offAllNamed(AppRoutesName.mainScreen);
                   } catch (e) {
@@ -426,13 +488,43 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
-  Widget _normalItem(DateTime date) {
+  Widget _normalItem(DateTime date, bool isInPeriod, bool isOvulationPos) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          date.day.toString(),
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Container(
+          width: 32,
+          height: 32,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isInPeriod ? const Color(0xffF8D7DA) : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Text(
+                date.day.toString(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isInPeriod ? AppColors.primary : Colors.black,
+                ),
+              ),
+              if (isOvulationPos)
+                Positioned(
+                  bottom: 2,
+                  child: Container(
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
         SizedBox(height: 4),
         Text(
@@ -447,34 +539,54 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 
-  Widget _selectedItem(DateTime date) {
+  Widget _selectedItem(DateTime date, bool isInPeriod, bool isOvulationPos) {
     return Container(
       width: 50,
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xffF8D7DA),
         borderRadius: BorderRadius.circular(12),
+        border: isInPeriod ? Border.all(color: AppColors.primary, width: 1) : null,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Text(
-            date.day.toString(),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                date.day.toString(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                DateFormat('E').format(date),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 4),
-          Text(
-            DateFormat('E').format(date),
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
+          if (isOvulationPos)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

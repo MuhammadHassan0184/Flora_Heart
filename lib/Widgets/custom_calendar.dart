@@ -5,12 +5,18 @@ import 'package:flutter/material.dart';
 
 class CustomCalendar extends StatefulWidget {
   final DateTime? ovulationDate;
+  final List<DateTime>? manualOvulationDates; // NEW
   final DateTime? nextPeriodDate;
   final List<DateTime>? fertilityWindow;
   final DateTime? initialStartDate;
   final DateTime? initialEndDate;
   final bool enabled;
   final void Function(DateTime start, DateTime end)? onRangeSelected;
+  final void Function(DateTime date)? onDateTap; // NEW
+  final DateTime? selectedDate; // NEW
+  final List<DateTime>? predictedPeriodDates; // NEW
+  final List<DateTime>? predictedFertilityDates; // NEW
+  final List<DateTime>? predictedOvulationDates; // NEW
   final bool showPredictedColors; // NEW
 
   const CustomCalendar({
@@ -18,9 +24,15 @@ class CustomCalendar extends StatefulWidget {
     this.initialStartDate,
     this.initialEndDate,
     this.onRangeSelected,
+    this.onDateTap,
+    this.selectedDate,
     this.ovulationDate,
+    this.manualOvulationDates,
     this.nextPeriodDate,
     this.fertilityWindow,
+    this.predictedPeriodDates,
+    this.predictedFertilityDates,
+    this.predictedOvulationDates,
     this.enabled = true,
     this.showPredictedColors = false, // default false
   });
@@ -33,6 +45,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
   DateTime currentMonth = DateTime.now();
   DateTime? startDate;
   DateTime? endDate;
+  Set<DateTime> selectedDates = {};
 
   static const int maxRangeDays = 5;
   final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
@@ -42,8 +55,25 @@ class _CustomCalendarState extends State<CustomCalendar> {
     super.initState();
     startDate = widget.initialStartDate;
     endDate = widget.initialEndDate;
+    _syncSelectedDatesFromRange();
     if (startDate != null) {
       currentMonth = DateTime(startDate!.year, startDate!.month);
+    }
+  }
+
+  void _syncSelectedDatesFromRange() {
+    selectedDates.clear();
+    if (startDate != null) {
+      DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+      DateTime end = endDate != null
+          ? DateTime(endDate!.year, endDate!.month, endDate!.day)
+          : start.add(const Duration(days: 5)); // Default to 6 days
+
+      DateTime current = start;
+      while (!current.isAfter(end)) {
+        selectedDates.add(current);
+        current = current.add(const Duration(days: 1));
+      }
     }
   }
 
@@ -54,6 +84,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         widget.initialEndDate != oldWidget.initialEndDate) {
       startDate = widget.initialStartDate;
       endDate = widget.initialEndDate;
+      _syncSelectedDatesFromRange();
       if (startDate != null) {
         setState(() {
           currentMonth = DateTime(startDate!.year, startDate!.month);
@@ -62,15 +93,50 @@ class _CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
+  void _updateRangeFromSelectedDates() {
+    if (selectedDates.isEmpty) {
+      startDate = null;
+      endDate = null;
+    } else {
+      final sorted = selectedDates.toList()..sort();
+      startDate = sorted.first;
+      endDate = sorted.last;
+    }
+  }
+
   void _handleCellTap(DateTime cellDate) {
-    if (!widget.enabled) return;
+    final normalizedDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
+
+    if (!widget.enabled) {
+      widget.onDateTap?.call(normalizedDate);
+      return;
+    }
 
     setState(() {
-      startDate = cellDate;
-      endDate = null;
+      if (selectedDates.contains(normalizedDate)) {
+        // One-by-one deselection
+        selectedDates.remove(normalizedDate);
+      } else {
+        if (selectedDates.isEmpty) {
+          // Select 6 days (tapped date + 5 more)
+          for (int i = 0; i < 6; i++) {
+            selectedDates.add(normalizedDate.add(Duration(days: i)));
+          }
+        } else {
+          // Manual addition
+          selectedDates.add(normalizedDate);
+        }
+      }
+
+      _updateRangeFromSelectedDates();
+      widget.onDateTap?.call(normalizedDate);
     });
 
-    widget.onRangeSelected?.call(cellDate, cellDate);
+    if (startDate != null && endDate != null) {
+      widget.onRangeSelected?.call(startDate!, endDate!);
+    } else if (startDate != null) {
+      widget.onRangeSelected?.call(startDate!, startDate!);
+    }
   }
 
   // void _handleCellTap(DateTime cellDate) {
@@ -236,43 +302,30 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   );
                 }
 
-                bool isSelected = false;
+                bool isSelected = selectedDates.contains(
+                  DateTime(cellDate.year, cellDate.month, cellDate.day),
+                );
 
-                DateTime now = DateTime.now();
-                DateTime todayDate = DateTime(now.year, now.month, now.day);
-
-                if (startDate != null) {
-                  final s = DateTime(
-                    startDate!.year,
-                    startDate!.month,
-                    startDate!.day,
-                  );
-                  if (endDate == null) {
-                    // ACTIVE PERIOD: Highlight from start until today (inclusive)
-                    isSelected =
-                        (cellDate.isAtSameMomentAs(s) || cellDate.isAfter(s)) &&
-                        (cellDate.isAtSameMomentAs(todayDate) ||
-                            cellDate.isBefore(todayDate));
-                  } else {
-                    // COMPLETED PERIOD: Highlight specific range
-                    final e = DateTime(
-                      endDate!.year,
-                      endDate!.month,
-                      endDate!.day,
-                    );
-                    isSelected =
-                        (cellDate.isAtSameMomentAs(s) || cellDate.isAfter(s)) &&
-                        (cellDate.isAtSameMomentAs(e) || cellDate.isBefore(e));
+                // If period is running (endDate is null) and this cell is within the 6-day window
+                if (!isSelected && startDate != null && endDate == null) {
+                  DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+                  DateTime end = start.add(const Duration(days: 5));
+                  DateTime cell = DateTime(cellDate.year, cellDate.month, cellDate.day);
+                  if (!cell.isBefore(start) && !cell.isAfter(end)) {
+                    isSelected = true;
                   }
                 }
+
+                bool isTappedSelection = widget.selectedDate != null &&
+                    cellDate.year == widget.selectedDate!.year &&
+                    cellDate.month == widget.selectedDate!.month &&
+                    cellDate.day == widget.selectedDate!.day;
 
                 /// ✅ Prediction Colors
                 Color? predictedColor;
 
-                // ONLY show predicted colors if period is NOT active (i.e. endDate is set)
-                bool isPeriodEnded = endDate != null;
-
-                if (widget.showPredictedColors && isPeriodEnded) {
+                // Predictions should show if showPredictedColors is true (which is now based on periodStart)
+                if (widget.showPredictedColors) {
                   if (widget.fertilityWindow != null) {
                     for (var d in widget.fertilityWindow!) {
                       if (d.year == cellDate.year &&
@@ -290,11 +343,52 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     predictedColor = const Color(0xFFA6E63F);
                   }
 
+                  if (widget.manualOvulationDates != null) {
+                    for (var d in widget.manualOvulationDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFA6E63F);
+                      }
+                    }
+                  }
+
                   if (widget.nextPeriodDate != null &&
                       cellDate.year == widget.nextPeriodDate!.year &&
                       cellDate.month == widget.nextPeriodDate!.month &&
                       cellDate.day == widget.nextPeriodDate!.day) {
                     predictedColor = const Color(0xFFE57373);
+                  }
+
+                  // Multi-cycle predictions
+                  if (widget.predictedPeriodDates != null) {
+                    for (var d in widget.predictedPeriodDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFE57373);
+                      }
+                    }
+                  }
+
+                  if (widget.predictedFertilityDates != null) {
+                    for (var d in widget.predictedFertilityDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFFDD7DD);
+                      }
+                    }
+                  }
+
+                  if (widget.predictedOvulationDates != null) {
+                    for (var d in widget.predictedOvulationDates!) {
+                      if (d.year == cellDate.year &&
+                          d.month == cellDate.month &&
+                          d.day == cellDate.day) {
+                        predictedColor = const Color(0xFFA6E63F);
+                      }
+                    }
                   }
                 }
 
@@ -339,8 +433,13 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : predictedColor ?? Colors.transparent,
+                          : isTappedSelection
+                              ? AppColors.primary.withOpacity(0.5)
+                              : predictedColor ?? Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
+                      border: isTappedSelection
+                          ? Border.all(color: Colors.blue, width: 2)
+                          : null,
                     ),
                     alignment: Alignment.center,
                     child: Text(

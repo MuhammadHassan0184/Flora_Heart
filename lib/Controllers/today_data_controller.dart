@@ -14,10 +14,12 @@ class TodayDataController extends GetxController {
   final sexualActivity = "".obs;
   final temperature = 0.0.obs;
   final weight = 0.0.obs; // New: stores user weight
+  final ovulationTest = "".obs; // Restore: stores ovulation test result
+  final pregnancyTest = "".obs; // New: stores pregnancy test result
+  final selectedDate = "".obs; // 🔥 THE CURRENTLY SELECTED DATE
 
   String get uid => FirebaseAuth.instance.currentUser!.uid;
-
-  String get today => DateFormat('yyyy-MM-dd').format(DateTime.now());
+  String get todayDate => DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   /// SAVE DATA
   Future<void> saveTodayData() async {
@@ -30,11 +32,13 @@ class TodayDataController extends GetxController {
 
       final uid = user.uid;
 
+      final targetDate = selectedDate.value.isEmpty ? todayDate : selectedDate.value;
+
       await FirebaseFirestore.instance
           .collection("users")
           .doc(uid)
           .collection("logs")
-          .doc(today)
+          .doc(targetDate)
           .set({
             "flow": flow.value,
             "period": period.value,
@@ -43,10 +47,12 @@ class TodayDataController extends GetxController {
             "sexualActivity": sexualActivity.value,
             "temperature": temperature.value,
             "weight": weight.value, // 🔥 add weight
+            "ovulationTest": ovulationTest.value, // 🔥 add test results
+            "pregnancyTest": pregnancyTest.value,
             "symptoms": symptoms.map(
               (key, value) => MapEntry(key, value.toList()),
             ),
-            "date": today,
+            "date": targetDate,
           });
     } catch (e) {
       print("FIRESTORE SAVE ERROR: $e");
@@ -55,18 +61,34 @@ class TodayDataController extends GetxController {
   }
 
   /// LOAD DATA
-  Future<void> loadTodayData() async {
+  Future<void> loadTodayData([String? date]) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    final targetDate = date ?? todayDate;
+    selectedDate.value = targetDate; // 🔥 Sync controller's date
 
     final doc = await FirebaseFirestore.instance
         .collection("users")
         .doc(user.uid)
         .collection("logs")
-        .doc(today)
+        .doc(targetDate)
         .get();
 
-    if (!doc.exists) return;
+    if (!doc.exists) {
+      // Clear data if not found for the specific date
+      flow.value = -1;
+      period.value = "";
+      moods.clear();
+      discharge.clear();
+      sexualActivity.value = "";
+      temperature.value = 0.0;
+      weight.value = 0.0;
+      ovulationTest.value = "";
+      pregnancyTest.value = "";
+      symptoms.clear();
+      return;
+    }
 
     final data = doc.data()!;
 
@@ -77,6 +99,8 @@ class TodayDataController extends GetxController {
     sexualActivity.value = data["sexualActivity"] ?? "";
     temperature.value = (data["temperature"] ?? 0).toDouble();
     weight.value = (data["weight"] ?? 0).toDouble(); // 🔥 load weight
+    ovulationTest.value = data["ovulationTest"] ?? "";
+    pregnancyTest.value = data["pregnancyTest"] ?? "";
 
     Map<String, dynamic> rawSymptoms = data["symptoms"] ?? {};
     symptoms.value = rawSymptoms.map(

@@ -188,27 +188,29 @@ class DateCard extends StatelessWidget {
 }
 
 class DatesRow extends StatelessWidget {
-  final DateTime? endDate; // last day of current period
+  final List<DateTime> fertilityWindow;
+  final DateTime? ovulationDate;
+  final DateTime? nextPeriodDate;
 
-  const DatesRow({super.key, required this.endDate});
+  const DatesRow({
+    super.key,
+    required this.fertilityWindow,
+    required this.ovulationDate,
+    required this.nextPeriodDate,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (endDate == null) return const SizedBox.shrink();
+    if (fertilityWindow.isEmpty ||
+        ovulationDate == null ||
+        nextPeriodDate == null) {
+      return const SizedBox.shrink();
+    }
 
-    // Calculate predicted dates
-    final fertilityStart = endDate!.add(const Duration(days: 1));
-    final fertilityEnd = fertilityStart.add(
-      const Duration(days: 5),
-    ); // 6 days window
-    final ovulationDate = fertilityStart.add(
-      const Duration(days: 3),
-    ); // middle day
-    final nextPeriodDate = endDate!.add(
-      const Duration(days: 28),
-    ); // assuming 28-day cycle
+    final fertilityStart = fertilityWindow.first;
+    final fertilityEnd = fertilityWindow.last;
 
-    // Format dates
+    // Format dates - using a more compact format to prevent card resizing
     String formatRange(DateTime start, DateTime end) =>
         "${start.day}-${end.day} ${_monthAbbr(start.month)}";
 
@@ -227,7 +229,7 @@ class DatesRow extends StatelessWidget {
         ),
         // Ovulation
         DateCard(
-          date: formatSingle(ovulationDate),
+          date: formatSingle(ovulationDate!),
           label: "Ovulation",
           gradientColors: [Color(0xFFE1FCB9), Color(0xFFA6E63F)],
           circleGradient: [Color(0xFFEFFFCC), Color(0xFFC9F079)],
@@ -235,7 +237,7 @@ class DatesRow extends StatelessWidget {
         ),
         // Next Period
         DateCard(
-          date: formatSingle(nextPeriodDate),
+          date: formatSingle(nextPeriodDate!),
           label: "Next Period",
           gradientColors: [Color(0xFFFDAAB1), Color(0xFFFF3F5E)],
           circleGradient: [Color(0xFFFFC6CD), Color(0xFFFF6B80)],
