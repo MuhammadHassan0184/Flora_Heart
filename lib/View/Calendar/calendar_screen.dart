@@ -32,20 +32,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Only show for predicted dates
     String? chance;
 
-    if (periodCtrl.predictedFertilityWindow != null) {
-      final dates = periodCtrl.predictedFertilityWindow!;
-      final index = dates.indexWhere(
-        (d) =>
-            d.year == date.year && d.month == date.month && d.day == date.day,
-      );
-      if (index != -1) {
-        if (index == 0 || index == dates.length - 1) {
-          chance = "Low";
-        } else if (index == 1 || index == dates.length - 2) {
-          chance = "Medium";
-        } else {
-          chance = "High";
-        }
+    final dates = periodCtrl.predictedFertilityWindow;
+    final index = dates.indexWhere(
+      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
+    );
+    if (index != -1) {
+      if (index == 0 || index == dates.length - 1) {
+        chance = "Low";
+      } else if (index == 1 || index == dates.length - 2) {
+        chance = "Medium";
+      } else {
+        chance = "High";
       }
     }
 
