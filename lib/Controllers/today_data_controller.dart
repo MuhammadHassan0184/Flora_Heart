@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'package:floraheart/Controllers/period_controller.dart';
+import 'package:floraheart/utils/tips_manager.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +23,44 @@ class TodayDataController extends GetxController {
   String get uid => FirebaseAuth.instance.currentUser!.uid;
   String get todayDate => DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+  String getDailyTip(PeriodController periodCtrl) {
+    final today = DateTime.now();
+
+    /// 1. PERIOD RUNNING
+    if (periodCtrl.isPeriodRunning) {
+      return TipsManager.getDailyStableTip(TipsManager.periodTips);
+    }
+
+    /// 2. OVULATION DAY
+    if (periodCtrl.ovulationDate != null) {
+      final ov = periodCtrl.ovulationDate!;
+
+      if (today.year == ov.year &&
+          today.month == ov.month &&
+          today.day == ov.day) {
+        return TipsManager.getDailyStableTip(TipsManager.ovulationTips);
+      }
+    }
+
+    /// 3. SYMPTOMS EXIST
+    if (symptoms.isNotEmpty) {
+      return TipsManager.getDailyStableTip(TipsManager.symptomTips);
+    }
+
+    /// 4. HEAVY FLOW SPECIAL
+    if (flow.value == 2 || flow.value == 3) {
+      return "Heavy flow detected, stay hydrated, take rest, and consider iron-rich foods for recovery.";
+    }
+
+    /// 5. MOOD BASED
+    if (moods.contains("Sad") || moods.contains("Stressed")) {
+      return "Take time for yourself, relax your mind, and do activities that bring you peace.";
+    }
+
+    /// 6. DEFAULT
+    return TipsManager.getDailyStableTip(TipsManager.normalTips);
+  }
+
   /// SAVE DATA
   Future<void> saveTodayData() async {
     try {
@@ -32,7 +72,9 @@ class TodayDataController extends GetxController {
 
       final uid = user.uid;
 
-      final targetDate = selectedDate.value.isEmpty ? todayDate : selectedDate.value;
+      final targetDate = selectedDate.value.isEmpty
+          ? todayDate
+          : selectedDate.value;
 
       await FirebaseFirestore.instance
           .collection("users")

@@ -171,205 +171,214 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Flow -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                    if (controller.flow.value != -1) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          controller.flow.value == 0
-                              ? "Light"
-                              : controller.flow.value == 1
-                              ? "Medium"
-                              : controller.flow.value == 2
-                              ? "Heavy"
-                              : controller.flow.value == 3
-                              ? "Disaster"
-                              : "",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Text(
+                            "Flow -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Mood -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          controller.moods.join(', '),
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Symptoms -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            // controller.symptoms.entries
-                            //     .map((e) => e.value.join(', '))
-                            //     .join(', '),
-                            controller.symptoms.values
-                                .expand((e) => e)
-                                .join(", "),
+                          SizedBox(width: 10),
+                          Text(
+                            controller.flow.value == 0
+                                ? "Light"
+                                : controller.flow.value == 1
+                                ? "Medium"
+                                : controller.flow.value == 2
+                                ? "Heavy"
+                                : controller.flow.value == 3
+                                ? "Disaster"
+                                : "",
                             style: TextStyle(
                               color: AppColors.grey,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Vaginal Discharge -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.moods.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          controller.discharge.join(', '),
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Text(
+                            "Mood -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Basal Body Temperature -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Text(
+                            controller.moods.join(', '),
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "${controller.temperature.value.toStringAsFixed(2)} °C",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.symptoms.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
                           ),
-                        ),
-                      ],
-                    ),
-                    // Inside the Obx Column in CalendarScreen (after Vaginal Discharge row)
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Sexual Activity -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Text(
+                            "Symptoms -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          controller.sexualActivity.value.isNotEmpty
-                              ? controller.sexualActivity.value
-                              : "",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              controller.symptoms.values
+                                  .expand((e) => e)
+                                  .join(", "),
+                              style: TextStyle(
+                                color: AppColors.grey,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 4,
-                          backgroundColor: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Weight -",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.discharge.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "${controller.weight.value.toStringAsFixed(2)} Kg",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(width: 10),
+                          Text(
+                            "Vaginal Discharge -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          SizedBox(width: 10),
+                          Text(
+                            controller.discharge.join(', '),
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.temperature.value != 0.0) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Basal Body Temperature -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "${controller.temperature.value.toStringAsFixed(2)} °C",
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.sexualActivity.value.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Sexual Activity -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            controller.sexualActivity.value,
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                    if (controller.weight.value != 0.0) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Weight -",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "${controller.weight.value.toStringAsFixed(2)} Kg",
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
                   ],
                 ),
               ),

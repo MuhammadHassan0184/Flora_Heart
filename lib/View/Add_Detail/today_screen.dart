@@ -46,9 +46,10 @@ class _TodayScreenState extends State<TodayScreen> {
 
     controller.loadTodayData(); // 🔥 LOAD DATA
     periodCtrl.refreshManualOvulationDates(); // 🔥 LOAD OVULATION DATES
-    
+
     // Set selected date to period start if it's running
-    if (periodCtrl.periodStart.value != null && periodCtrl.periodEnd.value == null) {
+    if (periodCtrl.periodStart.value != null &&
+        periodCtrl.periodEnd.value == null) {
       _selectedDate = periodCtrl.periodStart.value!;
       _currentMonth = DateTime(_selectedDate.year, _selectedDate.month);
     }
@@ -87,7 +88,8 @@ class _TodayScreenState extends State<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     int totalDays = _daysInMonth(_currentMonth);
-    final periodCtrl = Get.find<PeriodController>(); // 🔥 Define once for the whole build
+    final periodCtrl =
+        Get.find<PeriodController>(); // 🔥 Define once for the whole build
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -157,8 +159,10 @@ class _TodayScreenState extends State<TodayScreen> {
                                 await controller.saveTodayData();
 
                                 // Refresh manual dates if a positive test was just saved
-                                if (controller.ovulationTest.value == "Positive") {
-                                  await periodCtrl.refreshManualOvulationDates();
+                                if (controller.ovulationTest.value ==
+                                    "Positive") {
+                                  await periodCtrl
+                                      .refreshManualOvulationDates();
                                 }
 
                                 setState(() {
@@ -183,15 +187,28 @@ class _TodayScreenState extends State<TodayScreen> {
                                     _selectedDate.day == date.day;
 
                                 bool isInPeriod = periodCtrl.isInPeriod(date);
-                                
+
                                 // Check if this date has a positive ovulation test
-                                bool isOvulationPos = periodCtrl.manualOvulationDates.any(
-                                  (d) => d.year == date.year && d.month == date.month && d.day == date.day
-                                );
+                                bool isOvulationPos = periodCtrl
+                                    .manualOvulationDates
+                                    .any(
+                                      (d) =>
+                                          d.year == date.year &&
+                                          d.month == date.month &&
+                                          d.day == date.day,
+                                    );
 
                                 return isSelected
-                                    ? _selectedItem(date, isInPeriod, isOvulationPos)
-                                    : _normalItem(date, isInPeriod, isOvulationPos);
+                                    ? _selectedItem(
+                                        date,
+                                        isInPeriod,
+                                        isOvulationPos,
+                                      )
+                                    : _normalItem(
+                                        date,
+                                        isInPeriod,
+                                        isOvulationPos,
+                                      );
                               }),
                             ),
                           );
@@ -236,7 +253,8 @@ class _TodayScreenState extends State<TodayScreen> {
                           bool isStartDate = false;
                           if (periodCtrl.periodStart.value != null) {
                             final ps = periodCtrl.periodStart.value!;
-                            isStartDate = _selectedDate.year == ps.year &&
+                            isStartDate =
+                                _selectedDate.year == ps.year &&
                                 _selectedDate.month == ps.month &&
                                 _selectedDate.day == ps.day;
                           }
@@ -410,6 +428,13 @@ class _TodayScreenState extends State<TodayScreen> {
             SexualActivitySection(),
             SizedBox(height: 10),
             CustomCardButton(
+              label: "Tests",
+              onTap: () {
+                TestsBottomSheet.show(context);
+              },
+            ),
+            SizedBox(height: 10),
+            CustomCardButton(
               label: "Medicine",
               onTap: () {
                 showModalBottomSheet(
@@ -423,13 +448,6 @@ class _TodayScreenState extends State<TodayScreen> {
               label: "Drink Water",
               onTap: () {
                 DrinkWaterBottomSheet.show(context);
-              },
-            ),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Tests",
-              onTap: () {
-                TestsBottomSheet.show(context);
               },
             ),
             SizedBox(height: 10),
@@ -546,7 +564,9 @@ class _TodayScreenState extends State<TodayScreen> {
       decoration: BoxDecoration(
         color: const Color(0xffF8D7DA),
         borderRadius: BorderRadius.circular(12),
-        border: isInPeriod ? Border.all(color: AppColors.primary, width: 1) : null,
+        border: isInPeriod
+            ? Border.all(color: AppColors.primary, width: 1)
+            : null,
       ),
       child: Stack(
         alignment: Alignment.center,

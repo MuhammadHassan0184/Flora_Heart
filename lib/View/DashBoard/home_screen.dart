@@ -1,16 +1,374 @@
+// // ignore_for_file: deprecated_member_use, avoid_print
+
+// import 'package:floraheart/Controllers/period_controller.dart';
+// import 'package:floraheart/Controllers/today_data_controller.dart';
+// import 'package:floraheart/Widgets/custom_date_card.dart';
+// import 'package:floraheart/Widgets/custom_edit_button.dart';
+// import 'package:floraheart/config/Colors/colors.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'dart:math';
+
+// import 'package:get/get_core/src/get_main.dart';
+// import 'package:get/get_instance/get_instance.dart';
+// import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+
+// // ---------------- HOME SCREEN ----------------
+// class HomeScreen extends StatefulWidget {
+//   const HomeScreen({super.key});
+
+//   @override
+//   State<HomeScreen> createState() => _HomeScreenState();
+// }
+
+// class _HomeScreenState extends State<HomeScreen>
+//     with SingleTickerProviderStateMixin {
+//   // double _waveProgress = 0.0;
+//   late AnimationController _waveController;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     // FIX: Initialize controller if not already created
+//     if (!Get.isRegistered<TodayDataController>()) {
+//       Get.put(TodayDataController(), permanent: true);
+//     }
+
+//     // Controller to simulate progress for 3 seconds
+//     _waveController = AnimationController(
+//       vsync: this,
+//       duration: const Duration(seconds: 3),
+//     );
+
+//     _waveController.addListener(() {
+//       setState(() {
+//         // _waveProgress = _waveController.value;
+//       });
+//     });
+
+//     _waveController.forward(); // start animation
+//   }
+
+//   @override
+//   void dispose() {
+//     _waveController.dispose();
+//     super.dispose();
+//   }
+
+//   final PeriodController periodCtrl = Get.find<PeriodController>();
+
+//   late TodayDataController todayCtrl;
+//   // final todayCtrl = Get.find<TodayDataController>();
+//   // final periodCtrl = Get.find<PeriodController>();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         leading: Padding(
+//           padding: EdgeInsets.all(8),
+//           child: Container(
+//             decoration: BoxDecoration(
+//               border: Border.all(color: Colors.black),
+//               shape: BoxShape.circle,
+//             ),
+//             child: CircleAvatar(
+//               backgroundColor: Colors.white,
+//               child: Image.asset(
+//                 "assets/girl.png",
+//                 fit: BoxFit.cover,
+//                 width: 30,
+//                 height: 30,
+//               ),
+//             ),
+//           ),
+//         ),
+//         title: SizedBox(
+//           height: 30,
+//           child: SvgPicture.asset(
+//             "assets/homelogo.svg",
+//             fit: BoxFit.contain,
+//             width: 35,
+//             height: 35,
+//           ),
+//         ),
+//         centerTitle: true,
+//         actions: [
+//           Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 20),
+//             child: SvgPicture.asset("assets/bell.svg", width: 23, height: 23),
+//           ),
+//         ],
+//       ),
+//       body: SingleChildScrollView(
+//         child: Column(
+//           children: [
+//             SizedBox(height: 10),
+//             Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 20),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.end,
+//                 children: [
+//                   // GestureDetector(
+//                   //   onTap: () {
+//                   //     Get.toNamed(AppRoutesName.todayScreen);
+//                   //   },
+//                   //   child: Container(
+//                   //     padding: EdgeInsets.symmetric(horizontal: 6),
+//                   //     width: 71,
+//                   //     height: 29,
+//                   //     decoration: BoxDecoration(
+//                   //       border: Border.all(
+//                   //         color: AppColors.grey.withOpacity(0.3),
+//                   //       ),
+//                   //       borderRadius: BorderRadius.circular(20),
+//                   //     ),
+//                   //     child: Row(
+//                   //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                   //       children: [
+//                   //         SvgPicture.asset(
+//                   //           "assets/PinkDrops.svg",
+//                   //           width: 21,
+//                   //           height: 21,
+//                   //         ),
+//                   //         Text("Edit", style: TextStyle(color: AppColors.grey)),
+//                   //       ],
+//                   //     ),
+//                   //   ),
+//                   // ),
+//                   CustomEditButton(),
+//                 ],
+//               ),
+//             ),
+//             SizedBox(height: 10),
+
+//             // ---------------- PERIOD TRACKER ----------------
+//             SizedBox(height: 30),
+//             Obx(() {
+//               int day = periodCtrl.cycleDay;
+//               bool isRunning = periodCtrl.isPeriodRunning;
+//               int highlighted = isRunning ? day : 0;
+//               if (highlighted > 28) highlighted = 28;
+
+//               return Center(
+//                 child: Stack(
+//                   alignment: Alignment.center,
+//                   children: [
+//                     // Outer soft pink border
+//                     Container(
+//                       width: 210,
+//                       height: 200,
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         border: Border.all(
+//                           color: AppColors.primary.withOpacity(0.1),
+//                           width: 12,
+//                         ),
+//                       ),
+//                     ),
+
+//                     // Dots on border
+//                     CustomPaint(
+//                       size: Size(213, 210),
+//                       painter: DotCirclePainter(
+//                         totalDots: 28,
+//                         highlightedDots: highlighted,
+//                       ),
+//                     ),
+
+//                     ClipOval(
+//                       child: SizedBox(
+//                         width: 150,
+//                         height: 150,
+//                         child: TweenAnimationBuilder<double>(
+//                           tween: Tween(begin: 0, end: 1),
+//                           duration: const Duration(seconds: 2),
+//                           curve: Curves.easeOut,
+//                           builder: (context, value, child) {
+//                             double fillFactor = isRunning ? 0.6 : 0.3;
+//                             return Stack(
+//                               alignment: Alignment.bottomCenter,
+//                               children: [
+//                                 Container(color: Colors.white),
+//                                 FractionallySizedBox(
+//                                   heightFactor: fillFactor * value,
+//                                   widthFactor: 1,
+//                                   child: Container(
+//                                     decoration: BoxDecoration(
+//                                       gradient: LinearGradient(
+//                                         begin: Alignment.topCenter,
+//                                         end: Alignment.bottomCenter,
+//                                         colors: [
+//                                           AppColors.primary.withOpacity(0.6),
+//                                           AppColors.primary.withOpacity(0.3),
+//                                         ],
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             );
+//                           },
+//                         ),
+//                       ),
+//                     ),
+
+//                     // Center text
+//                     Container(
+//                       width: 150,
+//                       height: 160,
+//                       alignment: Alignment.center,
+//                       child: Column(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           Text(
+//                             isRunning ? "Period" : "Cycle",
+//                             style: TextStyle(
+//                               fontSize: 16,
+//                               color: AppColors.darkbrown,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                           SizedBox(height: 4),
+//                           Text(
+//                             "Day $day",
+//                             style: TextStyle(
+//                               fontSize: 22,
+//                               fontWeight: FontWeight.bold,
+//                               color: AppColors.darkbrown,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+
+//                     // Current day indicator
+//                     Positioned(
+//                       right: 25,
+//                       top: 30,
+//                       child: Container(
+//                         decoration: BoxDecoration(
+//                           border: Border.all(color: AppColors.primary),
+//                           shape: BoxShape.circle,
+//                         ),
+//                         child: CircleAvatar(
+//                           radius: 12,
+//                           backgroundColor: Colors.white,
+//                           child: Text(
+//                             "$day",
+//                             style: TextStyle(fontWeight: FontWeight.bold),
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             }),
+
+//             SizedBox(height: 35),
+//             Obx(() {
+//               if (!periodCtrl.isLoaded.value ||
+//                   periodCtrl.periodStart.value == null) {
+//                 return SizedBox(); // or CircularProgressIndicator()
+//               }
+//               return Padding(
+//                 padding: const EdgeInsets.symmetric(horizontal: 10),
+//                 child: DatesRow(
+//                   fertilityWindow: periodCtrl.fertilityWindow,
+//                   ovulationDate: periodCtrl.ovulationDate,
+//                   nextPeriodDate: periodCtrl.nextPeriodDate,
+//                 ),
+//               );
+//             }),
+//             // Padding(
+//             //   padding: const EdgeInsets.symmetric(horizontal: 10),
+//             //   child: DatesRow(endDate: periodCtrl.periodEnd.value),
+//             // ),
+//             SizedBox(height: 20),
+//             Container(
+//               margin: EdgeInsets.symmetric(horizontal: 14),
+//               padding: EdgeInsets.all(3),
+//               width: double.infinity,
+//               decoration: BoxDecoration(
+//                 border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+//                 borderRadius: BorderRadius.circular(15),
+//               ),
+//               child: ListTile(
+//                 leading: SvgPicture.asset("assets/bulb.svg"),
+//                 title: Text(
+//                   "Tip of the day!",
+//                   style: TextStyle(fontWeight: FontWeight.w900),
+//                 ),
+//                 // subtitle: Text(
+//                 //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in justo nunc...",
+//                 //   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+//                 // ),
+//                 subtitle: Obx(
+//                   () => Text(
+//                     todayCtrl.getDailyTip(periodCtrl),
+//                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             SizedBox(height: 20),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ---------------- DOT CIRCLE ----------------
+// class DotCirclePainter extends CustomPainter {
+//   final int totalDots;
+//   final int highlightedDots;
+
+//   DotCirclePainter({required this.totalDots, required this.highlightedDots});
+
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final center = Offset(size.width / 2, size.height / 2);
+//     final radius = size.width / 2;
+//     final dotPaint = Paint()
+//       ..color = Colors.pink.withOpacity(0.3)
+//       ..style = PaintingStyle.fill;
+
+//     final activeDotPaint = Paint()
+//       ..color = Colors.pink
+//       ..style = PaintingStyle.fill;
+
+//     for (int i = 0; i < totalDots; i++) {
+//       final angle = (i / totalDots) * 2 * pi;
+//       final x = center.dx + radius * 0.88 * cos(angle);
+//       final y = center.dy + radius * 0.88 * sin(angle);
+//       canvas.drawCircle(
+//         Offset(x, y),
+//         2.5,
+//         i < highlightedDots ? activeDotPaint : dotPaint,
+//       );
+//     }
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+// }
+
 // ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:floraheart/Controllers/period_controller.dart';
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_date_card.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:math';
-
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 
 // ---------------- HOME SCREEN ----------------
 class HomeScreen extends StatefulWidget {
@@ -22,26 +380,40 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  // double _waveProgress = 0.0;
   late AnimationController _waveController;
+
+  /// ✅ Controllers (SAFE INIT)
+  late TodayDataController todayCtrl;
+  late PeriodController periodCtrl;
 
   @override
   void initState() {
     super.initState();
 
-    // Controller to simulate progress for 3 seconds
+    // 🔥 FIX: Initialize controllers safely
+    if (!Get.isRegistered<TodayDataController>()) {
+      Get.put(TodayDataController(), permanent: true);
+    }
+
+    if (!Get.isRegistered<PeriodController>()) {
+      Get.put(PeriodController(), permanent: true);
+    }
+
+    /// ✅ Assign AFTER put
+    todayCtrl = Get.find<TodayDataController>();
+    periodCtrl = Get.find<PeriodController>();
+
+    /// Animation
     _waveController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     );
 
     _waveController.addListener(() {
-      setState(() {
-        // _waveProgress = _waveController.value;
-      });
+      setState(() {});
     });
 
-    _waveController.forward(); // start animation
+    _waveController.forward();
   }
 
   @override
@@ -50,16 +422,15 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  final PeriodController periodCtrl = Get.find<PeriodController>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black),
@@ -67,74 +438,39 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             child: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Image.asset(
-                "assets/girl.png",
-                fit: BoxFit.cover,
-                width: 30,
-                height: 30,
-              ),
+              child: Image.asset("assets/girl.png", width: 30, height: 30),
             ),
           ),
         ),
         title: SizedBox(
           height: 30,
-          child: SvgPicture.asset(
-            "assets/homelogo.svg",
-            fit: BoxFit.contain,
-            width: 35,
-            height: 35,
-          ),
+          child: SvgPicture.asset("assets/homelogo.svg"),
         ),
         centerTitle: true,
         actions: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SvgPicture.asset("assets/bell.svg", width: 23, height: 23),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SvgPicture.asset("assets/bell.svg", width: 23),
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Get.toNamed(AppRoutesName.todayScreen);
-                  //   },
-                  //   child: Container(
-                  //     padding: EdgeInsets.symmetric(horizontal: 6),
-                  //     width: 71,
-                  //     height: 29,
-                  //     decoration: BoxDecoration(
-                  //       border: Border.all(
-                  //         color: AppColors.grey.withOpacity(0.3),
-                  //       ),
-                  //       borderRadius: BorderRadius.circular(20),
-                  //     ),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //       children: [
-                  //         SvgPicture.asset(
-                  //           "assets/PinkDrops.svg",
-                  //           width: 21,
-                  //           height: 21,
-                  //         ),
-                  //         Text("Edit", style: TextStyle(color: AppColors.grey)),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  CustomEditButton(),
-                ],
+                children: const [CustomEditButton()],
               ),
             ),
-            SizedBox(height: 10),
 
+            const SizedBox(height: 20),
+
+            /// ---------------- PERIOD TRACKER ----------------
             // ---------------- PERIOD TRACKER ----------------
             SizedBox(height: 30),
             Obx(() {
@@ -259,12 +595,15 @@ class _HomeScreenState extends State<HomeScreen>
               );
             }),
 
-            SizedBox(height: 35),
+            const SizedBox(height: 25),
+
+            /// Dates Row
             Obx(() {
               if (!periodCtrl.isLoaded.value ||
                   periodCtrl.periodStart.value == null) {
-                return SizedBox(); // or CircularProgressIndicator()
+                return const SizedBox();
               }
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: DatesRow(
@@ -274,32 +613,39 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               );
             }),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 10),
-            //   child: DatesRow(endDate: periodCtrl.periodEnd.value),
-            // ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
+
+            /// ---------------- TIP CONTAINER ----------------
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 14),
-              padding: EdgeInsets.all(3),
-              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 14),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: ListTile(
                 leading: SvgPicture.asset("assets/bulb.svg"),
-                title: Text(
+                title: const Text(
                   "Tip of the day!",
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in justo nunc...",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                ),
+
+                /// 🔥 SAFE TIP DISPLAY
+                subtitle: Obx(() {
+                  try {
+                    return Text(
+                      todayCtrl.getDailyTip(periodCtrl),
+                      style: const TextStyle(fontSize: 12),
+                    );
+                  } catch (e) {
+                    return const Text("Loading tip...");
+                  }
+                }),
               ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -307,7 +653,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// ---------------- DOT CIRCLE ----------------
+/// ---------------- DOT CIRCLE ----------------
 class DotCirclePainter extends CustomPainter {
   final int totalDots;
   final int highlightedDots;
@@ -318,22 +664,19 @@ class DotCirclePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    final dotPaint = Paint()
-      ..color = Colors.pink.withOpacity(0.3)
-      ..style = PaintingStyle.fill;
 
-    final activeDotPaint = Paint()
-      ..color = Colors.pink
-      ..style = PaintingStyle.fill;
+    final dotPaint = Paint()..color = Colors.pink.withOpacity(0.3);
+    final activePaint = Paint()..color = Colors.pink;
 
     for (int i = 0; i < totalDots; i++) {
       final angle = (i / totalDots) * 2 * pi;
       final x = center.dx + radius * 0.88 * cos(angle);
       final y = center.dy + radius * 0.88 * sin(angle);
+
       canvas.drawCircle(
         Offset(x, y),
         2.5,
-        i < highlightedDots ? activeDotPaint : dotPaint,
+        i < highlightedDots ? activePaint : dotPaint,
       );
     }
   }
