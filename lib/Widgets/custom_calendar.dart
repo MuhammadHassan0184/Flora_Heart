@@ -252,23 +252,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
             const SizedBox(height: 15),
 
             /// Dates Grid
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 42,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-              ),
-              itemBuilder: (context, index) {
+            Builder(
+              builder: (context) {
                 final firstDayOfMonth = DateTime(
                   currentMonth.year,
                   currentMonth.month,
                   1,
                 );
 
-                int startWeekday = firstDayOfMonth.weekday % 7;
+                // Correctly align with the "mo-su" header (Mon is 0, Sun is 6)
+                int startWeekday = (firstDayOfMonth.weekday - 1);
 
                 final daysInMonth = DateTime(
                   currentMonth.year,
@@ -282,195 +275,212 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   0,
                 ).day;
 
-                int dayNumber = index - startWeekday + 1;
+                final totalItemsNeeded = startWeekday + daysInMonth;
+                final itemCount = (totalItemsNeeded / 7).ceil() * 7;
 
-                DateTime cellDate;
-
-                bool isCurrentMonth = true;
-
-                if (dayNumber < 1) {
-                  cellDate = DateTime(
-                    currentMonth.year,
-                    currentMonth.month - 1,
-                    daysInPrevMonth + dayNumber,
-                  );
-                  isCurrentMonth = false;
-                } else if (dayNumber > daysInMonth) {
-                  cellDate = DateTime(
-                    currentMonth.year,
-                    currentMonth.month + 1,
-                    dayNumber - daysInMonth,
-                  );
-                  isCurrentMonth = false;
-                } else {
-                  cellDate = DateTime(
-                    currentMonth.year,
-                    currentMonth.month,
-                    dayNumber,
-                  );
-                }
-
-                bool isSelected = selectedDates.contains(
-                  DateTime(cellDate.year, cellDate.month, cellDate.day),
-                );
-
-                // If period is running (endDate is null) and this cell is within the 6-day window
-                if (!isSelected && startDate != null && endDate == null) {
-                  DateTime start = DateTime(
-                    startDate!.year,
-                    startDate!.month,
-                    startDate!.day,
-                  );
-                  DateTime end = start.add(const Duration(days: 5));
-                  DateTime cell = DateTime(
-                    cellDate.year,
-                    cellDate.month,
-                    cellDate.day,
-                  );
-                  if (!cell.isBefore(start) && !cell.isAfter(end)) {
-                    isSelected = true;
-                  }
-                }
-
-                bool isTappedSelection =
-                    widget.selectedDate != null &&
-                    cellDate.year == widget.selectedDate!.year &&
-                    cellDate.month == widget.selectedDate!.month &&
-                    cellDate.day == widget.selectedDate!.day;
-
-                /// ✅ Prediction Colors
-                Color? predictedColor;
-
-                // Predictions should show if showPredictedColors is true (which is now based on periodStart)
-                if (widget.showPredictedColors) {
-                  if (widget.fertilityWindow != null) {
-                    for (var d in widget.fertilityWindow!) {
-                      if (d.year == cellDate.year &&
-                          d.month == cellDate.month &&
-                          d.day == cellDate.day) {
-                        predictedColor = const Color(0xFFFDD7DD);
-                      }
-                    }
-                  }
-
-                  if (widget.ovulationDate != null &&
-                      cellDate.year == widget.ovulationDate!.year &&
-                      cellDate.month == widget.ovulationDate!.month &&
-                      cellDate.day == widget.ovulationDate!.day) {
-                    predictedColor = const Color(0xFFA6E63F);
-                  }
-
-                  if (widget.manualOvulationDates != null) {
-                    for (var d in widget.manualOvulationDates!) {
-                      if (d.year == cellDate.year &&
-                          d.month == cellDate.month &&
-                          d.day == cellDate.day) {
-                        predictedColor = const Color(0xFFA6E63F);
-                      }
-                    }
-                  }
-
-                  if (widget.nextPeriodDate != null &&
-                      cellDate.year == widget.nextPeriodDate!.year &&
-                      cellDate.month == widget.nextPeriodDate!.month &&
-                      cellDate.day == widget.nextPeriodDate!.day) {
-                    predictedColor = const Color(0xFFE57373);
-                  }
-
-                  // Multi-cycle predictions
-                  if (widget.predictedPeriodDates != null) {
-                    for (var d in widget.predictedPeriodDates!) {
-                      if (d.year == cellDate.year &&
-                          d.month == cellDate.month &&
-                          d.day == cellDate.day) {
-                        predictedColor = AppColors.primary.withOpacity(0.7);
-                      }
-                    }
-                  }
-
-                  if (widget.predictedFertilityDates != null) {
-                    for (var d in widget.predictedFertilityDates!) {
-                      if (d.year == cellDate.year &&
-                          d.month == cellDate.month &&
-                          d.day == cellDate.day) {
-                        predictedColor = const Color(0xFFFDD7DD);
-                      }
-                    }
-                  }
-
-                  if (widget.predictedOvulationDates != null) {
-                    for (var d in widget.predictedOvulationDates!) {
-                      if (d.year == cellDate.year &&
-                          d.month == cellDate.month &&
-                          d.day == cellDate.day) {
-                        predictedColor = const Color(0xFFA6E63F);
-                      }
-                    }
-                  }
-                }
-
-                // if (widget.showPredictedColors && isPeriodEnded) {
-                //   // ONLY show in main calendar
-                //   DateTime? fertilityStart;
-                //   DateTime? fertilityEnd;
-                //   DateTime? ovulationDay;.
-
-                //   if (endDate != null) {
-                //     fertilityStart = endDate!.add(
-                //       const Duration(days: 1),
-                //     ); // start after period
-                //     fertilityEnd = fertilityStart.add(
-                //       const Duration(days: 5),
-                //     ); // 6 days window
-                //     ovulationDay = fertilityStart.add(
-                //       const Duration(days: 3),
-                //     ); // middle day
-                //   }
-
-                //   if (fertilityStart != null &&
-                //       (cellDate.isAtSameMomentAs(fertilityStart) ||
-                //           cellDate.isAfter(fertilityStart)) &&
-                //       (cellDate.isBefore(
-                //         fertilityEnd!.add(const Duration(days: 1)),
-                //       ))) {
-                //     predictedColor = const Color(0xFFFDD7DD); // pink fertility
-                //   }
-
-                //   if (ovulationDay != null &&
-                //       cellDate.year == ovulationDay.year &&
-                //       cellDate.month == ovulationDay.month &&
-                //       cellDate.day == ovulationDay.day) {
-                //     predictedColor = const Color(0xFFA6E63F); // green ovulation
-                //   }
-                // }
-
-                return GestureDetector(
-                  onTap: isCurrentMonth ? () => _handleCellTap(cellDate) : null,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary
-                          : isTappedSelection
-                          ? AppColors.primary.withOpacity(0.5)
-                          : predictedColor ?? Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                      border: isTappedSelection
-                          ? Border.all(color: Colors.blue, width: 2)
-                          : null,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${cellDate.day}",
-                      style: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : isCurrentMonth
-                            ? Colors.black
-                            : Colors.grey.shade300,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: itemCount,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 4,
+                    crossAxisSpacing: 4,
                   ),
+                  itemBuilder: (context, index) {
+                    int dayNumber = index - startWeekday + 1;
+
+                    DateTime cellDate;
+
+                    bool isCurrentMonth = true;
+
+                    if (dayNumber < 1) {
+                      cellDate = DateTime(
+                        currentMonth.year,
+                        currentMonth.month - 1,
+                        daysInPrevMonth + dayNumber,
+                      );
+                      isCurrentMonth = false;
+                    } else if (dayNumber > daysInMonth) {
+                      cellDate = DateTime(
+                        currentMonth.year,
+                        currentMonth.month + 1,
+                        dayNumber - daysInMonth,
+                      );
+                      isCurrentMonth = false;
+                    } else {
+                      cellDate = DateTime(
+                        currentMonth.year,
+                        currentMonth.month,
+                        dayNumber,
+                      );
+                    }
+
+                    bool isSelected = selectedDates.contains(
+                      DateTime(cellDate.year, cellDate.month, cellDate.day),
+                    );
+
+                    // If period is running (endDate is null) and this cell is within the 6-day window
+                    if (!isSelected && startDate != null && endDate == null) {
+                      DateTime start = DateTime(
+                        startDate!.year,
+                        startDate!.month,
+                        startDate!.day,
+                      );
+                      DateTime end = start.add(const Duration(days: 5));
+                      DateTime cell = DateTime(
+                        cellDate.year,
+                        cellDate.month,
+                        cellDate.day,
+                      );
+                      if (!cell.isBefore(start) && !cell.isAfter(end)) {
+                        isSelected = true;
+                      }
+                    }
+
+                    bool isTappedSelection =
+                        widget.selectedDate != null &&
+                        cellDate.year == widget.selectedDate!.year &&
+                        cellDate.month == widget.selectedDate!.month &&
+                        cellDate.day == widget.selectedDate!.day;
+
+                    /// ✅ Prediction Colors
+                    Color? predictedColor;
+
+                    // Predictions should show if showPredictedColors is true (which is now based on periodStart)
+                    if (widget.showPredictedColors) {
+                      if (widget.fertilityWindow != null) {
+                        for (var d in widget.fertilityWindow!) {
+                          if (d.year == cellDate.year &&
+                              d.month == cellDate.month &&
+                              d.day == cellDate.day) {
+                            predictedColor = const Color(0xFFFDD7DD);
+                          }
+                        }
+                      }
+
+                      if (widget.ovulationDate != null &&
+                          cellDate.year == widget.ovulationDate!.year &&
+                          cellDate.month == widget.ovulationDate!.month &&
+                          cellDate.day == widget.ovulationDate!.day) {
+                        predictedColor = const Color(0xFFA6E63F);
+                      }
+
+                      if (widget.manualOvulationDates != null) {
+                        for (var d in widget.manualOvulationDates!) {
+                          if (d.year == cellDate.year &&
+                              d.month == cellDate.month &&
+                              d.day == cellDate.day) {
+                            predictedColor = const Color(0xFFA6E63F);
+                          }
+                        }
+                      }
+
+                      if (widget.nextPeriodDate != null &&
+                          cellDate.year == widget.nextPeriodDate!.year &&
+                          cellDate.month == widget.nextPeriodDate!.month &&
+                          cellDate.day == widget.nextPeriodDate!.day) {
+                        predictedColor = const Color(0xFFE57373);
+                      }
+
+                      // Multi-cycle predictions
+                      if (widget.predictedPeriodDates != null) {
+                        for (var d in widget.predictedPeriodDates!) {
+                          if (d.year == cellDate.year &&
+                              d.month == cellDate.month &&
+                              d.day == cellDate.day) {
+                            predictedColor = AppColors.primary.withOpacity(0.7);
+                          }
+                        }
+                      }
+
+                      if (widget.predictedFertilityDates != null) {
+                        for (var d in widget.predictedFertilityDates!) {
+                          if (d.year == cellDate.year &&
+                              d.month == cellDate.month &&
+                              d.day == cellDate.day) {
+                            predictedColor = const Color(0xFFFDD7DD);
+                          }
+                        }
+                      }
+
+                      if (widget.predictedOvulationDates != null) {
+                        for (var d in widget.predictedOvulationDates!) {
+                          if (d.year == cellDate.year &&
+                              d.month == cellDate.month &&
+                              d.day == cellDate.day) {
+                            predictedColor = const Color(0xFFA6E63F);
+                          }
+                        }
+                      }
+                    }
+
+                    // if (widget.showPredictedColors && isPeriodEnded) {
+                    //   // ONLY show in main calendar
+                    //   DateTime? fertilityStart;
+                    //   DateTime? fertilityEnd;
+                    //   DateTime? ovulationDay;.
+
+                    //   if (endDate != null) {
+                    //     fertilityStart = endDate!.add(
+                    //       const Duration(days: 1),
+                    //     ); // start after period
+                    //     fertilityEnd = fertilityStart.add(
+                    //       const Duration(days: 5),
+                    //     ); // 6 days window
+                    //     ovulationDay = fertilityStart.add(
+                    //       const Duration(days: 3),
+                    //     ); // middle day
+                    //   }
+
+                    //   if (fertilityStart != null &&
+                    //       (cellDate.isAtSameMomentAs(fertilityStart) ||
+                    //           cellDate.isAfter(fertilityStart)) &&
+                    //       (cellDate.isBefore(
+                    //         fertilityEnd!.add(const Duration(days: 1)),
+                    //       ))) {
+                    //     predictedColor = const Color(0xFFFDD7DD); // pink fertility
+                    //   }
+
+                    //   if (ovulationDay != null &&
+                    //       cellDate.year == ovulationDay.year &&
+                    //       cellDate.month == ovulationDay.month &&
+                    //       cellDate.day == ovulationDay.day) {
+                    //     predictedColor = const Color(0xFFA6E63F); // green ovulation
+                    //   }
+                    // }
+
+                    return GestureDetector(
+                      onTap: isCurrentMonth
+                          ? () => _handleCellTap(cellDate)
+                          : null,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary
+                              : isTappedSelection
+                              ? AppColors.primary.withOpacity(0.5)
+                              : predictedColor ?? Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                          border: isTappedSelection
+                              ? Border.all(color: Colors.blue, width: 1.5)
+                              : null,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${cellDate.day}",
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : isCurrentMonth
+                                ? Colors.black
+                                : Colors.grey.shade300,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
