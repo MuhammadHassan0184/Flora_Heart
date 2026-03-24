@@ -23,9 +23,51 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late TodayDataController controller;
   late PeriodController periodCtrl;
 
+  final RxString fertilityChance = "".obs; // default empty
+
   // <<<<<<< HEAD
-  // =======
   final Rx<DateTime> selectedDate = DateTime.now().obs;
+
+  String? _getFertilityChance(DateTime date) {
+    // Only show for predicted dates
+    String? chance;
+
+    if (periodCtrl.predictedFertilityWindow != null) {
+      final dates = periodCtrl.predictedFertilityWindow!;
+      final index = dates.indexWhere(
+        (d) =>
+            d.year == date.year && d.month == date.month && d.day == date.day,
+      );
+      if (index != -1) {
+        if (index == 0 || index == dates.length - 1) {
+          chance = "Low";
+        } else if (index == 1 || index == dates.length - 2) {
+          chance = "Medium";
+        } else {
+          chance = "High";
+        }
+      }
+    }
+
+    // Ovulation date = High
+    if (periodCtrl.ovulationDate != null &&
+        date.year == periodCtrl.ovulationDate!.year &&
+        date.month == periodCtrl.ovulationDate!.month &&
+        date.day == periodCtrl.ovulationDate!.day) {
+      chance = "High";
+    }
+
+    // Manual ovulation = High
+    if (periodCtrl.manualOvulationDates.isNotEmpty) {
+      for (var d in periodCtrl.manualOvulationDates) {
+        if (d.year == date.year && d.month == date.month && d.day == date.day) {
+          chance = "High";
+        }
+      }
+    }
+
+    return chance;
+  }
 
   // >>>>>>> b2aa1a00cc967926c530041926d75938bda48978
   @override
@@ -81,6 +123,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   controller.loadTodayData(
                     DateFormat('yyyy-MM-dd').format(date),
                   );
+                  // Update fertility chance
+                  final chance = _getFertilityChance(date);
+                  fertilityChance.value = chance ?? "";
                 },
                 showPredictedColors: periodCtrl.periodStart.value != null,
               ),
@@ -133,39 +178,50 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Container(
-                    width: 71,
-                    height: 29,
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Low",
-                        style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
+            Obx(
+              () => fertilityChance.value.isEmpty
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 71,
+                            height: 29,
+                            decoration: BoxDecoration(
+                              color: fertilityChance.value == "Low"
+                                  ? AppColors.green
+                                  : fertilityChance.value == "Medium"
+                                  ? Colors.orange
+                                  : Colors.red,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: Text(
+                                fertilityChance.value,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "Chance of getting pregnant",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    "Chance of getting pregnant",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
             ),
             SizedBox(height: 10),
 
-            // ✅ Your design wrapped in Obx for reactivity
+            // Your design wrapped in Obx for reactivity
             Obx(
               () => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

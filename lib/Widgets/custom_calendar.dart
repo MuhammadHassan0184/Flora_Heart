@@ -47,7 +47,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
   DateTime? endDate;
   Set<DateTime> selectedDates = {};
 
-  static const int maxRangeDays = 5;
+  String fertilityChance = "Low"; // default value
+
+  // static const int maxRangeDays = 5;
   final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
   @override
@@ -147,46 +149,47 @@ class _CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
-  // void _handleCellTap(DateTime cellDate) {
-  //   if (!widget.enabled) return;
+  String? _getFertilityChance(DateTime date) {
+    // Only show for predicted colors
+    if (!widget.showPredictedColors) return null;
 
-  //   setState(() {
-  //     if (startDate == null || (startDate != null && endDate != null)) {
-  //       startDate = cellDate;
-  //       endDate = null;
-  //     } else {
-  //       DateTime newStart = startDate!;
-  //       DateTime newEnd = cellDate;
+    // Low: start/end of fertility window
+    if (widget.predictedFertilityDates != null) {
+      final index = widget.predictedFertilityDates!.indexWhere(
+        (d) =>
+            d.year == date.year && d.month == date.month && d.day == date.day,
+      );
+      if (index != -1) {
+        if (index == 0 || index == widget.predictedFertilityDates!.length - 1) {
+          return "Low";
+        } else if (index == 1 ||
+            index == widget.predictedFertilityDates!.length - 2) {
+          return "Medium";
+        } else {
+          return "High";
+        }
+      }
+    }
 
-  //       if (newEnd.isBefore(newStart)) {
-  //         final tmp = newStart;
-  //         newStart = newEnd;
-  //         newEnd = tmp;
-  //       }
+    // Ovulation date
+    if (widget.ovulationDate != null &&
+        date.year == widget.ovulationDate!.year &&
+        date.month == widget.ovulationDate!.month &&
+        date.day == widget.ovulationDate!.day) {
+      return "High";
+    }
 
-  //       final days = newEnd.difference(newStart).inDays + 1;
+    // Manual ovulation dates
+    if (widget.manualOvulationDates != null) {
+      for (var d in widget.manualOvulationDates!) {
+        if (d.year == date.year && d.month == date.month && d.day == date.day) {
+          return "High";
+        }
+      }
+    }
 
-  //       if (days > maxRangeDays) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //             content: Text("Period cannot exceed $maxRangeDays days."),
-  //             backgroundColor: AppColors.primary,
-  //           ),
-  //         );
-  //         return;
-  //       }
-
-  //       startDate = newStart;
-  //       endDate = newEnd;
-
-  //       widget.onRangeSelected?.call(startDate!, endDate!);
-  //     }
-  //   });
-  // }
-
-  // bool _isSameDate(DateTime a, DateTime b) {
-  //   return a.year == b.year && a.month == b.month && a.day == b.day;
-  // }
+    return null; // No chance for non-predicted dates
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -415,44 +418,18 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       }
                     }
 
-                    // if (widget.showPredictedColors && isPeriodEnded) {
-                    //   // ONLY show in main calendar
-                    //   DateTime? fertilityStart;
-                    //   DateTime? fertilityEnd;
-                    //   DateTime? ovulationDay;.
-
-                    //   if (endDate != null) {
-                    //     fertilityStart = endDate!.add(
-                    //       const Duration(days: 1),
-                    //     ); // start after period
-                    //     fertilityEnd = fertilityStart.add(
-                    //       const Duration(days: 5),
-                    //     ); // 6 days window
-                    //     ovulationDay = fertilityStart.add(
-                    //       const Duration(days: 3),
-                    //     ); // middle day
-                    //   }
-
-                    //   if (fertilityStart != null &&
-                    //       (cellDate.isAtSameMomentAs(fertilityStart) ||
-                    //           cellDate.isAfter(fertilityStart)) &&
-                    //       (cellDate.isBefore(
-                    //         fertilityEnd!.add(const Duration(days: 1)),
-                    //       ))) {
-                    //     predictedColor = const Color(0xFFFDD7DD); // pink fertility
-                    //   }
-
-                    //   if (ovulationDay != null &&
-                    //       cellDate.year == ovulationDay.year &&
-                    //       cellDate.month == ovulationDay.month &&
-                    //       cellDate.day == ovulationDay.day) {
-                    //     predictedColor = const Color(0xFFA6E63F); // green ovulation
-                    //   }
-                    // }
-
                     return GestureDetector(
                       onTap: isCurrentMonth
-                          ? () => _handleCellTap(cellDate)
+                          ? () {
+                              _handleCellTap(cellDate);
+
+                              // ✅ Update Row instead of SnackBar
+                              final chance = _getFertilityChance(cellDate);
+                              setState(() {
+                                fertilityChance =
+                                    chance ?? "Low"; // update the string state
+                              });
+                            }
                           : null,
                       child: Container(
                         decoration: BoxDecoration(
