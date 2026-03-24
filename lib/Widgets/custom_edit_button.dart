@@ -65,10 +65,6 @@ class CustomEditButton extends StatelessWidget {
                             setModalState(() {
                               tempStart = s;
                               tempEnd = e;
-                              ctrl.setRange(
-                                s,
-                                e,
-                              ); // Update controller in real-time
                             });
                           },
                         ),
