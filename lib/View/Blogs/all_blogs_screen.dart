@@ -14,6 +14,7 @@ class AllBlogsScreen extends StatefulWidget {
 }
 
 class _AllBlogsScreenState extends State<AllBlogsScreen> {
+  String searchQuery = "";
   String selectedChips = "All";
 
   final List<String> chip = [
@@ -75,15 +76,19 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "All Blogs"
-        ),
+      appBar: CustomAppBar(title: "All Blogs"),
       body: Column(
         children: [
           SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomSearchBar(),
+            child: CustomSearchBar(
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.toLowerCase();
+                });
+              },
+            ),
           ),
           SizedBox(height: 15),
 
@@ -138,11 +143,17 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
           Expanded(
             child: ListView(
               children: articles
-                  .where(
-                    (article) =>
+                  .where((article) {
+                    final matchesChip =
                         selectedChips == "All" ||
-                        article["tag"] == selectedChips,
-                  )
+                        article["tag"] == selectedChips;
+
+                    final matchesSearch = article["title"]!
+                        .toLowerCase()
+                        .contains(searchQuery);
+
+                    return matchesChip && matchesSearch;
+                  })
                   .map(
                     (article) => CustomArticleCard(
                       title: article["title"]!,
