@@ -38,9 +38,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FutureBuilder(
-        future: getUserData(),
-        builder: (context, snapshot) {
+      body: SafeArea(
+        child: FutureBuilder(
+          future: getUserData(),
+          builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return SingleChildScrollView(
               child: Column(
@@ -899,6 +900,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }
