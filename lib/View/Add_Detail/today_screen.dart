@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/Controllers/dashboard_controller.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_appbar.dart';
@@ -17,7 +18,6 @@ import 'package:floraheart/View/Add_Detail/cards/sexual_activity.dart';
 import 'package:floraheart/View/Add_Detail/cards/symptoms_section.dart';
 import 'package:floraheart/View/Add_Detail/cards/vaginal_discharge.dart';
 import 'package:floraheart/config/Colors/colors.dart';
-import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -466,6 +466,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   try {
                     final controller = Get.find<TodayDataController>();
                     final periodCtrl = Get.find<PeriodController>();
+                    final dashboardController = Get.find<DashboardController>();
 
                     await controller.saveTodayData();
 
@@ -474,7 +475,9 @@ class _TodayScreenState extends State<TodayScreen> {
                       await periodCtrl.refreshManualOvulationDates();
                     }
 
-                    Get.offAllNamed(AppRoutesName.mainScreen);
+                    // 🔥 Switch to Calendar tab (index 1) and go back
+                    dashboardController.updateIndex(1);
+                    Get.back();
                   } catch (e) {
                     print("SAVE ERROR FULL: $e");
 

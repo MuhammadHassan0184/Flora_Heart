@@ -109,15 +109,30 @@ class CustomBottomBar extends StatelessWidget {
         Get.toNamed(AppRoutesName.todayScreen);
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 7),
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
+        margin: const EdgeInsets.only(bottom: 10),
+        child: Material(
+          elevation: 4, // 👈 smooth shadow like vector
+          shape: const CircleBorder(),
           color: AppColors.primary,
-          shape: BoxShape.circle,
+          child: const SizedBox(
+            height: 60,
+            width: 60,
+            child: Icon(Icons.add, color: Colors.white, size: 30),
+          ),
         ),
-        child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
     );
   }
+
+  //   ClipOval(
+  //   child: Material(
+  //     elevation: 6,
+  //     color: AppColors.primary,
+  //     child: SizedBox(
+  //       height: 60,
+  //       width: 60,
+  //       child: Icon(Icons.add, color: Colors.white, size: 30),
+  //     ),
+  //   ),
+  // )
 }

@@ -360,6 +360,8 @@
 
 // ignore_for_file: deprecated_member_use, avoid_print
 
+import 'package:floraheart/Controllers/dashboard_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_date_card.dart';
@@ -385,6 +387,8 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _waveController;
 
   double get _waveProgress => _waveController.value;
+
+  final user = FirebaseAuth.instance.currentUser;
 
   /// ✅ Controllers (SAFE INIT)
   late TodayDataController todayCtrl;
@@ -428,21 +432,39 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final dashboardController = Get.find<DashboardController>();
+
     return Scaffold(
       backgroundColor: Colors.white,
 
       appBar: AppBar(
         backgroundColor: Colors.white,
+        elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              shape: BoxShape.circle,
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Image.asset("assets/girl.png", width: 30, height: 30),
+          child: GestureDetector(
+            onTap: () {
+              dashboardController.updateIndex(3);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFFE1DDDD)),
+                // shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: StreamBuilder<User?>(
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  final user = snapshot.data;
+
+                  return CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: user?.photoURL != null
+                        ? Image.asset(user!.photoURL!)
+                        : Image.asset("assets/girl.png", width: 30, height: 30),
+                  );
+                },
+              ),
             ),
           ),
         ),
