@@ -235,7 +235,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Flow -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -252,7 +252,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 : "",
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -271,7 +271,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Mood -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -280,7 +280,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             controller.moods.join(', '),
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -299,7 +299,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Symptoms -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -311,7 +311,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   .join(", "),
                               style: TextStyle(
                                 color: AppColors.grey,
-                                fontSize: 11,
+                                fontSize: 11.5,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -331,7 +331,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Vaginal Discharge -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -340,7 +340,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             controller.discharge.join(', '),
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -359,7 +359,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Basal Body Temperature -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -368,7 +368,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             "${controller.temperature.value.toStringAsFixed(2)} °C",
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -387,7 +387,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Sexual Activity -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -396,7 +396,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             controller.sexualActivity.value,
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -415,7 +415,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text(
                             "Weight -",
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -424,7 +424,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             "${controller.weight.value.toStringAsFixed(2)} Kg",
                             style: TextStyle(
                               color: AppColors.grey,
-                              fontSize: 11,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
