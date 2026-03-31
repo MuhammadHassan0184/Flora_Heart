@@ -364,6 +364,7 @@ import 'package:floraheart/Controllers/dashboard_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
+// import 'package:floraheart/Services/notification_service.dart';
 import 'package:floraheart/Widgets/custom_date_card.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
@@ -371,6 +372,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:floraheart/Controllers/today_controller.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
@@ -398,18 +400,14 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    // 🔥 FIX: Initialize controllers safely
-    if (!Get.isRegistered<TodayDataController>()) {
-      Get.put(TodayDataController(), permanent: true);
-    }
-
-    if (!Get.isRegistered<PeriodController>()) {
-      Get.put(PeriodController(), permanent: true);
-    }
-
     /// ✅ Assign AFTER put
     todayCtrl = Get.find<TodayDataController>();
     periodCtrl = Get.find<PeriodController>();
+
+    // Notification scheduling is now handled by TodayController onInit
+    if (!Get.isRegistered<TodayController>()) {
+      Get.put(TodayController(), permanent: true);
+    }
 
     /// Animation
     _waveController = AnimationController(
@@ -698,7 +696,16 @@ class _HomeScreenState extends State<HomeScreen>
                 }),
               ),
             ),
+            // const SizedBox(height: 10),
 
+            //           /// --- TEST NOTIFICATION BUTTON ---
+            //           TextButton.icon(
+            //             onPressed: () {
+            //               Get.find<TodayController>().testNotification();
+            //             },
+            //             icon: Icon(Icons.notifications_active, color: AppColors.primary),
+            //             label: Text("Test Daily Notification", style: TextStyle(color: AppColors.primary)),
+            //           ),
             const SizedBox(height: 20),
           ],
         ),

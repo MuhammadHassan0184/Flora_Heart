@@ -62,9 +62,9 @@ class TipsManager {
   ];
 
   /// -------- DAILY STABLE TIP ----------
-  static String getDailyStableTip(List<String> tips) {
-    final today = DateTime.now();
-    final seed = today.day + today.month + today.year;
+  static String getDailyStableTip(List<String> tips, [DateTime? date, int seedModifier = 0]) {
+    final targetDate = date ?? DateTime.now();
+    final seed = targetDate.day + targetDate.month + targetDate.year + seedModifier;
     final index = seed % tips.length;
     return tips[index];
   }

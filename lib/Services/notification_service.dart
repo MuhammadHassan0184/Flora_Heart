@@ -1,90 +1,121 @@
-// // ignore_for_file: depend_on_referenced_packages
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:timezone/timezone.dart' as tz;
-// import 'package:timezone/data/latest.dart';
+class NotificationService {
+  static final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
 
-// class NotificationService {
-//   static final FlutterLocalNotificationsPlugin _notifications =
-//       FlutterLocalNotificationsPlugin();
+  /// INIT
+  static Future<void> init() async {
+    // 1. Initialize Timezones
+    tz.initializeTimeZones();
 
-//   /// INIT
-//   static Future<void> init() async {
-//     initializeTimeZones(); // ✅ FIXED
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const settings = InitializationSettings(android: android);
 
-//     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    await _notifications.initialize(settings);
 
-//     const settings = InitializationSettings(android: android);
+    // 2. Request Notification Permission (Android 13+)
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
+  }
 
-//     await _notifications.initialize(settings);
-//   }
+  /// SHOW INSTANT (for testing)
+  static Future<void> showNow(String title, String body) async {
+    await _notifications.show(
+      DateTime.now().millisecond, // Unique ID for testing many
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_tips',
+          'Daily Tips',
+          importance: Importance.high,
+          priority: Priority.high,
+          ticker: 'ticker',
+        ),
+      ),
+    );
+  }
 
-//   /// DAILY NOTIFICATION
-//   static Future<void> showDailyTip(String tip) async {
-//     await _notifications.zonedSchedule(
-//       0,
-//       "Daily Health Tip 🌸",
-//       tip,
-//       _nextTime(),
-//       const NotificationDetails(
-//         android: AndroidNotificationDetails(
-//           'daily_tips_channel',
-//           'Daily Tips',
-//           channelDescription: 'Daily health tips',
-//           importance: Importance.max,
-//           priority: Priority.high,
-//         ),
-//       ),
+  /// SCHEDULE MULTIPLE SLOTS (🔥 UPGRADED)
+  static Future<void> scheduleMultipleSlots({
+    required List<String> morningTips,
+    required List<String> eveningTips,
+  }) async {
+    // 1. Clear old tips (Morning: 101-115, Evening: 201-215)
+    for (int i = 0; i < 15; i++) {
+      await _notifications.cancel(101 + i);
+      await _notifications.cancel(201 + i);
+    }
 
-//       /// 🔥 ADD THIS LINE (THIS IS YOUR ERROR FIX)
-//       uiLocalNotificationDateInterpretation:
-//           UILocalNotificationDateInterpretation.absoluteTime,
+    // 2. Schedule Morning Tips (9:00 AM)
+    final tz.TZDateTime nextMorning = _nextInstanceOfTime(9);
+    for (int i = 0; i < morningTips.length; i++) {
+        if (i >= 14) break;
+        final scheduledDate = nextMorning.add(Duration(days: i));
+        await _notifications.zonedSchedule(
+            101 + i,
+            "Morning Health Tip 🌸",
+            morningTips[i],
+            scheduledDate,
+            _notificationDetails('morning_tips', 'Morning Tips'),
+            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            matchDateTimeComponents: DateTimeComponents.dateAndTime,
+        );
+    }
 
-//       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-//       matchDateTimeComponents: DateTimeComponents.time,
-//     );
-//   }
+    // 3. Schedule Evening Tips (6:00 PM)
+    final tz.TZDateTime nextEvening = _nextInstanceOfTime(18); // 6 PM
+    for (int i = 0; i < eveningTips.length; i++) {
+        if (i >= 14) break;
+        final scheduledDate = nextEvening.add(Duration(days: i));
+        await _notifications.zonedSchedule(
+            201 + i,
+            "Evening Reflection ✨",
+            eveningTips[i],
+            scheduledDate,
+            _notificationDetails('evening_tips', 'Evening Tips'),
+            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            matchDateTimeComponents: DateTimeComponents.dateAndTime,
+        );
+    }
+    
+    print("Scheduled 14 days of Morning & Evening notifications.");
+  }
 
-//   static Future<void> showDailyTipAtTime(String tip, DateTime time) async {
-//     await _notifications.zonedSchedule(
-//       0,
-//       "Daily Health Tip 🌸",
-//       tip,
-//       tz.TZDateTime.from(time, tz.local),
-//       const NotificationDetails(
-//         android: AndroidNotificationDetails(
-//           'daily_tips_channel',
-//           'Daily Tips',
-//           channelDescription: 'Daily health tips',
-//           importance: Importance.max,
-//           priority: Priority.high,
-//         ),
-//       ),
+  static NotificationDetails _notificationDetails(String channelId, String channelName) {
+    return NotificationDetails(
+        android: AndroidNotificationDetails(
+            channelId,
+            channelName,
+            importance: Importance.high,
+            priority: Priority.high,
+        ),
+    );
+  }
 
-//       // 🔥 REQUIRED
-//       uiLocalNotificationDateInterpretation:
-//           UILocalNotificationDateInterpretation.absoluteTime,
+  /// CANCEL ALL TIPS
+  static Future<void> cancelAllTips() async {
+    for (int i = 0; i < 20; i++) {
+      await _notifications.cancel(101 + i);
+      await _notifications.cancel(201 + i);
+    }
+  }
 
-//       // Optional: for one-time test, remove recurrence
-//       // androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-//       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-//     );
-//   }
+  /// NEXT TIME CALCULATOR
+  static tz.TZDateTime _nextInstanceOfTime(int hour) {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour);
 
-//   static tz.TZDateTime _nextTime() {
-//     final now = tz.TZDateTime.now(tz.local);
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
 
-//     final scheduled = tz.TZDateTime(
-//       tz.local,
-//       now.year,
-//       now.month,
-//       now.day,
-//       9,
-//       0,
-//     );
-
-//     return scheduled.isBefore(now)
-//         ? scheduled.add(const Duration(days: 1))
-//         : scheduled;
-//   }
-// }
+    return scheduled;
+  }
+}
