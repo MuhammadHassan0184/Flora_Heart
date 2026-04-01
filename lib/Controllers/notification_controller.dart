@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:floraheart/models/notification_model.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +25,6 @@ class NotificationController extends GetxController {
         notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       }
     } catch (e) {
-      // ignore: avoid_print
       print("Error loading notifications: $e");
     }
   }

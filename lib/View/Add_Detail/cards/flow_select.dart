@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:floraheart/Services/notification_service.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';

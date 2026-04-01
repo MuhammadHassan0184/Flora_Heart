@@ -1,11 +1,9 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/Widgets/custom_chip.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
 
 class SymptomsSection extends StatefulWidget {
   const SymptomsSection({super.key});
@@ -171,6 +169,7 @@ class _SymptomsSectionState extends State<SymptomsSection> {
                             selectedSymptoms[title]!.add(label);
                           }
                           if (selectedSymptoms[title]!.isEmpty)
+                            // ignore: curly_braces_in_flow_control_structures
                             selectedSymptoms.remove(title);
 
                           controller.symptoms.assignAll(

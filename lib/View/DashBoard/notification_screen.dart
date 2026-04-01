@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:floraheart/Controllers/notification_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
