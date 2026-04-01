@@ -2,12 +2,14 @@
 
 import 'package:floraheart/Controllers/dashboard_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:floraheart/Controllers/notification_controller.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
 // import 'package:floraheart/Services/notification_service.dart';
 import 'package:floraheart/Widgets/custom_date_card.dart';
 import 'package:floraheart/Widgets/custom_edit_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
+import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:math';
@@ -112,9 +114,49 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SvgPicture.asset("assets/bell.svg", width: 23),
+          InkWell(
+            onTap: () {
+              Get.toNamed(AppRoutesName.notificationScreen);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SvgPicture.asset("assets/bell.svg", width: 23),
+                  Obx(() {
+                    final count =
+                        Get.find<NotificationController>().unreadCount;
+                    if (count == 0) return const SizedBox();
+                    return Positioned(
+                      right: 0,
+                      top: 10,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 14,
+                          minHeight: 14,
+                        ),
+                        child: Text(
+                          count > 9 ? '9+' : '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -339,13 +381,16 @@ class _HomeScreenState extends State<HomeScreen>
             // const SizedBox(height: 10),
 
             //           /// --- TEST NOTIFICATION BUTTON ---
-            //           TextButton.icon(
-            //             onPressed: () {
-            //               Get.find<TodayController>().testNotification();
-            //             },
-            //             icon: Icon(Icons.notifications_active, color: AppColors.primary),
-            //             label: Text("Test Daily Notification", style: TextStyle(color: AppColors.primary)),
-            //           ),
+            // TextButton.icon(
+            //   onPressed: () {
+            //     Get.find<TodayController>().testNotification();
+            //   },
+            //   icon: Icon(Icons.notifications_active, color: AppColors.primary),
+            //   label: Text(
+            //     "Test Daily Notification",
+            //     style: TextStyle(color: AppColors.primary),
+            //   ),
+            // ),
             const SizedBox(height: 20),
           ],
         ),

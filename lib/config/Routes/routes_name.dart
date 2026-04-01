@@ -17,4 +17,5 @@ class AppRoutesName {
   static const String feedbackScreen = "/FeedbackScreen";
   static const String privacyPolicyScreen = "/PrivacyPolicyScreen";
   static const String forgotPasswordScreen = "/ForgotPasswordScreen";
+  static const String notificationScreen = "/NotificationScreen";
 }

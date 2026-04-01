@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:floraheart/Controllers/notification_controller.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/Controllers/today_controller.dart';
 import 'package:floraheart/Controllers/today_data_controller.dart';
@@ -34,6 +35,7 @@ void main() async {
   await periodCtrl.loadPeriod(); 
   
   // Initialize TodayController for notifications
+  Get.put(NotificationController(), permanent: true);
   Get.put(TodayController(), permanent: true);
 
   runApp(const MyApp());
