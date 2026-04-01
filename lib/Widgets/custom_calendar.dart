@@ -253,10 +253,26 @@ class _CustomCalendarState extends State<CustomCalendar> {
             ),
 
             const SizedBox(height: 15),
-
+            
             /// Dates Grid
             Builder(
               builder: (context) {
+                // --- OPTIMIZED COLOR LOOKUP MAP ---
+                final Map<int, Color> calendarMap = {};
+                int toKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
+
+                // 1. Predictions (Lower Priority)
+                if (widget.showPredictedColors) {
+                  widget.fertilityWindow?.forEach((d) => calendarMap[toKey(d)] = const Color(0xFFFDD7DD));
+                  widget.predictedFertilityDates?.forEach((d) => calendarMap[toKey(d)] = const Color(0xFFFDD7DD));
+                  widget.predictedPeriodDates?.forEach((d) => calendarMap[toKey(d)] = AppColors.primary.withOpacity(0.7));
+                  widget.predictedOvulationDates?.forEach((d) => calendarMap[toKey(d)] = const Color(0xFFA6E63F));
+                  
+                  if (widget.ovulationDate != null) calendarMap[toKey(widget.ovulationDate!)] = const Color(0xFFA6E63F);
+                  if (widget.nextPeriodDate != null) calendarMap[toKey(widget.nextPeriodDate!)] = const Color(0xFFE57373);
+                  widget.manualOvulationDates?.forEach((d) => calendarMap[toKey(d)] = const Color(0xFFA6E63F));
+                }
+
                 final firstDayOfMonth = DateTime(
                   currentMonth.year,
                   currentMonth.month,
@@ -347,76 +363,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
                         cellDate.month == widget.selectedDate!.month &&
                         cellDate.day == widget.selectedDate!.day;
 
-                    /// ✅ Prediction Colors
-                    Color? predictedColor;
-
-                    // Predictions should show if showPredictedColors is true (which is now based on periodStart)
-                    if (widget.showPredictedColors) {
-                      if (widget.fertilityWindow != null) {
-                        for (var d in widget.fertilityWindow!) {
-                          if (d.year == cellDate.year &&
-                              d.month == cellDate.month &&
-                              d.day == cellDate.day) {
-                            predictedColor = const Color(0xFFFDD7DD);
-                          }
-                        }
-                      }
-
-                      if (widget.ovulationDate != null &&
-                          cellDate.year == widget.ovulationDate!.year &&
-                          cellDate.month == widget.ovulationDate!.month &&
-                          cellDate.day == widget.ovulationDate!.day) {
-                        predictedColor = const Color(0xFFA6E63F);
-                      }
-
-                      if (widget.manualOvulationDates != null) {
-                        for (var d in widget.manualOvulationDates!) {
-                          if (d.year == cellDate.year &&
-                              d.month == cellDate.month &&
-                              d.day == cellDate.day) {
-                            predictedColor = const Color(0xFFA6E63F);
-                          }
-                        }
-                      }
-
-                      if (widget.nextPeriodDate != null &&
-                          cellDate.year == widget.nextPeriodDate!.year &&
-                          cellDate.month == widget.nextPeriodDate!.month &&
-                          cellDate.day == widget.nextPeriodDate!.day) {
-                        predictedColor = const Color(0xFFE57373);
-                      }
-
-                      // Multi-cycle predictions
-                      if (widget.predictedPeriodDates != null) {
-                        for (var d in widget.predictedPeriodDates!) {
-                          if (d.year == cellDate.year &&
-                              d.month == cellDate.month &&
-                              d.day == cellDate.day) {
-                            predictedColor = AppColors.primary.withOpacity(0.7);
-                          }
-                        }
-                      }
-
-                      if (widget.predictedFertilityDates != null) {
-                        for (var d in widget.predictedFertilityDates!) {
-                          if (d.year == cellDate.year &&
-                              d.month == cellDate.month &&
-                              d.day == cellDate.day) {
-                            predictedColor = const Color(0xFFFDD7DD);
-                          }
-                        }
-                      }
-
-                      if (widget.predictedOvulationDates != null) {
-                        for (var d in widget.predictedOvulationDates!) {
-                          if (d.year == cellDate.year &&
-                              d.month == cellDate.month &&
-                              d.day == cellDate.day) {
-                            predictedColor = const Color(0xFFA6E63F);
-                          }
-                        }
-                      }
-                    }
+                    /// ✅ Color Priority Logic
+                    final Color? predictedColor = calendarMap[cellDate.year * 10000 + cellDate.month * 100 + cellDate.day];
 
                     return GestureDetector(
                       onTap: isCurrentMonth
