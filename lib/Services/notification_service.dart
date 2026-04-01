@@ -56,46 +56,49 @@ class NotificationService {
     // 2. Schedule Morning Tips (9:00 AM)
     final tz.TZDateTime nextMorning = _nextInstanceOfTime(9);
     for (int i = 0; i < morningTips.length; i++) {
-        if (i >= 14) break;
-        final scheduledDate = nextMorning.add(Duration(days: i));
-        await _notifications.zonedSchedule(
-            101 + i,
-            "Morning Health Tip 🌸",
-            morningTips[i],
-            scheduledDate,
-            _notificationDetails('morning_tips', 'Morning Tips'),
-            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-            matchDateTimeComponents: DateTimeComponents.dateAndTime,
-        );
+      if (i >= 14) break;
+      final scheduledDate = nextMorning.add(Duration(days: i));
+      await _notifications.zonedSchedule(
+        101 + i,
+        "Morning Health Tip 🌸",
+        morningTips[i],
+        scheduledDate,
+        _notificationDetails('morning_tips', 'Morning Tips'),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      );
     }
 
     // 3. Schedule Evening Tips (6:00 PM)
     final tz.TZDateTime nextEvening = _nextInstanceOfTime(18); // 6 PM
     for (int i = 0; i < eveningTips.length; i++) {
-        if (i >= 14) break;
-        final scheduledDate = nextEvening.add(Duration(days: i));
-        await _notifications.zonedSchedule(
-            201 + i,
-            "Evening Reflection ✨",
-            eveningTips[i],
-            scheduledDate,
-            _notificationDetails('evening_tips', 'Evening Tips'),
-            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-            matchDateTimeComponents: DateTimeComponents.dateAndTime,
-        );
+      if (i >= 14) break;
+      final scheduledDate = nextEvening.add(Duration(days: i));
+      await _notifications.zonedSchedule(
+        201 + i,
+        "Evening Reflection ✨",
+        eveningTips[i],
+        scheduledDate,
+        _notificationDetails('evening_tips', 'Evening Tips'),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      );
     }
-    
+
     print("Scheduled 14 days of Morning & Evening notifications.");
   }
 
-  static NotificationDetails _notificationDetails(String channelId, String channelName) {
+  static NotificationDetails _notificationDetails(
+    String channelId,
+    String channelName,
+  ) {
     return NotificationDetails(
-        android: AndroidNotificationDetails(
-            channelId,
-            channelName,
-            importance: Importance.high,
-            priority: Priority.high,
-        ),
+      android: AndroidNotificationDetails(
+        channelId,
+        channelName,
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
     );
   }
 
