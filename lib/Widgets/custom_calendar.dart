@@ -382,7 +382,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.primary
+                              ? (calendarMap[toKey(cellDate)] == const Color(0xFFA6E63F)
+                                  ? const Color(0xFFA6E63F)
+                                  : AppColors.primary)
                               : isTappedSelection
                               ? AppColors.primary.withOpacity(0.5)
                               : predictedColor ?? Colors.transparent,

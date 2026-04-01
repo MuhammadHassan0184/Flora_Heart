@@ -23,12 +23,20 @@ class TodayDataController extends GetxController {
   String get uid => FirebaseAuth.instance.currentUser!.uid;
   String get todayDate => DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-  String getDailyTip(PeriodController periodCtrl, [DateTime? date, int seedModifier = 0]) {
+  String getDailyTip(
+    PeriodController periodCtrl, [
+    DateTime? date,
+    int seedModifier = 0,
+  ]) {
     final targetDate = date ?? DateTime.now();
 
     /// 1. PERIOD RUNNING
     if (periodCtrl.isPeriodRunning) {
-      return TipsManager.getDailyStableTip(TipsManager.periodTips, targetDate, seedModifier);
+      return TipsManager.getDailyStableTip(
+        TipsManager.periodTips,
+        targetDate,
+        seedModifier,
+      );
     }
 
     /// 2. OVULATION DAY
@@ -38,13 +46,21 @@ class TodayDataController extends GetxController {
       if (targetDate.year == ov.year &&
           targetDate.month == ov.month &&
           targetDate.day == ov.day) {
-        return TipsManager.getDailyStableTip(TipsManager.ovulationTips, targetDate, seedModifier);
+        return TipsManager.getDailyStableTip(
+          TipsManager.ovulationTips,
+          targetDate,
+          seedModifier,
+        );
       }
     }
 
     /// 3. SYMPTOMS EXIST
     if (symptoms.isNotEmpty) {
-      return TipsManager.getDailyStableTip(TipsManager.symptomTips, targetDate, seedModifier);
+      return TipsManager.getDailyStableTip(
+        TipsManager.symptomTips,
+        targetDate,
+        seedModifier,
+      );
     }
 
     /// 4. HEAVY FLOW SPECIAL
@@ -58,7 +74,11 @@ class TodayDataController extends GetxController {
     }
 
     /// 6. DEFAULT
-    return TipsManager.getDailyStableTip(TipsManager.normalTips, targetDate, seedModifier);
+    return TipsManager.getDailyStableTip(
+      TipsManager.normalTips,
+      targetDate,
+      seedModifier,
+    );
   }
 
   /// SAVE DATA

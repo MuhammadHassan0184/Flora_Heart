@@ -88,25 +88,30 @@ class TestsBottomSheet {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  Obx(() => buildTestSection(
-                    title: "Ovulation Test",
-                    selectedValue: controller.ovulationTest.value,
-                    onSelect: (value) async {
-                      controller.ovulationTest.value = value;
-                      // 🔥 If positive, save and refresh manual dates immediately for visual feedback
-                      if (value == "Positive") {
-                        await controller.saveTodayData();
-                        Get.find<PeriodController>().refreshManualOvulationDates();
-                      }
-                    },
-                  )),
-                  Obx(() => buildTestSection(
-                    title: "Pregnancy Test",
-                    selectedValue: controller.pregnancyTest.value,
-                    onSelect: (value) {
-                      controller.pregnancyTest.value = value;
-                    },
-                  )),
+                  Obx(
+                    () => buildTestSection(
+                      title: "Ovulation Test",
+                      selectedValue: controller.ovulationTest.value,
+                      onSelect: (value) async {
+                        controller.ovulationTest.value = value;
+                        // 🔥 If positive, save and refresh manual dates immediately for visual feedback
+                        if (value == "Positive") {
+                          await controller.saveTodayData();
+                          Get.find<PeriodController>()
+                              .refreshManualOvulationDates();
+                        }
+                      },
+                    ),
+                  ),
+                  Obx(
+                    () => buildTestSection(
+                      title: "Pregnancy Test",
+                      selectedValue: controller.pregnancyTest.value,
+                      onSelect: (value) {
+                        controller.pregnancyTest.value = value;
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   CustomButton(
                     label: "Done",
