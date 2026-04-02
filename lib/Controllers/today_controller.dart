@@ -51,13 +51,4 @@ class TodayController extends GetxController {
       print("Failed to schedule multi-slot notifications: $e");
     }
   }
-
-  // 7. Testing: Method to trigger instant notification
-  void testNotification() {
-    final String tip = dataCtrl.getDailyTip(periodCtrl);
-    NotificationService.showNow(
-      "Daily Tip (Test) 🌸",
-      tip,
-    );
-  }
 }

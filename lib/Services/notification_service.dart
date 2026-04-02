@@ -22,10 +22,15 @@ class NotificationService {
 
     // 2. Request Notification Permission (Android 13+)
     await _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
+
+    // 3. Request Exact Alarm Permission (Android 12+)
+    if (GetPlatform.isAndroid) {
+      await _notifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestExactAlarmsPermission();
+    }
   }
 
   /// SHOW INSTANT (for testing)
@@ -75,7 +80,7 @@ class NotificationService {
         morningTips[i],
         scheduledDate,
         _notificationDetails('morning_tips', 'Morning Tips'),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
     }
@@ -91,7 +96,7 @@ class NotificationService {
         eveningTips[i],
         scheduledDate,
         _notificationDetails('evening_tips', 'Evening Tips'),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
     }

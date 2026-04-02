@@ -378,19 +378,6 @@ class _HomeScreenState extends State<HomeScreen>
                 }),
               ),
             ),
-            // const SizedBox(height: 10),
-
-            //           /// --- TEST NOTIFICATION BUTTON ---
-            // TextButton.icon(
-            //   onPressed: () {
-            //     Get.find<TodayController>().testNotification();
-            //   },
-            //   icon: Icon(Icons.notifications_active, color: AppColors.primary),
-            //   label: Text(
-            //     "Test Daily Notification",
-            //     style: TextStyle(color: AppColors.primary),
-            //   ),
-            // ),
             const SizedBox(height: 20),
           ],
         ),
