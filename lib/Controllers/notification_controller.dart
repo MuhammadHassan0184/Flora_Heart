@@ -55,6 +55,28 @@ class NotificationController extends GetxController {
     saveNotifications();
   }
 
+  // Add a scheduled notification (Pre-save for history)
+  void addScheduledNotification({
+    required String id,
+    required String title,
+    required String body,
+    required DateTime timestamp,
+  }) {
+    // Check if this specific scheduled notification already exists
+    if (notifications.any((n) => n.id == id)) return;
+
+    final newNotif = AppNotification(
+      id: id,
+      title: title,
+      body: body,
+      timestamp: timestamp,
+    );
+    notifications.add(newNotif);
+    // Sort to keep newest on top when displayed
+    notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    saveNotifications();
+  }
+
   // Mark a notification as read
   void markAsRead(String id) {
     final index = notifications.indexWhere((n) => n.id == id);
@@ -67,8 +89,11 @@ class NotificationController extends GetxController {
 
   // Mark all as read
   void markAllAsRead() {
+    final now = DateTime.now();
     for (var n in notifications) {
-      n.isRead = true;
+      if (n.timestamp.isBefore(now)) {
+        n.isRead = true;
+      }
     }
     notifications.refresh();
     saveNotifications();
@@ -80,6 +105,9 @@ class NotificationController extends GetxController {
     saveNotifications();
   }
 
-  // Count unread notifications
-  int get unreadCount => notifications.where((n) => !n.isRead).length;
+  // Count unread notifications (only those already fired)
+  int get unreadCount {
+    final now = DateTime.now();
+    return notifications.where((n) => !n.isRead && n.timestamp.isBefore(now)).length;
+  }
 }

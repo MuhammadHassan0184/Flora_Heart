@@ -46,16 +46,21 @@ class NotificationScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (controller.notifications.isEmpty) {
+        final now = DateTime.now();
+        final visibleNotifications = controller.notifications
+            .where((n) => n.timestamp.isBefore(now))
+            .toList();
+
+        if (visibleNotifications.isEmpty) {
           return _buildEmptyState();
         }
 
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          itemCount: controller.notifications.length,
+          itemCount: visibleNotifications.length,
           separatorBuilder: (context, index) => const Divider(height: 25, color: Color(0xFFF1F1F1)),
           itemBuilder: (context, index) {
-            final notification = controller.notifications[index];
+            final notification = visibleNotifications[index];
             return InkWell(
               onTap: () {
                 controller.markAsRead(notification.id);

@@ -71,9 +71,13 @@ class NotificationService {
 
     // 2. Schedule Morning Tips (9:00 AM)
     final tz.TZDateTime nextMorning = _nextInstanceOfTime(9);
+    final controller = Get.find<NotificationController>();
+    
     for (int i = 0; i < morningTips.length; i++) {
       if (i >= 14) break;
       final scheduledDate = nextMorning.add(Duration(days: i));
+      
+      // A. Schedule in System
       await _notifications.zonedSchedule(
         101 + i,
         "Morning Health Tip 🌸",
@@ -83,6 +87,14 @@ class NotificationService {
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
+
+      // B. Save to History (Pre-fill)
+      controller.addScheduledNotification(
+        id: "scheduled_morning_${scheduledDate.year}_${scheduledDate.month}_${scheduledDate.day}",
+        title: "Morning Health Tip 🌸",
+        body: morningTips[i],
+        timestamp: DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day, 9, 0),
+      );
     }
 
     // 3. Schedule Evening Tips (6:00 PM)
@@ -90,6 +102,8 @@ class NotificationService {
     for (int i = 0; i < eveningTips.length; i++) {
       if (i >= 14) break;
       final scheduledDate = nextEvening.add(Duration(days: i));
+
+      // A. Schedule in System
       await _notifications.zonedSchedule(
         201 + i,
         "Evening Reflection ✨",
@@ -98,6 +112,14 @@ class NotificationService {
         _notificationDetails('evening_tips', 'Evening Tips'),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      );
+
+      // B. Save to History (Pre-fill)
+      controller.addScheduledNotification(
+        id: "scheduled_evening_${scheduledDate.year}_${scheduledDate.month}_${scheduledDate.day}",
+        title: "Evening Reflection ✨",
+        body: eveningTips[i],
+        timestamp: DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day, 18, 0),
       );
     }
 
