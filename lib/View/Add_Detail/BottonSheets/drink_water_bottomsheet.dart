@@ -1,13 +1,17 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class DrinkWaterBottomSheet {
   static void show(BuildContext context) {
-    int selectedGlasses = 3; // 750 ml (3 × 250)
+    final controller = Get.find<TodayDataController>();
+    int selectedGlasses = (controller.drinkWater.value / 250).round();
+    if (selectedGlasses == 0 && controller.drinkWater.value > 0) {
+      selectedGlasses = 1; // logical fallback
+    }
 
     showModalBottomSheet(
       context: context,
@@ -116,8 +120,10 @@ class DrinkWaterBottomSheet {
                   /// Done Button
                   CustomButton(
                     label: "Done",
-                    ontap: () {
-                      Navigator.pop(context);
+                    ontap: () async {
+                      controller.drinkWater.value = selectedGlasses * 250;
+                      await controller.saveTodayData();
+                      if (context.mounted) Navigator.pop(context);
                     },
                   ),
 

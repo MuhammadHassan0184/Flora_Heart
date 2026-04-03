@@ -18,6 +18,7 @@ class TodayDataController extends GetxController {
   final weight = 0.0.obs; // New: stores user weight
   final ovulationTest = "".obs; // Restore: stores ovulation test result
   final pregnancyTest = "".obs; // New: stores pregnancy test result
+  final drinkWater = 0.obs; // 🔥 NEW: stores water intake in ml
   final selectedDate = "".obs; // 🔥 THE CURRENTLY SELECTED DATE
 
   String get uid => FirebaseAuth.instance.currentUser!.uid;
@@ -111,6 +112,7 @@ class TodayDataController extends GetxController {
             "weight": weight.value, // 🔥 add weight
             "ovulationTest": ovulationTest.value, // 🔥 add test results
             "pregnancyTest": pregnancyTest.value,
+            "drinkWater": drinkWater.value, // 🔥 add water intake
             "symptoms": symptoms.map(
               (key, value) => MapEntry(key, value.toList()),
             ),
@@ -148,6 +150,7 @@ class TodayDataController extends GetxController {
       weight.value = 0.0;
       ovulationTest.value = "";
       pregnancyTest.value = "";
+      drinkWater.value = 0; // 🔥 clear water intake
       symptoms.clear();
       return;
     }
@@ -163,6 +166,7 @@ class TodayDataController extends GetxController {
     weight.value = (data["weight"] ?? 0).toDouble(); // 🔥 load weight
     ovulationTest.value = data["ovulationTest"] ?? "";
     pregnancyTest.value = data["pregnancyTest"] ?? "";
+    drinkWater.value = data["drinkWater"] ?? 0; // 🔥 load water intake
 
     Map<String, dynamic> rawSymptoms = data["symptoms"] ?? {};
     symptoms.value = rawSymptoms.map(

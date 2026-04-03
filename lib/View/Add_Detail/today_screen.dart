@@ -435,19 +435,19 @@ class _TodayScreenState extends State<TodayScreen> {
             ),
             SizedBox(height: 10),
             CustomCardButton(
+              label: "Drink Water",
+              onTap: () {
+                DrinkWaterBottomSheet.show(context);
+              },
+            ),
+            SizedBox(height: 10),
+            CustomCardButton(
               label: "Medicine",
               onTap: () {
                 showModalBottomSheet(
                   context: context,
                   builder: (context) => MedicineBottomSheetExample(),
                 );
-              },
-            ),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Drink Water",
-              onTap: () {
-                DrinkWaterBottomSheet.show(context);
               },
             ),
             SizedBox(height: 10),

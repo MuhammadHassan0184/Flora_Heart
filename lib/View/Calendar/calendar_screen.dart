@@ -432,6 +432,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                       SizedBox(height: 10),
                     ],
+                    if (controller.drinkWater.value > 0) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
+                          ),
+                          SizedBox(width: 10),
+                          const Text(
+                            "Drink Water -",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "${controller.drinkWater.value} ml",
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
                   ],
                 ),
               ),
