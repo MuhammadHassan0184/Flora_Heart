@@ -1,9 +1,9 @@
-// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
-
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class MedicineBottomSheetExample extends StatefulWidget {
   const MedicineBottomSheetExample({super.key});
@@ -15,7 +15,8 @@ class MedicineBottomSheetExample extends StatefulWidget {
 
 class _MedicineBottomSheetExampleState
     extends State<MedicineBottomSheetExample> {
-  String selectedMedicine = "Contraceptive Pill";
+  final TodayDataController controller = Get.find<TodayDataController>();
+  late String selectedMedicine;
 
   final List<Map<String, dynamic>> medicines = [
     {"label": "Contraceptive Pill", "icon": "assets/contraceptive.svg"},
@@ -29,6 +30,9 @@ class _MedicineBottomSheetExampleState
   @override
   void initState() {
     super.initState();
+    // Load existing selection from controller
+    selectedMedicine = controller.medicine.value;
+
     // Automatically open the bottom sheet when the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showMedicineBottomSheet();
@@ -86,8 +90,6 @@ class _MedicineBottomSheetExampleState
                             setModalState(() {
                               selectedMedicine = medicine['label'];
                             });
-                            // Optional: close the sheet immediately on tap
-                            // Navigator.pop(context);
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
@@ -131,12 +133,12 @@ class _MedicineBottomSheetExampleState
                       );
                     }),
                     SizedBox(height: 16),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomButton(
                         label: "Done",
                         ontap: () {
+                          controller.medicine.value = selectedMedicine;
                           Navigator.pop(context);
                         },
                       ),
@@ -149,22 +151,22 @@ class _MedicineBottomSheetExampleState
           },
         );
       },
-    );
-
-    // After bottom sheet is closed, go back to previous screen
-    if (mounted) {
-      Navigator.pop(context);
-    }
+      // After bottom sheet is closed, go back to previous screen
+    ).then((_) {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Medicine Bottom Sheet")),
+      appBar: AppBar(title: const Text("Medicine Selection")),
       body: Center(
         child: ElevatedButton(
           onPressed: _showMedicineBottomSheet,
-          child: Text("Choose Medicine"),
+          child: const Text("Choose Medicine"),
         ),
       ),
     );

@@ -460,6 +460,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                       SizedBox(height: 10),
                     ],
+                    if (controller.medicine.value.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primary,
+                          ),
+                          SizedBox(width: 10),
+                          const Text(
+                            "Medicine -",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            controller.medicine.value,
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
                   ],
                 ),
               ),
