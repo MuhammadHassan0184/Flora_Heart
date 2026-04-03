@@ -28,27 +28,30 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     {
       "title": "Why You Feel Like a Social Butterfly During Ovulation..",
       "tag": "Cycle Syncing",
-      "image": "assets/3girls.png",
+      "image": "assets/smilinggirls.jpg",
+      "content":
+          "During the ovulation phase, your estrogen and testosterone levels peak. This hormonal surge often leads to increased energy, higher confidence, and a natural desire to socialize. It's the perfect time for meetings, parties, and connecting with others. Understanding this cycle helps you plan your social calendar to match your body's natural rhythms, allowing you to shine when you feel your best.",
     },
     {
       "title": "3 Foods to Fight the \"Period Bloat\"",
       "tag": "Nutrition & Wellness",
-      "image": "assets/food.png",
+      "image": "assets/foodie.jpg",
+      "content":
+          "Period bloating is a common symptom caused by changes in progesterone and estrogen levels. To combat this, try incorporating these three foods: 1. Bananas, which are rich in potassium and help regulate fluid balance. 2. Ginger, a natural anti-inflammatory that aids digestion. 3. Leafy Greens like spinach, which provides magnesium to reduce water retention. Staying hydrated and reducing salt intake can also significantly help.",
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
       "tag": "Pain & Management",
-      "image": "assets/mountain.png",
+      "image": "assets/HandC.jpg",
+      "content":
+          "When dealing with period cramps, heat is generally the preferred choice. Heat helps relax the uterine muscles and increases blood flow to the area, which can significantly reduce pain. A heating pad or a warm bath is often very effective. Cold therapy is less common for cramps but can be useful if there is specific inflammation or if you find it more soothing. Most experts recommend heat as the primary home remedy for menstrual discomfort.",
     },
     {
-      "title": "3 Foods to Fight the \"Period Bloat\"",
-      "tag": "Nutrition & Wellness",
-      "image": "assets/food.png",
-    },
-    {
-      "title": "Heat vs. Cold: Which is better for cramps?",
-      "tag": "Pain & Management",
-      "image": "assets/mountain.png",
+      "title": "Unlock Your \"Superhuman\" Strength Window",
+      "tag": "Cycle Syncing",
+      "image": "assets/pexelsgirl.jpg",
+      "content":
+          "Did you know there's a specific time in your cycle when you're naturally stronger? During the follicular phase, particularly leading up to ovulation, your body is primed for high-intensity workouts and strength training. Lower progesterone levels during this time mean your body can bounce back faster and handle heavier loads. By timing your toughest workouts to these 'superhuman' windows, you can maximize your fitness gains and work with your body's strengths.",
     },
   ];
 
@@ -56,10 +59,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Self Care", 
-        showBackButton: false
-        ),
+      appBar: CustomAppBar(title: "Self Care", showBackButton: false),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,9 +104,9 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    _recommendedCard(),
+                    _recommendedCard(articles[3]),
                     SizedBox(width: 10),
-                    _recommendedCard(),
+                    _recommendedCard(articles[0]),
                   ],
                 ),
               ),
@@ -183,7 +183,10 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                       tag: article["tag"]!,
                       imagePath: article["image"]!,
                       onTap: () {
-                        print(article["title"]);
+                        Get.toNamed(
+                          AppRoutesName.blogsDetailScreen,
+                          arguments: article,
+                        );
                       },
                     ),
                   )
@@ -196,12 +199,13 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
   }
 }
 
-Widget _recommendedCard() {
+Widget _recommendedCard(Map<String, String> article) {
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       GestureDetector(
         onTap: () {
-          Get.toNamed(AppRoutesName.blogsDetailScreen);
+          Get.toNamed(AppRoutesName.blogsDetailScreen, arguments: article);
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(18),
@@ -209,7 +213,7 @@ Widget _recommendedCard() {
             width: 270,
             height: 160,
             color: AppColors.lightgrey,
-            child: Image.asset("assets/pexelsgirl.jpg", fit: BoxFit.cover),
+            child: Image.asset(article["image"]!, fit: BoxFit.cover),
           ),
         ),
       ),
@@ -217,7 +221,9 @@ Widget _recommendedCard() {
       SizedBox(
         width: 270,
         child: Text(
-          "Unlock Your \"Superhuman\" Strength Window",
+          article["title"]!,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17),
         ),
       ),

@@ -1,17 +1,26 @@
 import 'package:floraheart/Widgets/custom_appbar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BlogsDetailScreen extends StatelessWidget {
   const BlogsDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve arguments passed from the previous screen
+    final Map<String, String> data = Get.arguments ?? {
+      "title": "Topic Detail",
+      "tag": "General",
+      "image": "assets/pexelsgirl.jpg",
+      "content": "No content available."
+    };
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
         title: "All Detail"
-        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -25,10 +34,15 @@ class BlogsDetailScreen extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(18),
-                child: Image.asset(
-                  "assets/pexelsgirl.jpg",
-                  fit: BoxFit.cover, // better than fill
-                ),
+                child: data["image"]!.startsWith("assets/") 
+                  ? Image.asset(
+                      data["image"]!,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      data["image"]!,
+                      fit: BoxFit.cover,
+                    ),
               ),
             ),
             SizedBox(height: 15),
@@ -45,7 +59,7 @@ class BlogsDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: Text(
-                    "Strength",
+                    data["tag"]!,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -58,9 +72,7 @@ class BlogsDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "Unlock Your \"Superhuman\" Strength Window",
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                data["title"]!,
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w900,
@@ -69,18 +81,17 @@ class BlogsDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id sit eu tellus sed cursus eleifend id porta. Lorem adipiscing mus vestibulum consequat porta eu ultrices feugiat. Et, faucibus ut amet turpis. Facilisis faucibus semper cras purus.",
+                data["content"]!,
+                style: const TextStyle(
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Colors.black87,
+                ),
               ),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas id sit eu tellus sed cursus eleifend id porta. Lorem adipiscing mus vestibulum consequat porta eu ultrices feugiat. Et, faucibus ut amet turpis. Facilisis faucibus semper cras purus.",
-              ),
-            ),
+            SizedBox(height: 20),
           ],
         ),
       ),
