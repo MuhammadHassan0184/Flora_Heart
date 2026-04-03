@@ -1,11 +1,17 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NoteBottomsheet {
   static void show(BuildContext context) {
+    final TodayDataController controller = Get.find<TodayDataController>();
+    final TextEditingController textController =
+        TextEditingController(text: controller.note.value);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -37,10 +43,10 @@ class NoteBottomsheet {
                       ),
                     ),
 
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     /// Title
-                    Text(
+                    const Text(
                       "Note",
                       style: TextStyle(
                         fontSize: 20,
@@ -48,7 +54,7 @@ class NoteBottomsheet {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     /// TextField Container
                     Container(
@@ -61,6 +67,7 @@ class NoteBottomsheet {
                         borderRadius: BorderRadius.circular(17),
                       ),
                       child: TextField(
+                        controller: textController,
                         maxLines: 5,
                         decoration: InputDecoration(
                           hintText: "Type Your Note..",
@@ -73,17 +80,18 @@ class NoteBottomsheet {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     /// Done Button
                     CustomButton(
                       label: "Done",
                       ontap: () {
+                        controller.note.value = textController.text;
                         Navigator.pop(context);
                       },
                     ),
 
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
