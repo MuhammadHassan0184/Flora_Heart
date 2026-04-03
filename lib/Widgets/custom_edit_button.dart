@@ -2,6 +2,7 @@
 
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/Widgets/custom_calendar.dart';
+import 'package:floraheart/Controllers/dashboard_controller.dart';
 import 'package:floraheart/Controllers/period_controller.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,7 @@ class CustomEditButton extends StatelessWidget {
                                 await ctrl.savePeriod();
                               }
                               Navigator.pop(context);
+                              Get.find<DashboardController>().updateIndex(1);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text("Period updated successfully!"),
