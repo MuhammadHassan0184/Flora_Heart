@@ -30,21 +30,21 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
     {
       "title": "Why You Feel Like a Social Butterfly During Ovulation..",
       "tag": "Cycle Syncing",
-      "image": "assets/3girls.png",
+      "image": "assets/smilinggirls.jpg",
       "content":
           "During the ovulation phase, your estrogen and testosterone levels peak. This hormonal surge often leads to increased energy, higher confidence, and a natural desire to socialize. It's the perfect time for meetings, parties, and connecting with others. Understanding this cycle helps you plan your social calendar to match your body's natural rhythms, allowing you to shine when you feel your best.",
     },
     {
       "title": "3 Foods to Fight the \"Period Bloat\"",
       "tag": "Nutrition & Wellness",
-      "image": "assets/food.png",
+      "image": "assets/foodie.jpg",
       "content":
           "Period bloating is a common symptom caused by changes in progesterone and estrogen levels. To combat this, try incorporating these three foods: 1. Bananas, which are rich in potassium and help regulate fluid balance. 2. Ginger, a natural anti-inflammatory that aids digestion. 3. Leafy Greens like spinach, which provides magnesium to reduce water retention. Staying hydrated and reducing salt intake can also significantly help.",
     },
     {
       "title": "Heat vs. Cold: Which is better for cramps?",
       "tag": "Pain & Management",
-      "image": "assets/mountain.png",
+      "image": "assets/HandC.jpg",
       "content":
           "When dealing with period cramps, heat is generally the preferred choice. Heat helps relax the uterine muscles and increases blood flow to the area, which can significantly reduce pain. A heating pad or a warm bath is often very effective. Cold therapy is less common for cramps but can be useful if there is specific inflammation or if you find it more soothing. Most experts recommend heat as the primary home remedy for menstrual discomfort.",
     },
