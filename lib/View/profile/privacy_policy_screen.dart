@@ -11,9 +11,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Privacy Policy"
-        ),
+      appBar: CustomAppBar(title: "Privacy Policy"),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -38,7 +36,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "Effective Date: 1 January 2001\n\n"
+                    "Effective Date: 1 January 2026\n\n"
                     "FloraHeart is a period and menstrual cycle tracking application developed by TheWebConcept. We respect your privacy and are committed to protecting your personal information.\n\n"
                     "Information We Collect\n"
                     "FloraHeart collects only the data you choose to provide, such as:\n"
