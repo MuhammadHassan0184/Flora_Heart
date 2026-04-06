@@ -234,22 +234,20 @@ class _CustomCalendarState extends State<CustomCalendar> {
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), 
 
             /// Week Days
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: weekDays
-                  .map(
-                    (e) => Text(
-                      e,
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 13,
-                      ),
-                    ),
-                  )
-                  .toList(),
+              children: const [
+                Text("mo", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("tu", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("we", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("th", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("fr", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("sa", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text("su", style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+              ],
             ),
 
             const SizedBox(height: 15),
@@ -296,118 +294,91 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
                 final totalItemsNeeded = startWeekday + daysInMonth;
                 final itemCount = (totalItemsNeeded / 7).ceil() * 7;
+ 
+                return RepaintBoundary(
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: itemCount,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                    ),
+                    itemBuilder: (context, index) {
+                      int dayNumber = index - startWeekday + 1;
+                      DateTime cellDate;
+                      bool isCurrentMonth = true;
 
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: itemCount,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7,
-                    mainAxisSpacing: 4,
-                    crossAxisSpacing: 4,
-                  ),
-                  itemBuilder: (context, index) {
-                    int dayNumber = index - startWeekday + 1;
-
-                    DateTime cellDate;
-
-                    bool isCurrentMonth = true;
-
-                    if (dayNumber < 1) {
-                      cellDate = DateTime(
-                        currentMonth.year,
-                        currentMonth.month - 1,
-                        daysInPrevMonth + dayNumber,
-                      );
-                      isCurrentMonth = false;
-                    } else if (dayNumber > daysInMonth) {
-                      cellDate = DateTime(
-                        currentMonth.year,
-                        currentMonth.month + 1,
-                        dayNumber - daysInMonth,
-                      );
-                      isCurrentMonth = false;
-                    } else {
-                      cellDate = DateTime(
-                        currentMonth.year,
-                        currentMonth.month,
-                        dayNumber,
-                      );
-                    }
-
-                    bool isSelected = selectedDates.contains(
-                      DateTime(cellDate.year, cellDate.month, cellDate.day),
-                    );
-
-                    // If period is running (endDate is null) and this cell is within the 6-day window
-                    if (!isSelected && startDate != null && endDate == null) {
-                      DateTime start = DateTime(
-                        startDate!.year,
-                        startDate!.month,
-                        startDate!.day,
-                      );
-                      DateTime end = start.add(const Duration(days: 5));
-                      DateTime cell = DateTime(
-                        cellDate.year,
-                        cellDate.month,
-                        cellDate.day,
-                      );
-                      if (!cell.isBefore(start) && !cell.isAfter(end)) {
-                        isSelected = true;
+                      if (dayNumber < 1) {
+                        cellDate = DateTime(currentMonth.year, currentMonth.month - 1, daysInPrevMonth + dayNumber);
+                        isCurrentMonth = false;
+                      } else if (dayNumber > daysInMonth) {
+                        cellDate = DateTime(currentMonth.year, currentMonth.month + 1, dayNumber - daysInMonth);
+                        isCurrentMonth = false;
+                      } else {
+                        cellDate = DateTime(currentMonth.year, currentMonth.month, dayNumber);
                       }
-                    }
 
-                    bool isTappedSelection =
-                        widget.selectedDate != null &&
-                        cellDate.year == widget.selectedDate!.year &&
-                        cellDate.month == widget.selectedDate!.month &&
-                        cellDate.day == widget.selectedDate!.day;
+                      final normalizedCellDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
+                      bool isSelected = selectedDates.contains(normalizedCellDate);
 
-                    /// ✅ Color Priority Logic
-                    final Color? predictedColor = calendarMap[cellDate.year * 10000 + cellDate.month * 100 + cellDate.day];
+                      if (!isSelected && startDate != null && endDate == null) {
+                        DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+                        DateTime end = start.add(const Duration(days: 5));
+                        if (!normalizedCellDate.isBefore(start) && !normalizedCellDate.isAfter(end)) {
+                          isSelected = true;
+                        }
+                      }
 
-                    return GestureDetector(
-                      onTap: isCurrentMonth
-                          ? () {
-                              _handleCellTap(cellDate);
+                      bool isTappedSelection = widget.selectedDate != null &&
+                          normalizedCellDate.year == widget.selectedDate!.year &&
+                          normalizedCellDate.month == widget.selectedDate!.month &&
+                          normalizedCellDate.day == widget.selectedDate!.day;
 
-                              // ✅ Update Row instead of SnackBar
-                              final chance = _getFertilityChance(cellDate);
-                              setState(() {
-                                fertilityChance =
-                                    chance ?? "Low"; // update the string state
-                              });
-                            }
-                          : null,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? (calendarMap[toKey(cellDate)] == const Color(0xFFA6E63F)
-                                  ? const Color(0xFFA6E63F)
-                                  : AppColors.primary)
-                              : isTappedSelection
-                              ? AppColors.primary.withOpacity(0.5)
-                              : predictedColor ?? Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
-                          border: isTappedSelection
-                              ? Border.all(color: Colors.blue, width: 1.5)
-                              : null,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "${cellDate.day}",
-                          style: TextStyle(
+                      final int cellKey = toKey(normalizedCellDate);
+                      final Color? predictedColor = calendarMap[cellKey];
+
+                      return GestureDetector(
+                        onTap: isCurrentMonth
+                            ? () {
+                                _handleCellTap(cellDate);
+                                final chance = _getFertilityChance(cellDate);
+                                setState(() {
+                                  fertilityChance = chance ?? "Low";
+                                });
+                              }
+                            : null,
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.white
-                                : isCurrentMonth
-                                ? Colors.black
-                                : Colors.grey.shade300,
-                            fontWeight: FontWeight.w500,
+                                ? (predictedColor == const Color(0xFFA6E63F)
+                                    ? const Color(0xFFA6E63F)
+                                    : AppColors.primary)
+                                : isTappedSelection
+                                ? AppColors.primary.withOpacity(0.5)
+                                : predictedColor ?? Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                            border: isTappedSelection
+                                ? Border.all(color: Colors.blue, width: 1.5)
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "${cellDate.day}",
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : isCurrentMonth
+                                  ? Colors.black
+                                  : Colors.grey.shade300,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             ),

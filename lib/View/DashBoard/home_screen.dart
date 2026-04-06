@@ -57,10 +57,6 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(seconds: 3),
     );
 
-    _waveController.addListener(() {
-      setState(() {});
-    });
-
     _waveController.forward();
   }
 
@@ -210,33 +206,38 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
 
-                    ClipOval(
-                      child: SizedBox(
-                        width: 150,
-                        height: 150,
-                        child: WaveWidget(
-                          config: CustomConfig(
-                            gradients: [
-                              [
-                                AppColors.primary.withOpacity(0.6),
-                                AppColors.primary.withOpacity(0.4),
-                              ],
-                              [
-                                AppColors.primary.withOpacity(0.4),
-                                AppColors.primary.withOpacity(0.2),
-                              ],
-                            ],
-                            durations: [5000, 7000],
-                            heightPercentages: [
-                              0.5 * _waveProgress,
-                              0.52 * _waveProgress,
-                            ],
+                    AnimatedBuilder(
+                      animation: _waveController,
+                      builder: (context, child) {
+                        return ClipOval(
+                          child: SizedBox(
+                            width: 150,
+                            height: 150,
+                            child: WaveWidget(
+                              config: CustomConfig(
+                                gradients: [
+                                  [
+                                    AppColors.primary.withOpacity(0.6),
+                                    AppColors.primary.withOpacity(0.4),
+                                  ],
+                                  [
+                                    AppColors.primary.withOpacity(0.4),
+                                    AppColors.primary.withOpacity(0.2),
+                                  ],
+                                ],
+                                durations: [5000, 7000],
+                                heightPercentages: [
+                                  0.5 * _waveProgress,
+                                  0.52 * _waveProgress,
+                                ],
+                              ),
+                              backgroundColor: Colors.white,
+                              waveAmplitude: 15,
+                              size: const Size(double.infinity, double.infinity),
+                            ),
                           ),
-                          backgroundColor: Colors.white,
-                          waveAmplitude: 15,
-                          size: Size(double.infinity, double.infinity),
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     // ClipOval(
@@ -426,5 +427,8 @@ class DotCirclePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant DotCirclePainter oldDelegate) {
+    return oldDelegate.highlightedDots != highlightedDots ||
+        oldDelegate.totalDots != totalDots;
+  }
 }

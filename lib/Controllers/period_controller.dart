@@ -24,15 +24,17 @@ class PeriodController extends GetxController {
   final int defaultPeriodLength = 5;
 
   /// --- CACHING FOR PERFORMANCE ---
-  List<DateTime>? _cachedPredictedPeriod;
-  List<DateTime>? _cachedPredictedFertility;
-  List<DateTime>? _cachedPredictedOvulation;
+  Set<int>? _cachedPredictedPeriod;
+  Set<int>? _cachedPredictedFertility;
+  Set<int>? _cachedPredictedOvulation;
 
   void _clearPredictionCache() {
     _cachedPredictedPeriod = null;
     _cachedPredictedFertility = null;
     _cachedPredictedOvulation = null;
   }
+
+  int _toKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 
   /// USER ID
   String get uid => FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -222,20 +224,16 @@ class PeriodController extends GetxController {
   /// PREDICTED PERIOD RANGE (Future-Only Fix)
   List<DateTime> get predictedPeriodRange {
     if (periodStart.value == null) return [];
-    if (_cachedPredictedPeriod != null) return _cachedPredictedPeriod!;
-
+    
     List<DateTime> allPredictions = [];
     int cycleLen = averageCycleLength;
     int periodLen = averagePeriodLength;
     
-    // We only show predictions AFTER the current expected period ends
     DateTime today = DateTime.now();
     DateTime lastKnownBound = periodEnd.value ?? periodStart.value!.add(const Duration(days: 5));
 
     for (int i = 1; i <= 6; i++) {
       DateTime nextStart = periodStart.value!.add(Duration(days: cycleLen * i));
-      
-      // If this prediction is in the past or conflicts with current period, skip or adjust
       if (nextStart.isBefore(lastKnownBound) || nextStart.isBefore(today.subtract(const Duration(days: 1)))) {
         continue;
       }
@@ -245,14 +243,13 @@ class PeriodController extends GetxController {
       }
     }
     
-    _cachedPredictedPeriod = allPredictions;
+    _cachedPredictedPeriod = allPredictions.map(_toKey).toSet();
     return allPredictions;
   }
 
   /// PREDICTED FERTILITY WINDOW (Future-Only Fix)
   List<DateTime> get predictedFertilityWindow {
     if (periodStart.value == null) return [];
-    if (_cachedPredictedFertility != null) return _cachedPredictedFertility!;
 
     List<DateTime> allFertility = [];
     int cycleLen = averageCycleLength;
@@ -263,7 +260,6 @@ class PeriodController extends GetxController {
       DateTime nextStart = periodStart.value!.add(Duration(days: cycleLen * i));
       DateTime ovulation = nextStart.subtract(const Duration(days: 14));
       
-      // Skip past predictions
       if (ovulation.isBefore(lastKnownBound) || ovulation.isBefore(today.subtract(const Duration(days: 5)))) {
         continue;
       }
@@ -273,14 +269,13 @@ class PeriodController extends GetxController {
       }
     }
 
-    _cachedPredictedFertility = allFertility;
+    _cachedPredictedFertility = allFertility.map(_toKey).toSet();
     return allFertility;
   }
 
   /// PREDICTED OVULATION DATES (Future-Only Fix)
   List<DateTime> get predictedOvulationDates {
     if (periodStart.value == null) return [];
-    if (_cachedPredictedOvulation != null) return _cachedPredictedOvulation!;
 
     List<DateTime> allOvulation = [];
     int cycleLen = averageCycleLength;
@@ -298,7 +293,7 @@ class PeriodController extends GetxController {
       allOvulation.add(ovulation);
     }
 
-    _cachedPredictedOvulation = allOvulation;
+    _cachedPredictedOvulation = allOvulation.map(_toKey).toSet();
     return allOvulation;
   }
 
@@ -345,22 +340,25 @@ class PeriodController extends GetxController {
 
   /// CHECK IF DATE IS IN PREDICTED FERTILITY WINDOW
   bool isInFertility(DateTime date) {
-    return fertilityWindow.any(
-      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-    );
+    if (_cachedPredictedFertility == null) {
+      predictedFertilityWindow; // triggers cache
+    }
+    return _cachedPredictedFertility?.contains(_toKey(date)) ?? false;
   }
 
   /// CHECK IF DATE IS OVULATION DAY
   bool isOvulationDay(DateTime date) {
-    final ov = ovulationDate;
-    if (ov == null) return false;
-    return ov.year == date.year && ov.month == date.month && ov.day == date.day;
+    if (_cachedPredictedOvulation == null) {
+      predictedOvulationDates; // triggers cache
+    }
+    return _cachedPredictedOvulation?.contains(_toKey(date)) ?? false;
   }
 
   /// CHECK IF DATE IS IN PREDICTED PERIOD RANGE
   bool isInPredictedPeriod(DateTime date) {
-    return predictedPeriodRange.any(
-      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-    );
+    if (_cachedPredictedPeriod == null) {
+      predictedPeriodRange; // triggers cache
+    }
+    return _cachedPredictedPeriod?.contains(_toKey(date)) ?? false;
   }
 }
