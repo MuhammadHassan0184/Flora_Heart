@@ -16,44 +16,44 @@ class _FaqScreenState extends State<FaqScreen> {
 
   final List<Map<String, String>> faqList = [
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "What is Flora Heart?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "Flora Heart is your personal health companion designed to help you track your menstrual cycle, understand your body's patterns, and stay informed about your reproductive health with ease and privacy.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "How does the app predict my next period?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "The app uses sophisticated algorithms based on your historical cycle data. The more consistently you log your periods, the more accurate the predictions for your future cycles and fertile windows become.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "Is my health data secure and private?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "Yes, absolutely. We prioritize your privacy. Your data is encrypted and securely stored. We do not share your personal health information with third parties without your explicit consent.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "How do I log a new period?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "To log a period, simply go to the Calendar or Today screen and tap on the dates you want to mark. You can also add details about your flow, symptoms, and moods for a more comprehensive record.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "Can I track symptoms like cramps or mood changes?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "Yes! Flora Heart allows you to log a wide variety of symptoms, moods, and activities daily. This helps you identify patterns and better understand how your cycle affects your overall well-being.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "What should I do if my cycle is irregular?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "If your cycle is irregular, continue logging your data as accurately as possible. Flora Heart will adapt its predictions based on the variations in your cycle, though predictions may be less certain for irregular cycles.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "How can I set up reminders?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "You can customize your notifications in the Settings or Profile section. You can set reminders for upcoming periods, ovulation days, or even daily health tips to keep you on track.",
     },
     {
-      "question": "Lorem ipsum dolor sit amet?",
+      "question": "Can I export my cycle history for my doctor?",
       "answer":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eros tortor, blandit ut nunc in, interdum consectetur risus. Fusce bibendum porttitor condimentum. Suspendisse scelerisque eros a condimentum aliquam.",
+          "Yes, you can generate a report of your cycle history from the Profile or Trends section, which can be easily shared with your healthcare provider during consultations.",
     },
   ];
 
