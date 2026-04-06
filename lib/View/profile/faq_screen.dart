@@ -45,25 +45,23 @@ class _FaqScreenState extends State<FaqScreen> {
       "answer":
           "If your cycle is irregular, continue logging your data as accurately as possible. Flora Heart will adapt its predictions based on the variations in your cycle, though predictions may be less certain for irregular cycles.",
     },
-    {
-      "question": "How can I set up reminders?",
-      "answer":
-          "You can customize your notifications in the Settings or Profile section. You can set reminders for upcoming periods, ovulation days, or even daily health tips to keep you on track.",
-    },
-    {
-      "question": "Can I export my cycle history for my doctor?",
-      "answer":
-          "Yes, you can generate a report of your cycle history from the Profile or Trends section, which can be easily shared with your healthcare provider during consultations.",
-    },
+    // {
+    //   "question": "How can I set up reminders?",
+    //   "answer":
+    //       "You can customize your notifications in the Settings or Profile section. You can set reminders for upcoming periods, ovulation days, or even daily health tips to keep you on track.",
+    // },
+    // {
+    //   "question": "Can I export my cycle history for my doctor?",
+    //   "answer":
+    //       "Yes, you can generate a report of your cycle history from the Profile or Trends section, which can be easily shared with your healthcare provider during consultations.",
+    // },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "FAQs"
-        ),
+      appBar: CustomAppBar(title: "FAQs"),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Container(
