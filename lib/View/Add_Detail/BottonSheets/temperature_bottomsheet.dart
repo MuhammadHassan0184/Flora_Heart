@@ -18,24 +18,65 @@ class BasalTemperatureBottomSheet extends StatefulWidget {
 class _BasalTemperatureBottomSheetState
     extends State<BasalTemperatureBottomSheet> {
   String selectedUnit = "°C";
-  double selectedValue = 36.00;
+  int wholePart = 36;
+  int decimalPart = 0;
 
-  late List<double> celsiusTemps;
-  late List<double> fahrenheitTemps;
+  late FixedExtentScrollController wholeController;
+  late FixedExtentScrollController decimalController;
+
+  late List<int> wholeValues;
+  late List<int> decimalValues;
+
+  void _updateValues() {
+    if (selectedUnit == "°C") {
+      wholeValues = List.generate(15, (index) => 30 + index); // 30 to 44
+    } else {
+      wholeValues = List.generate(35, (index) => 86 + index); // 86 to 120
+    }
+    decimalValues = List.generate(100, (index) => index);
+  }
 
   @override
   void initState() {
     super.initState();
+    final controller = Get.find<TodayDataController>();
+    double currentTemp = controller.temperature.value;
 
-    // 36.00°C to 42.00°C (step 0.01)
-    celsiusTemps = List.generate(601, (index) => 36.00 + index * 0.01);
+    if (currentTemp <= 0) currentTemp = 36.0;
 
-    fahrenheitTemps = celsiusTemps.map((c) => (c * 9 / 5) + 32).toList();
+    selectedUnit = controller.temperatureUnit.value;
+    
+    double displayTemp = currentTemp;
+    if (selectedUnit == "°F") {
+        displayTemp = (currentTemp * 9 / 5) + 32;
+    }
+
+    wholePart = displayTemp.floor();
+    decimalPart = ((displayTemp - wholePart) * 100).round();
+
+    if (decimalPart >= 100) {
+      wholePart += 1;
+      decimalPart = 0;
+    }
+
+    _updateValues();
+
+    int wholeIndex = wholeValues.indexOf(wholePart);
+    if (wholeIndex == -1) wholeIndex = 0;
+
+    wholeController = FixedExtentScrollController(initialItem: wholeIndex);
+    decimalController = FixedExtentScrollController(initialItem: decimalPart);
+  }
+
+  @override
+  void dispose() {
+    wholeController.dispose();
+    decimalController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<double> temps = selectedUnit == "°C" ? celsiusTemps : fahrenheitTemps;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -84,7 +125,7 @@ class _BasalTemperatureBottomSheetState
               ),
               child: Center(
                 child: Text(
-                  "${selectedValue.toStringAsFixed(2)} $selectedUnit",
+                  "$wholePart.${decimalPart.toString().padLeft(2, '0')} $selectedUnit",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -97,36 +138,109 @@ class _BasalTemperatureBottomSheetState
 
             /// Picker
             SizedBox(
-              height: 150,
-              child: ListWheelScrollView.useDelegate(
-                itemExtent: 40,
-                physics: const FixedExtentScrollPhysics(),
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    selectedValue = temps[index];
-                  });
-                },
-                childDelegate: ListWheelChildBuilderDelegate(
-                  childCount: temps.length,
-                  builder: (context, index) {
-                    double temp = temps[index];
-
-                    bool isSelected =
-                        temp.toStringAsFixed(2) ==
-                        selectedValue.toStringAsFixed(2);
-
-                    return Center(
-                      child: Text(
-                        temp.toStringAsFixed(2),
-                        style: TextStyle(
-                          fontSize: isSelected ? 20 : 16,
-                          color: isSelected ? AppColors.primary : Colors.grey,
-                          fontWeight: FontWeight.bold,
+              height: 180,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Selection Highlight Bar
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Whole Part Wheel
+                      SizedBox(
+                        width: 70,
+                        child: ListWheelScrollView.useDelegate(
+                          controller: wholeController,
+                          itemExtent: 45,
+                          physics: const FixedExtentScrollPhysics(),
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              wholePart = wholeValues[index];
+                            });
+                          },
+                          childDelegate: ListWheelChildBuilderDelegate(
+                            childCount: wholeValues.length,
+                            builder: (context, index) {
+                              int value = wholeValues[index];
+                              bool isSelected = value == wholePart;
+                              return Center(
+                                child: Text(
+                                  "$value",
+                                  style: TextStyle(
+                                    fontSize: isSelected ? 24 : 18,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : Colors.grey.shade400,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                      
+                      // Decimal Point
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          ".",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+
+                      // Decimal Part Wheel
+                      SizedBox(
+                        width: 70,
+                        child: ListWheelScrollView.useDelegate(
+                          controller: decimalController,
+                          itemExtent: 45,
+                          physics: const FixedExtentScrollPhysics(),
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              decimalPart = decimalValues[index];
+                            });
+                          },
+                          childDelegate: ListWheelChildBuilderDelegate(
+                            childCount: decimalValues.length,
+                            builder: (context, index) {
+                              int value = decimalValues[index];
+                              bool isSelected = value == decimalPart;
+                              return Center(
+                                child: Text(
+                                  value.toString().padLeft(2, '0'),
+                                  style: TextStyle(
+                                    fontSize: isSelected ? 24 : 18,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : Colors.grey.shade400,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -139,8 +253,17 @@ class _BasalTemperatureBottomSheetState
                 ontap: () async {
                   final controller = Get.find<TodayDataController>();
 
-                  // 🔥 Save the selected temperature to the controller
-                  controller.temperature.value = selectedValue;
+                  double finalTemp = wholePart + (decimalPart / 100.0);
+
+                  // If saved as Fahrenheit, convert back to Celsius for storage if needed,
+                  // but here we store as the numeric value shown.
+                  // Most apps store Celsius.
+                  if (selectedUnit == "°F") {
+                    finalTemp = (finalTemp - 32) * 5 / 9;
+                  }
+
+                  controller.temperature.value = finalTemp;
+                  controller.temperatureUnit.value = selectedUnit;
 
                   try {
                     // Optional: save to Firebase immediately
@@ -156,7 +279,7 @@ class _BasalTemperatureBottomSheetState
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        "Selected: ${selectedValue.toStringAsFixed(2)} $selectedUnit",
+                        "Selected: $wholePart.${decimalPart.toString().padLeft(2, '0')} $selectedUnit",
                       ),
                       backgroundColor: AppColors.primary,
                       duration: const Duration(seconds: 2),
@@ -182,18 +305,39 @@ class _BasalTemperatureBottomSheetState
       //     selectedValue = unit == "°C" ? 36.00 : 96.80; // 36°C in °F
       //   });
       // },
-      onTap: () async {
-        final controller = Get.find<TodayDataController>();
+      onTap: () {
+        if (selectedUnit != unit) {
+          setState(() {
+            // Convert current value before switching unit
+            double currentC = wholePart + (decimalPart / 100.0);
+            if (selectedUnit == "°F") {
+              currentC = (currentC - 32) * 5 / 9;
+            }
 
-        controller.temperature.value = selectedValue;
+            selectedUnit = unit;
+            double convertedValue;
+            if (unit == "°C") {
+              convertedValue = currentC;
+            } else {
+              convertedValue = (currentC * 9 / 5) + 32;
+            }
 
-        try {
-          await controller.saveTodayData(); // 🔥 Auto-save
-        } catch (e) {
-          print("Auto-save error: $e");
+            wholePart = convertedValue.floor();
+            decimalPart = ((convertedValue - wholePart) * 100).round();
+            if (decimalPart >= 100) {
+              wholePart += 1;
+              decimalPart = 0;
+            }
+
+            _updateValues();
+
+            int wholeIndex = wholeValues.indexOf(wholePart);
+            if (wholeIndex == -1) wholeIndex = 0;
+
+            wholeController.jumpToItem(wholeIndex);
+            decimalController.jumpToItem(decimalPart);
+          });
         }
-
-        Navigator.pop(context);
       },
       child: Container(
         height: 44,

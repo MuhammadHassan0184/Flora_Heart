@@ -14,14 +14,16 @@ class TodayDataController extends GetxController {
   final symptoms = <String, Set<String>>{}.obs;
   final discharge = <String>[].obs;
   final sexualActivity = "".obs;
-  final temperature = 0.0.obs;
-  final weight = 0.0.obs; // New: stores user weight
-  final ovulationTest = "".obs; // Restore: stores ovulation test result
-  final pregnancyTest = "".obs; // New: stores pregnancy test result
-  final drinkWater = 0.obs; // 🔥 NEW: stores water intake in ml
-  final medicine = "".obs; // 🔥 NEW: stores selected medicine
-  final note = "".obs; // 🔥 NEW: stores user note
-  final selectedDate = "".obs; // 🔥 THE CURRENTLY SELECTED DATE
+  final temperature = 0.0.obs; // Stores value in Celsius
+  final temperatureUnit = "°C".obs; // Stores user unit preference
+  final weight = 0.0.obs; // Stores value in Kg
+  final weightUnit = "Kg".obs; // Stores user unit preference
+  final ovulationTest = "".obs;
+  final pregnancyTest = "".obs;
+  final drinkWater = 0.obs;
+  final medicine = "".obs;
+  final note = "".obs;
+  final selectedDate = "".obs;
 
   String get uid => FirebaseAuth.instance.currentUser!.uid;
   String get todayDate => DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -111,12 +113,14 @@ class TodayDataController extends GetxController {
             "discharge": discharge.toList(),
             "sexualActivity": sexualActivity.value,
             "temperature": temperature.value,
-            "weight": weight.value, // 🔥 add weight
-            "ovulationTest": ovulationTest.value, // 🔥 add test results
+            "tempUnit": temperatureUnit.value, // 🔥 save unit
+            "weight": weight.value,
+            "weightUnit": weightUnit.value, // 🔥 save unit
+            "ovulationTest": ovulationTest.value,
             "pregnancyTest": pregnancyTest.value,
-            "drinkWater": drinkWater.value, // 🔥 add water intake
-            "medicine": medicine.value, // 🔥 add medicine
-            "note": note.value, // 🔥 add note
+            "drinkWater": drinkWater.value,
+            "medicine": medicine.value,
+            "note": note.value,
             "symptoms": symptoms.map(
               (key, value) => MapEntry(key, value.toList()),
             ),
@@ -169,12 +173,14 @@ class TodayDataController extends GetxController {
     discharge.assignAll(List<String>.from(data["discharge"] ?? []));
     sexualActivity.value = data["sexualActivity"] ?? "";
     temperature.value = (data["temperature"] ?? 0).toDouble();
-    weight.value = (data["weight"] ?? 0).toDouble(); // 🔥 load weight
+    temperatureUnit.value = data["tempUnit"] ?? "°C"; // 🔥 load unit
+    weight.value = (data["weight"] ?? 0).toDouble();
+    weightUnit.value = data["weightUnit"] ?? "Kg"; // 🔥 load unit
     ovulationTest.value = data["ovulationTest"] ?? "";
     pregnancyTest.value = data["pregnancyTest"] ?? "";
-    drinkWater.value = data["drinkWater"] ?? 0; // 🔥 load water intake
-    medicine.value = data["medicine"] ?? ""; // 🔥 load medicine
-    note.value = data["note"] ?? ""; // 🔥 load note
+    drinkWater.value = data["drinkWater"] ?? 0;
+    medicine.value = data["medicine"] ?? "";
+    note.value = data["note"] ?? "";
 
     Map<String, dynamic> rawSymptoms = data["symptoms"] ?? {};
     symptoms.value = rawSymptoms.map(

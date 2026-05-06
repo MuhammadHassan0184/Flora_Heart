@@ -365,7 +365,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "${controller.temperature.value.toStringAsFixed(2)} °C",
+                            controller.temperature.value == 0.0
+                                ? ""
+                                : controller.temperatureUnit.value == "°C"
+                                    ? "${controller.temperature.value.toStringAsFixed(2)} °C"
+                                    : "${(controller.temperature.value * 9 / 5 + 32).toStringAsFixed(2)} °F",
                             style: TextStyle(
                               color: AppColors.grey,
                               fontSize: 11.5,
@@ -421,7 +425,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "${controller.weight.value.toStringAsFixed(2)} Kg",
+                            controller.weight.value == 0.0
+                                ? ""
+                                : controller.weightUnit.value == "Kg"
+                                    ? "${controller.weight.value.toStringAsFixed(2)} Kg"
+                                    : "${(controller.weight.value * 2.20462).toStringAsFixed(2)} Lb",
                             style: TextStyle(
                               color: AppColors.grey,
                               fontSize: 11.5,

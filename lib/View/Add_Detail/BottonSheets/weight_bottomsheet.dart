@@ -31,20 +31,30 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
     kgValues = List.generate(250, (index) => (index + 1).toDouble());
     lbValues = kgValues.map((kg) => kg * 2.20462).toList();
 
-    // Load initial value
-    if (controller.weight.value > 0) {
-      selectedValue = controller.weight.value;
+    selectedUnit = controller.weightUnit.value;
+    double currentWeight = controller.weight.value;
+
+    if (currentWeight > 0) {
+      selectedValue = currentWeight;
     } else {
       selectedValue = 60.0; // Default to 60kg
     }
 
-    // Find index
-    int initialIndex = kgValues.indexWhere(
-      (v) => v.toStringAsFixed(0) == selectedValue.toStringAsFixed(0),
+    // Convert selectedValue to the current unit for display logic in the picker
+    double displayValue = selectedValue;
+    if (selectedUnit == "Lb") {
+      displayValue = selectedValue * 2.20462;
+    }
+
+    List<double> values = selectedUnit == "Kg" ? kgValues : lbValues;
+    int initialIndex = values.indexWhere(
+      (v) => v.toStringAsFixed(0) == displayValue.toStringAsFixed(0),
     );
     if (initialIndex == -1) initialIndex = 59; // fallback to 60kg
 
     scrollController = FixedExtentScrollController(initialItem: initialIndex);
+    // Ensure selectedValue matches what's at the index to avoid mismatch
+    selectedValue = values[initialIndex];
   }
 
   @override
@@ -158,8 +168,14 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
                 label: "Done",
                 ontap: () async {
                   final controller = Get.find<TodayDataController>();
-                  controller.weight.value =
-                      selectedValue; // 🔥 save reactive value
+                  
+                  double finalWeight = selectedValue;
+                  if (selectedUnit == "Lb") {
+                    finalWeight = selectedValue / 2.20462;
+                  }
+                  
+                  controller.weight.value = finalWeight;
+                  controller.weightUnit.value = selectedUnit;
                   try {
                     await controller.saveTodayData(); // 🔥 persist to Firebase
                   } catch (e) {
