@@ -52,7 +52,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // home: SplashScreen(),
-      initialRoute: AppRoutesName.splash, // start from splash
 
       theme: ThemeData(
         fontFamily: 'Poppins',
@@ -60,7 +59,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       getPages: AppRoutes.routes(),
-      // initialRoute: AppRoutesName.authgate,
+      initialRoute: AppRoutesName.splash, // start from splash
     );
   }
 }
