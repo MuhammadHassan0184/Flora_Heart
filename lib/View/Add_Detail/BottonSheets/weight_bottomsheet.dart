@@ -16,7 +16,8 @@ class WeightBottomSheet extends StatefulWidget {
 
 class _WeightBottomSheetState extends State<WeightBottomSheet> {
   String selectedUnit = "Kg";
-  double selectedValue = 40.00;
+  double selectedValue = 60.00;
+  late FixedExtentScrollController scrollController;
 
   late List<double> kgValues;
   late List<double> lbValues;
@@ -24,11 +25,32 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
   @override
   void initState() {
     super.initState();
+    final controller = Get.find<TodayDataController>();
 
-    // Generate weight list (40kg – 150kg)
-    kgValues = List.generate(111, (index) => 40 + index.toDouble());
-
+    // Generate weight list (1kg – 250kg)
+    kgValues = List.generate(250, (index) => (index + 1).toDouble());
     lbValues = kgValues.map((kg) => kg * 2.20462).toList();
+
+    // Load initial value
+    if (controller.weight.value > 0) {
+      selectedValue = controller.weight.value;
+    } else {
+      selectedValue = 60.0; // Default to 60kg
+    }
+
+    // Find index
+    int initialIndex = kgValues.indexWhere(
+      (v) => v.toStringAsFixed(0) == selectedValue.toStringAsFixed(0),
+    );
+    if (initialIndex == -1) initialIndex = 59; // fallback to 60kg
+
+    scrollController = FixedExtentScrollController(initialItem: initialIndex);
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,6 +119,7 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
             SizedBox(
               height: 150,
               child: ListWheelScrollView.useDelegate(
+                controller: scrollController,
                 itemExtent: 40,
                 physics: const FixedExtentScrollPhysics(),
                 onSelectedItemChanged: (index) {
@@ -167,8 +190,23 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedUnit = unit;
-          selectedValue = unit == "Kg" ? 40.00 : 88.18;
+          if (selectedUnit != unit) {
+            selectedUnit = unit;
+            List<double> newValues = unit == "Kg" ? kgValues : lbValues;
+
+            // Find nearest index to current selectedValue
+            int newIndex = 0;
+            double minDiff = double.maxFinite;
+            for (int i = 0; i < newValues.length; i++) {
+              double diff = (newValues[i] - selectedValue).abs();
+              if (diff < minDiff) {
+                minDiff = diff;
+                newIndex = i;
+              }
+            }
+            scrollController.jumpToItem(newIndex);
+            selectedValue = newValues[newIndex];
+          }
         });
       },
       child: Container(

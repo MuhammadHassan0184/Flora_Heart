@@ -15,11 +15,10 @@ class WeightScreen extends StatefulWidget {
 
 class _WeightScreenState extends State<WeightScreen> {
   bool isKg = true;
-  // double selectedWeight = 40.0;
-  double selectedWeight = 10.00;
+  double selectedWeight = 60.00;
 
   final FixedExtentScrollController _controller = FixedExtentScrollController(
-    initialItem: 0,
+    initialItem: (60 - 1) * 10,
   );
 
   // final FixedExtentScrollController _controller = FixedExtentScrollController(
@@ -99,20 +98,20 @@ class _WeightScreenState extends State<WeightScreen> {
                     itemExtent: 40,
                     physics: const FixedExtentScrollPhysics(),
                     onSelectedItemChanged: (index) {
-                      int whole = 10 + (index ~/ 10);
+                      int whole = 1 + (index ~/ 10);
                       int decimal = index % 10;
 
                       setState(() {
-                        selectedWeight = double.parse("$whole.0$decimal");
+                        selectedWeight = double.parse("$whole.$decimal");
                       });
                     },
                     childDelegate: ListWheelChildBuilderDelegate(
-                      childCount: (150 - 10 + 1) * 10, // 10.00 → 150.09
+                      childCount: (250 - 1 + 1) * 10, // 1.0 → 250.9
                       builder: (context, index) {
-                        int whole = 10 + (index ~/ 10);
+                        int whole = 1 + (index ~/ 10);
                         int decimal = index % 10;
 
-                        String valueString = "$whole.0$decimal";
+                        String valueString = "$whole.$decimal";
 
                         double value = double.parse(valueString);
 
