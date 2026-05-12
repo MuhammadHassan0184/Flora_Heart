@@ -3,6 +3,7 @@
 import 'package:floraheart/Widgets/custom_appbar.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
@@ -12,7 +13,7 @@ class FaqScreen extends StatefulWidget {
 }
 
 class _FaqScreenState extends State<FaqScreen> {
-  int expandedIndex = 1; // default open item (02)
+  final RxInt expandedIndex = 1.obs; // default open item (02)
 
   final List<Map<String, String>> faqList = [
     {
@@ -74,81 +75,79 @@ class _FaqScreenState extends State<FaqScreen> {
             padding: EdgeInsets.zero,
             itemCount: faqList.length,
             itemBuilder: (context, index) {
-              bool isExpanded = expandedIndex == index;
+              return Obx(() {
+                bool isExpanded = expandedIndex.value == index;
 
-              return Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        expandedIndex = isExpanded
-                            ? -1
-                            : index; // toggle open/close
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 18,
-                      ),
-                      color: isExpanded
-                          ? const Color(0xffFCEBED) // light pink background
-                          : Colors.white,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${(index + 1).toString().padLeft(2, '0')}",
-                            style: TextStyle(
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        expandedIndex.value = isExpanded ? -1 : index;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 18,
+                        ),
+                        color: isExpanded
+                            ? const Color(0xffFCEBED) // light pink background
+                            : Colors.white,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${(index + 1).toString().padLeft(2, '0')}",
+                              style: TextStyle(
+                                color: isExpanded
+                                    ? Colors.red
+                                    : Colors.grey.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    faqList[index]["question"]!,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: isExpanded
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  if (isExpanded &&
+                                      faqList[index]["answer"]!.isNotEmpty) ...[
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      faqList[index]["answer"]!,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              isExpanded ? Icons.close : Icons.add,
                               color: isExpanded
                                   ? Colors.red
                                   : Colors.grey.shade600,
-                              fontWeight: FontWeight.w600,
+                              size: 20,
                             ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  faqList[index]["question"]!,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: isExpanded
-                                        ? Colors.red
-                                        : Colors.black,
-                                  ),
-                                ),
-                                if (isExpanded &&
-                                    faqList[index]["answer"]!.isNotEmpty) ...[
-                                  SizedBox(height: 12),
-                                  Text(
-                                    faqList[index]["answer"]!,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            isExpanded ? Icons.close : Icons.add,
-                            color: isExpanded
-                                ? Colors.red
-                                : Colors.grey.shade600,
-                            size: 20,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  if (index != faqList.length - 1)
-                    Divider(height: 1, color: Colors.grey.shade200),
-                ],
-              );
+                    if (index != faqList.length - 1)
+                      Divider(height: 1, color: Colors.grey.shade200),
+                  ],
+                );
+              });
             },
           ),
         ),

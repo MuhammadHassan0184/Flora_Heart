@@ -19,7 +19,7 @@ void main() async {
   await NotificationService.init();
 
   print("Starting Firebase init...");
-  
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -32,8 +32,8 @@ void main() async {
   // Initialize controllers
   Get.put(TodayDataController(), permanent: true);
   final periodCtrl = Get.put(PeriodController(), permanent: true);
-  await periodCtrl.loadPeriod(); 
-  
+  await periodCtrl.loadPeriod();
+
   // Initialize TodayController for notifications
   Get.put(NotificationController(), permanent: true);
   Get.put(TodayController(), permanent: true);
@@ -52,7 +52,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // home: SplashScreen(),
-
       theme: ThemeData(
         fontFamily: 'Poppins',
         textTheme: GoogleFonts.poppinsTextTheme(),

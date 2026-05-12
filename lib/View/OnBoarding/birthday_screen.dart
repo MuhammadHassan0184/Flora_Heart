@@ -18,9 +18,9 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
   late FixedExtentScrollController monthController;
   late FixedExtentScrollController yearController;
 
-  int selectedDay = 0;
-  int selectedMonth = 2;
-  int selectedYear = 33; // 1998 if start 1965
+  final RxInt selectedDay = 0.obs;
+  final RxInt selectedMonth = 2.obs;
+  final RxInt selectedYear = 33.obs;
 
   final List<String> months = [
     "January",
@@ -40,9 +40,9 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
   @override
   void initState() {
     super.initState();
-    dayController = FixedExtentScrollController(initialItem: selectedDay);
-    monthController = FixedExtentScrollController(initialItem: selectedMonth);
-    yearController = FixedExtentScrollController(initialItem: selectedYear);
+    dayController = FixedExtentScrollController(initialItem: selectedDay.value);
+    monthController = FixedExtentScrollController(initialItem: selectedMonth.value);
+    yearController = FixedExtentScrollController(initialItem: selectedYear.value);
   }
 
   @override
@@ -78,18 +78,18 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(color: AppColors.primary, width: 1.5),
                 ),
-                child: Row(
+                child: Obx(() => Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${(selectedDay + 1).toString().padLeft(2, '0')}."
-                      "${(selectedMonth + 1).toString().padLeft(2, '0')}."
-                      "${1965 + selectedYear}",
-                      style: TextStyle(fontSize: 16),
+                      "${(selectedDay.value + 1).toString().padLeft(2, '0')}."
+                      "${(selectedMonth.value + 1).toString().padLeft(2, '0')}."
+                      "${1965 + selectedYear.value}",
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    Icon(Icons.calendar_month, size: 18),
+                    const Icon(Icons.calendar_month, size: 18),
                   ],
-                ),
+                )),
               ),
             ),
 
@@ -109,9 +109,9 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
               child: CustomButton(
                 label: "Continue",
                 ontap: () {
-                  if (selectedDay < 0 ||
-                      selectedMonth < 0 ||
-                      selectedYear < 0) {
+                  if (selectedDay.value < 0 ||
+                      selectedMonth.value < 0 ||
+                      selectedYear.value < 0) {
                     Get.snackbar(
                       "Error",
                       "Please select your birthday",
@@ -122,22 +122,10 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
                   }
                   final onboarding = Get.find<OnboardingController>();
                   onboarding.dob =
-                      "${selectedDay + 1}-${selectedMonth + 1}-${1965 + selectedYear}";
+                      "${selectedDay.value + 1}-${selectedMonth.value + 1}-${1965 + selectedYear.value}";
                   widget.onNext();
                 },
               ),
-              //  CustomButton(
-              //   label: "Continue",
-              //   // ontap: widget.onNext,
-              //   ontap: () {
-              //     final onboarding = Get.find<OnboardingController>();
-
-              //     onboarding.dob =
-              //         "${selectedDay + 1}-${selectedMonth + 1}-${1965 + selectedYear}";
-
-              //     widget.onNext();
-              //   },
-              // ),
             ),
 
             SizedBox(height: 30),
@@ -155,24 +143,27 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
           buildWheel(
             controller: dayController,
             itemCount: 31,
+            selectedRx: selectedDay,
             onChanged: (index) {
-              setState(() => selectedDay = index);
+              selectedDay.value = index;
             },
             builder: (index) => (index + 1).toString().padLeft(2, '0'),
           ),
           buildWheel(
             controller: monthController,
             itemCount: 12,
+            selectedRx: selectedMonth,
             onChanged: (index) {
-              setState(() => selectedMonth = index);
+              selectedMonth.value = index;
             },
             builder: (index) => months[index],
           ),
           buildWheel(
             controller: yearController,
             itemCount: 60,
+            selectedRx: selectedYear,
             onChanged: (index) {
-              setState(() => selectedYear = index);
+              selectedYear.value = index;
             },
             builder: (index) => (1965 + index).toString(),
           ),
@@ -184,6 +175,7 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
   Widget buildWheel({
     required FixedExtentScrollController controller,
     required int itemCount,
+    required RxInt selectedRx,
     required Function(int) onChanged,
     required String Function(int) builder,
   }) {
@@ -196,25 +188,27 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
             itemExtent: 45,
             diameterRatio: 1.4,
             perspective: 0.003,
-            physics: FixedExtentScrollPhysics(),
+            physics: const FixedExtentScrollPhysics(),
             onSelectedItemChanged: onChanged,
             childDelegate: ListWheelChildBuilderDelegate(
               childCount: itemCount,
               builder: (context, index) {
-                final isSelected = controller.selectedItem == index;
+                return Obx(() {
+                  final isSelected = selectedRx.value == index;
 
-                return Center(
-                  child: Text(
-                    builder(index),
-                    style: TextStyle(
-                      fontSize: isSelected ? 20 : 16,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                      color: isSelected ? AppColors.primary : Colors.grey,
+                  return Center(
+                    child: Text(
+                      builder(index),
+                      style: TextStyle(
+                        fontSize: isSelected ? 20 : 16,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: isSelected ? AppColors.primary : Colors.grey,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                });
               },
             ),
           ),

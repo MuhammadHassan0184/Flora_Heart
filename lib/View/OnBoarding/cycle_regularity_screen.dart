@@ -14,11 +14,11 @@ class CycleRegularityScreen extends StatefulWidget {
 }
 
 class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
-  bool isRegular = true;
+  final RxBool isRegular = true.obs;
 
-  int selectedRegular = 28;
-  int selectedMin = 28;
-  int selectedMax = 32;
+  final RxInt selectedRegular = 28.obs;
+  final RxInt selectedMin = 28.obs;
+  final RxInt selectedMax = 32.obs;
 
   final List<int> days = List.generate(15, (index) => 21 + index); // 21–35
 
@@ -38,14 +38,14 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
 
             SizedBox(height: 30),
 
-            Row(
+            Obx(() => Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                toggle("Regular", isRegular),
-                SizedBox(width: 12),
-                toggle("Irregular", !isRegular),
+                toggle("Regular", isRegular.value),
+                const SizedBox(width: 12),
+                toggle("Irregular", !isRegular.value),
               ],
-            ),
+            )),
 
             SizedBox(height: 20),
             Padding(
@@ -56,8 +56,8 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
             /// 🔥 THIS MAKES PICKER CENTERED
             Center(
               child: SizedBox(
-                height: 250, // important for proper centering
-                child: isRegular ? buildSinglePicker() : buildDoublePicker(),
+                height: 250,
+                child: Obx(() => isRegular.value ? buildSinglePicker() : buildDoublePicker()),
               ),
             ),
 
@@ -70,7 +70,7 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
                 label: "Continue",
                 ontap: () {
                   final onboarding = Get.find<OnboardingController>();
-                  if (isRegular && selectedRegular <= 0) {
+                  if (isRegular.value && selectedRegular.value <= 0) {
                     Get.snackbar(
                       "Error",
                       "Please select your cycle length",
@@ -79,7 +79,7 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
                     );
                     return;
                   }
-                  if (!isRegular && (selectedMin <= 0 || selectedMax <= 0)) {
+                  if (!isRegular.value && (selectedMin.value <= 0 || selectedMax.value <= 0)) {
                     Get.snackbar(
                       "Error",
                       "Please select your cycle range",
@@ -88,9 +88,9 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
                     );
                     return;
                   }
-                  onboarding.cycleLength = isRegular
-                      ? selectedRegular
-                      : selectedMax;
+                  onboarding.cycleLength = isRegular.value
+                      ? selectedRegular.value
+                      : selectedMax.value;
                   widget.onNext();
                 },
               ),
@@ -126,40 +126,38 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
       diameterRatio: 1.2,
       physics: FixedExtentScrollPhysics(),
       onSelectedItemChanged: (index) {
-        setState(() {
-          selectedRegular = days[index];
-        });
+        selectedRegular.value = days[index];
       },
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: days.length,
         builder: (context, index) {
           final day = days[index];
-          final isSelected = day == selectedRegular;
+          return Obx(() {
+            final isSelected = day == selectedRegular.value;
 
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  day.toString(),
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected
-                        ? AppColors.primary
-                        : Colors.grey.shade400,
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    day.toString(),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color: isSelected ? AppColors.primary : Colors.grey.shade400,
+                    ),
                   ),
-                ),
-                if (isSelected)
-                  Container(
-                    margin: const EdgeInsets.only(top: 6),
-                    width: 40,
-                    height: 2,
-                    color: AppColors.lightgrey,
-                  ),
-              ],
-            ),
-          );
+                  if (isSelected)
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      width: 40,
+                      height: 2,
+                      color: AppColors.lightgrey,
+                    ),
+                ],
+              ),
+            );
+          });
         },
       ),
     );
@@ -185,17 +183,16 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
       diameterRatio: 1.2,
       physics: FixedExtentScrollPhysics(),
       onSelectedItemChanged: (index) {
-        setState(() {
-          selectedMin = days[index];
-        });
+        selectedMin.value = days[index];
       },
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: days.length,
         builder: (context, index) {
           final day = days[index];
-          final isSelected = day == selectedMin;
-
-          return buildPickerItem(day, isSelected);
+          return Obx(() {
+            final isSelected = day == selectedMin.value;
+            return buildPickerItem(day, isSelected);
+          });
         },
       ),
     );
@@ -208,17 +205,16 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
       diameterRatio: 1.2,
       physics: FixedExtentScrollPhysics(),
       onSelectedItemChanged: (index) {
-        setState(() {
-          selectedMax = days[index];
-        });
+        selectedMax.value = days[index];
       },
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: days.length,
         builder: (context, index) {
           final day = days[index];
-          final isSelected = day == selectedMax;
-
-          return buildPickerItem(day, isSelected);
+          return Obx(() {
+            final isSelected = day == selectedMax.value;
+            return buildPickerItem(day, isSelected);
+          });
         },
       ),
     );
@@ -255,9 +251,7 @@ class _CycleRegularityScreenState extends State<CycleRegularityScreen> {
   Widget toggle(String text, bool active) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isRegular = text == "Regular";
-        });
+        isRegular.value = text == "Regular";
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),

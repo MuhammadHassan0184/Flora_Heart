@@ -16,8 +16,8 @@ class AllBlogsScreen extends StatefulWidget {
 }
 
 class _AllBlogsScreenState extends State<AllBlogsScreen> {
-  String searchQuery = "";
-  String selectedChips = "All";
+  final RxString searchQuery = "".obs;
+  final RxString selectedChips = "All".obs;
 
   final List<String> chip = [
     "All",
@@ -69,9 +69,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomSearchBar(
               onChanged: (value) {
-                setState(() {
-                  searchQuery = value.toLowerCase();
-                });
+                searchQuery.value = value.toLowerCase();
               },
             ),
           ),
@@ -82,42 +80,42 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
-              children: chip.map((chip) {
-                final bool isSelected = selectedChips == chip;
+              children: chip.map((chipItem) {
+                return Obx(() {
+                  final bool isSelected = selectedChips.value == chipItem;
 
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedChips = chip;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.grey.withOpacity(0.3),
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        selectedChips.value = chipItem;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                      ),
-                      child: Text(
-                        chip,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.grey,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppColors.primary : Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.grey.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          chipItem,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : AppColors.grey,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
+                  );
+                });
               }).toList(),
             ),
           ),
@@ -126,33 +124,35 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
 
           /// ---------------- ARTICLE LIST ----------------
           Expanded(
-            child: ListView(
-              children: articles
-                  .where((article) {
-                    final matchesChip =
-                        selectedChips == "All" ||
-                        article["tag"] == selectedChips;
+            child: Obx(
+              () => ListView(
+                children: articles
+                    .where((article) {
+                      final matchesChip =
+                          selectedChips.value == "All" ||
+                          article["tag"] == selectedChips.value;
 
-                    final matchesSearch = article["title"]!
-                        .toLowerCase()
-                        .contains(searchQuery);
+                      final matchesSearch = article["title"]!
+                          .toLowerCase()
+                          .contains(searchQuery.value);
 
-                    return matchesChip && matchesSearch;
-                  })
-                  .map(
-                    (article) => CustomArticleCard(
-                      title: article["title"]!,
-                      tag: article["tag"]!,
-                      imagePath: article["image"]!,
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutesName.blogsDetailScreen,
-                          arguments: article,
-                        );
-                      },
-                    ),
-                  )
-                  .toList(),
+                      return matchesChip && matchesSearch;
+                    })
+                    .map(
+                      (article) => CustomArticleCard(
+                        title: article["title"]!,
+                        tag: article["tag"]!,
+                        imagePath: article["image"]!,
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutesName.blogsDetailScreen,
+                            arguments: article,
+                          );
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ],

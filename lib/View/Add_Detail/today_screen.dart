@@ -30,12 +30,11 @@ class TodayScreen extends StatefulWidget {
 }
 
 class _TodayScreenState extends State<TodayScreen> {
-  DateTime _currentMonth = DateTime.now();
-  DateTime _selectedDate = DateTime.now();
+  final Rx<DateTime> _currentMonth = DateTime.now().obs;
+  final Rx<DateTime> _selectedDate = DateTime.now().obs;
+  final RxInt selectedIndex = 0.obs; // 0 = Start, 1 = End
 
   final ScrollController _scrollController = ScrollController();
-
-  int selectedIndex = 0; // 0 = Start, 1 = End
   late TodayDataController controller;
 
   @override
@@ -44,14 +43,13 @@ class _TodayScreenState extends State<TodayScreen> {
     controller = Get.put(TodayDataController(), permanent: true);
     final periodCtrl = Get.find<PeriodController>();
 
-    controller.loadTodayData(); // 🔥 LOAD DATA
-    periodCtrl.refreshManualOvulationDates(); // 🔥 LOAD OVULATION DATES
+    controller.loadTodayData();
+    periodCtrl.refreshManualOvulationDates();
 
-    // Set selected date to period start if it's running
     if (periodCtrl.periodStart.value != null &&
         periodCtrl.periodEnd.value == null) {
-      _selectedDate = periodCtrl.periodStart.value!;
-      _currentMonth = DateTime(_selectedDate.year, _selectedDate.month);
+      _selectedDate.value = periodCtrl.periodStart.value!;
+      _currentMonth.value = DateTime(_selectedDate.value.year, _selectedDate.value.month);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,21 +58,20 @@ class _TodayScreenState extends State<TodayScreen> {
   }
 
   void _scrollToSelectedDate() {
-    int dayIndex = _selectedDate.day - 1;
+    int dayIndex = _selectedDate.value.day - 1;
     double position = dayIndex * 60.0;
-    _scrollController.animateTo(
-      position,
-      duration: Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        position,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _changeMonth(int value) {
-    setState(() {
-      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + value);
-
-      _selectedDate = DateTime(_currentMonth.year, _currentMonth.month, 1);
-    });
+    _currentMonth.value = DateTime(_currentMonth.value.year, _currentMonth.value.month + value);
+    _selectedDate.value = DateTime(_currentMonth.value.year, _currentMonth.value.month, 1);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
@@ -87,201 +84,207 @@ class _TodayScreenState extends State<TodayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    int totalDays = _daysInMonth(_currentMonth);
-    final periodCtrl =
-        Get.find<PeriodController>(); // 🔥 Define once for the whole build
+    final periodCtrl = Get.find<PeriodController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: "Today"),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            /// ===== Calendar Container =====
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                children: [
-                  /// Month Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        /// Left Arrow
-                        GestureDetector(
-                          onTap: () => _changeMonth(-1),
-                          child: _arrowButton(Icons.chevron_left),
-                        ),
-
-                        /// Month Name
-                        Text(
-                          DateFormat('MMMM yyyy').format(_currentMonth),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-
-                        /// Right Arrow
-                        GestureDetector(
-                          onTap: () => _changeMonth(1),
-                          child: _arrowButton(Icons.chevron_right),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  /// Dates
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 13),
-                    child: SizedBox(
-                      height: 70,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: totalDays,
-                        itemBuilder: (context, index) {
-                          DateTime date = DateTime(
-                            _currentMonth.year,
-                            _currentMonth.month,
-                            index + 1,
-                          );
-
-                          return GestureDetector(
-                            onTap: () async {
-                              try {
-                                // 🔥 Save current date data before switching
-                                await controller.saveTodayData();
-
-                                // Refresh manual dates if a positive test was just saved
-                                if (controller.ovulationTest.value ==
-                                    "Positive") {
-                                  await periodCtrl
-                                      .refreshManualOvulationDates();
-                                }
-
-                                setState(() {
-                                  _selectedDate = date;
-                                });
-
-                                // 🔥 Reload data for the new selected date
-                                await controller.loadTodayData(
-                                  DateFormat('yyyy-MM-dd').format(date),
-                                );
-                              } catch (e) {
-                                print("SWITCH DATE ERROR: $e");
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 14),
-                              child: Obx(() {
-                                // Wrap in Obx to react to manualOvulationDates changes
-                                bool isSelected =
-                                    _selectedDate.year == date.year &&
-                                    _selectedDate.month == date.month &&
-                                    _selectedDate.day == date.day;
-
-                                bool isInPeriod = periodCtrl.isInPeriod(date);
-
-                                // Check if this date has a positive ovulation test
-                                bool isOvulationPos = periodCtrl
-                                    .manualOvulationDates
-                                    .any(
-                                      (d) =>
-                                          d.year == date.year &&
-                                          d.month == date.month &&
-                                          d.day == date.day,
-                                    );
-
-                                return isSelected
-                                    ? _selectedItem(
-                                        date,
-                                        isInPeriod,
-                                        isOvulationPos,
-                                      )
-                                    : _normalItem(
-                                        date,
-                                        isInPeriod,
-                                        isOvulationPos,
-                                      );
-                              }),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Obx(() {
-              bool isRunning =
-                  periodCtrl.periodStart.value != null &&
-                  periodCtrl.periodEnd.value == null;
-
-              return Container(
+        child: Obx(() {
+          int totalDays = _daysInMonth(_currentMonth.value);
+          
+          return Column(
+            children: [
+              /// ===== Calendar Container =====
+              Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(16),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Period",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    /// Month Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _changeMonth(-1),
+                            child: _arrowButton(Icons.chevron_left),
+                          ),
+                          Text(
+                            DateFormat('MMMM yyyy').format(_currentMonth.value),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _changeMonth(1),
+                            child: _arrowButton(Icons.chevron_right),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        /// START BUTTON
-                        () {
-                          bool isStartDate = false;
-                          if (periodCtrl.periodStart.value != null) {
-                            final ps = periodCtrl.periodStart.value!;
-                            isStartDate =
-                                _selectedDate.year == ps.year &&
-                                _selectedDate.month == ps.month &&
-                                _selectedDate.day == ps.day;
-                          }
 
-                          // If period is running, only enable "Start" if on the start date
-                          // If period is not running, allow starting on any date
-                          bool isStartButtonEnabled =
-                              !isRunning || (isRunning && isStartDate);
+                    const SizedBox(height: 20),
 
-                          return Expanded(
+                    /// Dates
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 13),
+                      child: SizedBox(
+                        height: 70,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: totalDays,
+                          itemBuilder: (context, index) {
+                            DateTime date = DateTime(
+                              _currentMonth.value.year,
+                              _currentMonth.value.month,
+                              index + 1,
+                            );
+
+                            bool isSelected =
+                                _selectedDate.value.year == date.year &&
+                                _selectedDate.value.month == date.month &&
+                                _selectedDate.value.day == date.day;
+
+                            bool isInPeriod = periodCtrl.isInPeriod(date);
+                            bool isOvulationPos = periodCtrl.manualOvulationDates.any(
+                                  (d) =>
+                                      d.year == date.year &&
+                                      d.month == date.month &&
+                                      d.day == date.day,
+                                );
+
+                            return GestureDetector(
+                              onTap: () async {
+                                try {
+                                  await controller.saveTodayData();
+                                  if (controller.ovulationTest.value == "Positive") {
+                                    await periodCtrl.refreshManualOvulationDates();
+                                  }
+                                  _selectedDate.value = date;
+                                  await controller.loadTodayData(
+                                    DateFormat('yyyy-MM-dd').format(date),
+                                  );
+                                } catch (e) {
+                                  print("SWITCH DATE ERROR: $e");
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 14),
+                                child: isSelected
+                                    ? _selectedItem(date, isInPeriod, isOvulationPos)
+                                    : _normalItem(date, isInPeriod, isOvulationPos),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              
+              () {
+                bool isRunning = periodCtrl.periodStart.value != null &&
+                    periodCtrl.periodEnd.value == null;
+
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.all(16),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Period",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          /// START BUTTON
+                          Expanded(
+                            child: () {
+                              bool isStartDate = false;
+                              if (periodCtrl.periodStart.value != null) {
+                                final ps = periodCtrl.periodStart.value!;
+                                isStartDate =
+                                    _selectedDate.value.year == ps.year &&
+                                    _selectedDate.value.month == ps.month &&
+                                    _selectedDate.value.day == ps.day;
+                              }
+
+                              bool isStartButtonEnabled = !isRunning || (isRunning && isStartDate);
+
+                              return GestureDetector(
+                                onTap: !isStartButtonEnabled
+                                    ? null
+                                    : () async {
+                                        selectedIndex.value = 0;
+                                        await periodCtrl.startPeriod(_selectedDate.value);
+                                      },
+                                child: Opacity(
+                                  opacity: isStartButtonEnabled ? 1.0 : 0.4,
+                                  child: Container(
+                                    height: 37,
+                                    decoration: BoxDecoration(
+                                      color: selectedIndex.value == 0
+                                          ? AppColors.primary
+                                          : Colors.grey,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(Icons.play_arrow, color: Colors.white),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          "Start",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }(),
+                          ),
+
+                          const SizedBox(width: 20),
+
+                          /// END BUTTON
+                          Expanded(
                             child: GestureDetector(
-                              onTap: !isStartButtonEnabled
+                              onTap: !isRunning
                                   ? null
                                   : () async {
-                                      setState(() {
-                                        selectedIndex = 0;
-                                      });
-                                      await periodCtrl.startPeriod(
-                                        _selectedDate,
-                                      );
+                                      selectedIndex.value = 1;
+                                      await periodCtrl.endPeriod(DateTime.now());
                                     },
                               child: Opacity(
-                                opacity: isStartButtonEnabled ? 1.0 : 0.4,
+                                opacity: !isRunning ? 0.4 : 1.0,
                                 child: Container(
                                   height: 37,
                                   decoration: BoxDecoration(
-                                    color: selectedIndex == 0
+                                    color: selectedIndex.value == 1
                                         ? AppColors.primary
                                         : Colors.grey,
                                     borderRadius: BorderRadius.circular(30),
@@ -289,13 +292,10 @@ class _TodayScreenState extends State<TodayScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: const [
-                                      Icon(
-                                        Icons.play_arrow,
-                                        color: Colors.white,
-                                      ),
+                                      Icon(Icons.stop, color: Colors.white, size: 18),
                                       SizedBox(width: 6),
                                       Text(
-                                        "Start",
+                                        "End",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -307,191 +307,134 @@ class _TodayScreenState extends State<TodayScreen> {
                                 ),
                               ),
                             ),
-                          );
-                        }(),
-
-                        const SizedBox(width: 20),
-
-                        /// END BUTTON
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: !isRunning
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      selectedIndex = 1;
-                                    });
-                                    await periodCtrl.endPeriod(DateTime.now());
-                                  },
-                            child: Opacity(
-                              opacity: !isRunning ? 0.4 : 1.0,
-                              child: Container(
-                                height: 37,
-                                decoration: BoxDecoration(
-                                  color: selectedIndex == 1
-                                      ? AppColors.primary
-                                      : Colors.grey,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      Icons.stop,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      "End",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }(),
+              
+              const SizedBox(height: 10),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      "Flow",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(height: 8),
+                    FlowSelector(),
                   ],
                 ),
-              );
-            }),
-            SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Flow",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  FlowSelector(),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            MoodSection(),
-            SizedBox(height: 10),
-            SymptomsSection(),
-            SizedBox(height: 10),
-            DischargeSection(),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Basal Body Temperature",
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(25),
+              const SizedBox(height: 10),
+              const MoodSection(),
+              const SizedBox(height: 10),
+              const SymptomsSection(),
+              const SizedBox(height: 10),
+              const DischargeSection(),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Basal Body Temperature",
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
                     ),
-                  ),
-                  builder: (context) => const BasalTemperatureBottomSheet(),
-                );
-              },
-            ),
-
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Weight",
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(25),
-                    ),
-                  ),
-                  builder: (context) => const WeightBottomSheet(),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            SexualActivitySection(),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Tests",
-              onTap: () {
-                TestsBottomSheet.show(context);
-              },
-            ),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Drink Water",
-              onTap: () {
-                DrinkWaterBottomSheet.show(context);
-              },
-            ),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Medicine",
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => MedicineBottomSheetExample(),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            CustomCardButton(
-              label: "Note",
-              onTap: () {
-                NoteBottomsheet.show(context);
-              },
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(
-                label: "Done",
-                ontap: () async {
-                  try {
-                    final controller = Get.find<TodayDataController>();
-                    final periodCtrl = Get.find<PeriodController>();
-                    final dashboardController = Get.find<DashboardController>();
-
-                    await controller.saveTodayData();
-
-                    // Refresh manual ovulation dates in case it changed
-                    if (controller.ovulationTest.value == "Positive") {
-                      await periodCtrl.refreshManualOvulationDates();
-                    }
-
-                    // 🔥 Switch to Calendar tab (index 1) and go back
-                    dashboardController.updateIndex(1);
-                    Get.back();
-                  } catch (e) {
-                    print("SAVE ERROR FULL: $e");
-
-                    Get.snackbar(
-                      "Error",
-                      e.toString(), // show real error
-                    );
-                  }
+                    builder: (context) => const BasalTemperatureBottomSheet(),
+                  );
                 },
               ),
-            ),
-            SizedBox(height: 20),
-          ],
-        ),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Weight",
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                    ),
+                    builder: (context) => const WeightBottomSheet(),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              const SexualActivitySection(),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Tests",
+                onTap: () {
+                  TestsBottomSheet.show(context);
+                },
+              ),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Drink Water",
+                onTap: () {
+                  DrinkWaterBottomSheet.show(context);
+                },
+              ),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Medicine",
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => MedicineBottomSheetExample(),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              CustomCardButton(
+                label: "Note",
+                onTap: () {
+                  NoteBottomsheet.show(context);
+                },
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: CustomButton(
+                  label: "Done",
+                  ontap: () async {
+                    try {
+                      final controller = Get.find<TodayDataController>();
+                      final periodCtrl = Get.find<PeriodController>();
+                      final dashboardController = Get.find<DashboardController>();
+
+                      await controller.saveTodayData();
+
+                      if (controller.ovulationTest.value == "Positive") {
+                        await periodCtrl.refreshManualOvulationDates();
+                      }
+
+                      dashboardController.updateIndex(1);
+                      Get.back();
+                    } catch (e) {
+                      print("SAVE ERROR FULL: $e");
+                      Get.snackbar("Error", e.toString());
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -547,10 +490,10 @@ class _TodayScreenState extends State<TodayScreen> {
             ],
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           DateFormat('E').format(date),
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: Colors.grey,
             fontWeight: FontWeight.bold,
@@ -567,9 +510,7 @@ class _TodayScreenState extends State<TodayScreen> {
       decoration: BoxDecoration(
         color: const Color(0xffF8D7DA),
         borderRadius: BorderRadius.circular(12),
-        border: isInPeriod
-            ? Border.all(color: AppColors.primary, width: 1)
-            : null,
+        border: isInPeriod ? Border.all(color: AppColors.primary, width: 1) : null,
       ),
       child: Stack(
         alignment: Alignment.center,
@@ -585,7 +526,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 DateFormat('E').format(date),
                 style: TextStyle(
@@ -615,3 +556,6 @@ class _TodayScreenState extends State<TodayScreen> {
     );
   }
 }
+
+
+

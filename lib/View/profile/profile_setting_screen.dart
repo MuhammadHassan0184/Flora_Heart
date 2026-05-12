@@ -18,7 +18,7 @@ class ProfileSettingScreen extends StatefulWidget {
 }
 
 class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
-  int selectedIndex = 0;
+  final RxInt selectedIndex = 0.obs;
   late String displayName;
 
   final TextEditingController firstNameController = TextEditingController();
@@ -86,7 +86,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                   color: AppColors.lightgrey,
                   border: Border.all(color: AppColors.primary, width: 2),
                 ),
-                child: Image.asset(avatars[selectedIndex], fit: BoxFit.cover),
+                child: Obx(() => Image.asset(avatars[selectedIndex.value], fit: BoxFit.cover)),
               ),
             ),
             SizedBox(height: 20),
@@ -116,59 +116,59 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                   mainAxisSpacing: 18,
                 ),
                 itemBuilder: (context, index) {
-                  bool isSelected = selectedIndex == index;
+                  return Obx(() {
+                    bool isSelected = selectedIndex.value == index;
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = index;
-                      });
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              avatars[index],
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-
-                        /// Tick Icon
-                        if (isSelected)
-                          Positioned(
-                            bottom: 0,
-                            top: 40,
-                            child: Container(
-                              width: 19,
-                              height: 19,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
+                    return GestureDetector(
+                      onTap: () {
+                        selectedIndex.value = index;
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : Colors.transparent,
+                                width: 2,
                               ),
-                              child: const Icon(
-                                Icons.check,
-                                size: 15,
-                                color: Colors.white,
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                avatars[index],
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                  );
+
+                          /// Tick Icon
+                          if (isSelected)
+                            Positioned(
+                              bottom: 0,
+                              top: 40,
+                              child: Container(
+                                width: 19,
+                                height: 19,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.check,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  });
                 },
               ),
             ),
@@ -217,7 +217,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
 
                     // Update FirebaseAuth
                     await user.updateDisplayName(fullName);
-                    await user.updatePhotoURL(avatars[selectedIndex]);
+                    await user.updatePhotoURL(avatars[selectedIndex.value]);
 
                     // Update Firestore
                     await FirebaseFirestore.instance
@@ -225,7 +225,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                         .doc(uid)
                         .update({
                           "name": fullName,
-                          "avatar": avatars[selectedIndex],
+                          "avatar": avatars[selectedIndex.value],
                         });
 
                     Get.snackbar(

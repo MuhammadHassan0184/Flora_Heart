@@ -20,9 +20,7 @@ class NoteBottomsheet {
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
+        return Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
@@ -96,8 +94,6 @@ class NoteBottomsheet {
                 ),
               ),
             );
-          },
-        );
       },
     );
   }

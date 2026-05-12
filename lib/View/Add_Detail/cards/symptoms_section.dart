@@ -13,13 +13,13 @@ class SymptomsSection extends StatefulWidget {
 }
 
 class _SymptomsSectionState extends State<SymptomsSection> {
-  final Set<String> expandedSections = {
+  final RxSet<String> expandedSections = {
     "Pain & Pelvic",
     "Digestive & Gut",
     "Energy & Sleep",
     "Skin & Body",
     "Vaginal & Fertility",
-  };
+  }.obs;
 
   @override
   Widget build(BuildContext context) {

@@ -7,6 +7,7 @@ import 'package:floraheart/View/OnBoarding/period_length.dart';
 import 'package:floraheart/View/OnBoarding/weight_screen.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -17,12 +18,12 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController controller = PageController();
-  int currentIndex = 0;
+  final RxInt currentIndex = 0.obs;
 
   final int totalSteps = 7;
 
   void next() {
-    if (currentIndex < totalSteps - 1) {
+    if (currentIndex.value < totalSteps - 1) {
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -31,7 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void previous() {
-    if (currentIndex > 0) {
+    if (currentIndex.value > 0) {
       controller.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -51,10 +52,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             /// ===== TOP HEADER =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              child: Obx(() => Row(
                 children: [
                   /// Back Arrow (Hidden on First Page)
-                  if (currentIndex > 0)
+                  if (currentIndex.value > 0)
                     GestureDetector(
                       onTap: previous,
                       child: const Icon(Icons.arrow_back, size: 22),
@@ -70,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       builder: (context, constraints) {
                         final fullWidth = constraints.maxWidth;
                         final progress =
-                            fullWidth * ((currentIndex + 1) / totalSteps);
+                            fullWidth * ((currentIndex.value + 1) / totalSteps);
 
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(10),
@@ -97,18 +98,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
 
                   /// Step Counter
                   Text(
-                    "${currentIndex + 1}/$totalSteps",
+                    "${currentIndex.value + 1}/$totalSteps",
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
-              ),
+              )),
             ),
 
             const SizedBox(height: 30),
@@ -119,9 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: controller,
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
+                  currentIndex.value = index;
                 },
                 children: [
                   NameScreen(onNext: next),

@@ -8,9 +8,9 @@ import 'package:get/get.dart';
 class DrinkWaterBottomSheet {
   static void show(BuildContext context) {
     final controller = Get.find<TodayDataController>();
-    int selectedGlasses = (controller.drinkWater.value / 250).round();
-    if (selectedGlasses == 0 && controller.drinkWater.value > 0) {
-      selectedGlasses = 1; // logical fallback
+    final RxInt selectedGlasses = ((controller.drinkWater.value / 250).round()).obs;
+    if (selectedGlasses.value == 0 && controller.drinkWater.value > 0) {
+      selectedGlasses.value = 1; // logical fallback
     }
 
     showModalBottomSheet(
@@ -21,10 +21,9 @@ class DrinkWaterBottomSheet {
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            int totalGoal = 2000;
-            int currentML = selectedGlasses * 250;
+        const int totalGoal = 2000;
+        return Obx(() {
+          int currentML = selectedGlasses.value * 250;
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -76,13 +75,11 @@ class DrinkWaterBottomSheet {
                           spacing: 18,
                           runSpacing: 18,
                           children: List.generate(10, (index) {
-                            bool isFilled = index < selectedGlasses;
+                            bool isFilled = index < selectedGlasses.value;
 
                             return GestureDetector(
                               onTap: () {
-                                setModalState(() {
-                                  selectedGlasses = index + 1;
-                                });
+                                selectedGlasses.value = index + 1;
                               },
                               child: Column(
                                 children: [
@@ -121,7 +118,7 @@ class DrinkWaterBottomSheet {
                   CustomButton(
                     label: "Done",
                     ontap: () async {
-                      controller.drinkWater.value = selectedGlasses * 250;
+                      controller.drinkWater.value = selectedGlasses.value * 250;
                       await controller.saveTodayData();
                       if (context.mounted) Navigator.pop(context);
                     },
@@ -131,8 +128,7 @@ class DrinkWaterBottomSheet {
                 ],
               ),
             );
-          },
-        );
+          });
       },
     );
   }

@@ -14,8 +14,8 @@ class WeightScreen extends StatefulWidget {
 }
 
 class _WeightScreenState extends State<WeightScreen> {
-  bool isKg = true;
-  double selectedWeight = 60.00;
+  final RxBool isKg = true.obs;
+  final RxDouble selectedWeight = 60.00.obs;
 
   final FixedExtentScrollController _controller = FixedExtentScrollController(
     initialItem: (60 - 1) * 10,
@@ -43,19 +43,17 @@ class _WeightScreenState extends State<WeightScreen> {
 
               SizedBox(height: 35),
 
-              /// UNIT TOGGLE
-              Row(
+              Obx(() => Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _unitButton("kg", isKg),
-                  SizedBox(width: 16),
-                  _unitButton("lb", !isKg),
+                  _unitButton("kg", isKg.value),
+                  const SizedBox(width: 16),
+                  _unitButton("lb", !isKg.value),
                 ],
-              ),
+              )),
 
               SizedBox(height: 25),
 
-              /// SELECTED VALUE BOX
               Container(
                 width: double.infinity,
                 height: 47,
@@ -64,10 +62,10 @@ class _WeightScreenState extends State<WeightScreen> {
                   border: Border.all(color: AppColors.primary, width: 1.5),
                 ),
                 child: Center(
-                  child: Text(
-                    selectedWeight.toStringAsFixed(2),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
+                  child: Obx(() => Text(
+                    selectedWeight.value.toStringAsFixed(2),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  )),
                 ),
               ),
 
@@ -100,10 +98,7 @@ class _WeightScreenState extends State<WeightScreen> {
                     onSelectedItemChanged: (index) {
                       int whole = 1 + (index ~/ 10);
                       int decimal = index % 10;
-
-                      setState(() {
-                        selectedWeight = double.parse("$whole.$decimal");
-                      });
+                      selectedWeight.value = double.parse("$whole.$decimal");
                     },
                     childDelegate: ListWheelChildBuilderDelegate(
                       childCount: (250 - 1 + 1) * 10, // 1.0 → 250.9
@@ -115,22 +110,24 @@ class _WeightScreenState extends State<WeightScreen> {
 
                         double value = double.parse(valueString);
 
-                        bool isSelected = value == selectedWeight;
+                        return Obx(() {
+                          bool isSelected = value == selectedWeight.value;
 
-                        return Center(
-                          child: Text(
-                            valueString,
-                            style: TextStyle(
-                              fontSize: isSelected ? 22 : 16,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.grey,
+                          return Center(
+                            child: Text(
+                              valueString,
+                              style: TextStyle(
+                                fontSize: isSelected ? 22 : 16,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : Colors.grey,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        });
                       },
                     ),
                   ),
@@ -155,7 +152,7 @@ class _WeightScreenState extends State<WeightScreen> {
               CustomButton(
                 label: "Continue",
                 ontap: () {
-                  if (selectedWeight <= 0) {
+                  if (selectedWeight.value <= 0) {
                     Get.snackbar(
                       "Error",
                       "Please select your weight",
@@ -165,7 +162,7 @@ class _WeightScreenState extends State<WeightScreen> {
                     return;
                   }
                   final onboarding = Get.find<OnboardingController>();
-                  onboarding.weight = "$selectedWeight ${isKg ? "kg" : "lb"}";
+                  onboarding.weight = "${selectedWeight.value} ${isKg.value ? "kg" : "lb"}";
                   widget.onNext();
                 },
               ),
@@ -181,9 +178,7 @@ class _WeightScreenState extends State<WeightScreen> {
   Widget _unitButton(String text, bool active) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isKg = text == "kg";
-        });
+        isKg.value = text == "kg";
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),

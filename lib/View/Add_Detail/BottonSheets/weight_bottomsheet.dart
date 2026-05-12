@@ -4,8 +4,7 @@ import 'package:floraheart/Controllers/today_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:floraheart/Widgets/custom_button.dart';
 import 'package:floraheart/config/Colors/colors.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get.dart';
 
 class WeightBottomSheet extends StatefulWidget {
   const WeightBottomSheet({super.key});
@@ -15,8 +14,8 @@ class WeightBottomSheet extends StatefulWidget {
 }
 
 class _WeightBottomSheetState extends State<WeightBottomSheet> {
-  String selectedUnit = "Kg";
-  double selectedValue = 60.00;
+  final RxString selectedUnit = "Kg".obs;
+  final RxDouble selectedValue = 60.00.obs;
   late FixedExtentScrollController scrollController;
 
   late List<double> kgValues;
@@ -31,30 +30,25 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
     kgValues = List.generate(250, (index) => (index + 1).toDouble());
     lbValues = kgValues.map((kg) => kg * 2.20462).toList();
 
-    selectedUnit = controller.weightUnit.value;
+    selectedUnit.value = controller.weightUnit.value;
     double currentWeight = controller.weight.value;
 
-    if (currentWeight > 0) {
-      selectedValue = currentWeight;
-    } else {
-      selectedValue = 60.0; // Default to 60kg
+    double initialWeight = currentWeight > 0 ? currentWeight : 60.0;
+
+    // Convert to display unit for picker logic
+    double displayValue = initialWeight;
+    if (selectedUnit.value == "Lb") {
+      displayValue = initialWeight * 2.20462;
     }
 
-    // Convert selectedValue to the current unit for display logic in the picker
-    double displayValue = selectedValue;
-    if (selectedUnit == "Lb") {
-      displayValue = selectedValue * 2.20462;
-    }
-
-    List<double> values = selectedUnit == "Kg" ? kgValues : lbValues;
+    List<double> values = selectedUnit.value == "Kg" ? kgValues : lbValues;
     int initialIndex = values.indexWhere(
       (v) => v.toStringAsFixed(0) == displayValue.toStringAsFixed(0),
     );
-    if (initialIndex == -1) initialIndex = 59; // fallback to 60kg
+    if (initialIndex == -1) initialIndex = 59;
 
     scrollController = FixedExtentScrollController(initialItem: initialIndex);
-    // Ensure selectedValue matches what's at the index to avoid mismatch
-    selectedValue = values[initialIndex];
+    selectedValue.value = values[initialIndex];
   }
 
   @override
@@ -65,183 +59,178 @@ class _WeightBottomSheetState extends State<WeightBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    List<double> values = selectedUnit == "Kg" ? kgValues : lbValues;
-
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 4,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade400,
-                borderRadius: BorderRadius.circular(10),
+        child: Obx(() {
+          List<double> values = selectedUnit.value == "Kg" ? kgValues : lbValues;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 4,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-            ),
-            SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            /// Header
-            Text(
-              "Weight",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-
-            /// Unit Toggle
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _unitToggle("Kg"),
-                const SizedBox(width: 12),
-                _unitToggle("Lb"),
-              ],
-            ),
-            SizedBox(height: 16),
-
-            /// Selected Value Box
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              height: 47,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: AppColors.primary, width: 1.5),
+              Text(
+                "Weight",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              child: Center(
-                child: Text(
-                  selectedValue.toStringAsFixed(2),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _unitToggle("Kg"),
+                  const SizedBox(width: 12),
+                  _unitToggle("Lb"),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                height: 47,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.primary, width: 1.5),
+                ),
+                child: Center(
+                  child: Text(
+                    selectedValue.value.toStringAsFixed(2),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            /// Picker
-            SizedBox(
-              height: 150,
-              child: ListWheelScrollView.useDelegate(
-                controller: scrollController,
-                itemExtent: 40,
-                physics: const FixedExtentScrollPhysics(),
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    selectedValue = values[index];
-                  });
-                },
-                childDelegate: ListWheelChildBuilderDelegate(
-                  childCount: values.length,
-                  builder: (context, index) {
-                    double value = values[index];
-                    bool isSelected =
-                        value.toStringAsFixed(2) ==
-                        selectedValue.toStringAsFixed(2);
+              SizedBox(
+                height: 150,
+                child: ListWheelScrollView.useDelegate(
+                  controller: scrollController,
+                  itemExtent: 40,
+                  physics: const FixedExtentScrollPhysics(),
+                  onSelectedItemChanged: (index) {
+                    selectedValue.value = values[index];
+                  },
+                  childDelegate: ListWheelChildBuilderDelegate(
+                    childCount: values.length,
+                    builder: (context, index) {
+                      double value = values[index];
+                      bool isSelected =
+                          value.toStringAsFixed(2) ==
+                          selectedValue.value.toStringAsFixed(2);
 
-                    return Center(
-                      child: Text(
-                        value.toStringAsFixed(2),
-                        style: TextStyle(
-                          fontSize: isSelected ? 20 : 16,
-                          color: isSelected ? AppColors.primary : Colors.grey,
-                          fontWeight: FontWeight.bold,
+                      return Center(
+                        child: Text(
+                          value.toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: isSelected ? 20 : 16,
+                            color: isSelected ? AppColors.primary : Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: CustomButton(
+                  label: "Done",
+                  ontap: () async {
+                    final controller = Get.find<TodayDataController>();
+                    
+                    double finalWeight = selectedValue.value;
+                    if (selectedUnit.value == "Lb") {
+                      finalWeight = selectedValue.value / 2.20462;
+                    }
+                    
+                    controller.weight.value = finalWeight;
+                    controller.weightUnit.value = selectedUnit.value;
+                    try {
+                      await controller.saveTodayData();
+                    } catch (e) {
+                      print("Weight save error: $e");
+                    }
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Selected: ${selectedValue.value.toStringAsFixed(2)} ${selectedUnit.value}",
+                        ),
+                        backgroundColor: AppColors.primary,
                       ),
                     );
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-
-            /// Done Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: CustomButton(
-                label: "Done",
-                ontap: () async {
-                  final controller = Get.find<TodayDataController>();
-                  
-                  double finalWeight = selectedValue;
-                  if (selectedUnit == "Lb") {
-                    finalWeight = selectedValue / 2.20462;
-                  }
-                  
-                  controller.weight.value = finalWeight;
-                  controller.weightUnit.value = selectedUnit;
-                  try {
-                    await controller.saveTodayData(); // 🔥 persist to Firebase
-                  } catch (e) {
-                    print("Weight save error: $e");
-                  }
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "Selected: ${selectedValue.toStringAsFixed(2)} $selectedUnit",
-                      ),
-                      backgroundColor: AppColors.primary,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+              const SizedBox(height: 10),
+            ],
+          );
+        }),
       ),
     );
   }
 
   Widget _unitToggle(String unit) {
-    bool isSelected = selectedUnit == unit;
+    return Obx(() {
+      bool isSelected = selectedUnit.value == unit;
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (selectedUnit != unit) {
-            selectedUnit = unit;
+      return GestureDetector(
+        onTap: () {
+          if (selectedUnit.value != unit) {
+            double currentVal = selectedValue.value;
+            selectedUnit.value = unit;
             List<double> newValues = unit == "Kg" ? kgValues : lbValues;
 
-            // Find nearest index to current selectedValue
             int newIndex = 0;
             double minDiff = double.maxFinite;
             for (int i = 0; i < newValues.length; i++) {
-              double diff = (newValues[i] - selectedValue).abs();
+              double diff = (newValues[i] - currentVal).abs();
               if (diff < minDiff) {
                 minDiff = diff;
                 newIndex = i;
               }
             }
             scrollController.jumpToItem(newIndex);
-            selectedValue = newValues[newIndex];
+            selectedValue.value = newValues[newIndex];
           }
-        });
-      },
-      child: Container(
-        height: 44,
-        width: 120, // important for equal size
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.white,
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: AppColors.primary, width: 1.5),
-        ),
-        child: Text(
-          unit,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
+        },
+        child: Container(
+          height: 44,
+          width: 120,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : AppColors.white,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: AppColors.primary, width: 1.5),
+          ),
+          child: Text(
+            unit,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

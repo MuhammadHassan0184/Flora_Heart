@@ -18,9 +18,7 @@ class TestsBottomSheet {
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            Widget buildTestSection({
+        Widget buildTestSection({
               required String title,
               required String selectedValue,
               required Function(String) onSelect,
@@ -120,11 +118,10 @@ class TestsBottomSheet {
                     },
                   ),
                   const SizedBox(height: 20),
-                ],
-              ),
-            );
-          },
-        );
+                ]
+              )
+              );
+              
       },
     );
   }

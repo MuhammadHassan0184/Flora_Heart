@@ -18,7 +18,7 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
     initialItem: 2,
   );
 
-  int selectedLength = 5;
+  final RxInt selectedLength = 5.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
                 label: "Continue",
                 ontap: () {
                   final onboarding = Get.find<OnboardingController>();
-                  if (selectedLength <= 0) {
+                  if (selectedLength.value <= 0) {
                     Get.snackbar(
                       "Error",
                       "Please select your period length",
@@ -86,7 +86,7 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
                     );
                     return;
                   }
-                  onboarding.periodLength = selectedLength;
+                  onboarding.periodLength = selectedLength.value;
                   widget.onNext();
                 },
               ),
@@ -119,26 +119,26 @@ class _PeriodLengthScreenState extends State<PeriodLengthScreen> {
         itemExtent: 50,
         physics: const FixedExtentScrollPhysics(),
         onSelectedItemChanged: (index) {
-          setState(() {
-            selectedLength = index + 3; // 3 to 7
-          });
+          selectedLength.value = index + 3; // 3 to 7
         },
         childDelegate: ListWheelChildBuilderDelegate(
           childCount: 5, // 3,4,5,6,7
           builder: (context, index) {
             int value = index + 3;
-            bool isSelected = value == selectedLength;
+            return Obx(() {
+              bool isSelected = value == selectedLength.value;
 
-            return Center(
-              child: Text(
-                value.toString().padLeft(2, '0'),
-                style: TextStyle(
-                  fontSize: isSelected ? 26 : 18,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  color: isSelected ? AppColors.primary : Colors.grey.shade400,
+              return Center(
+                child: Text(
+                  value.toString().padLeft(2, '0'),
+                  style: TextStyle(
+                    fontSize: isSelected ? 26 : 18,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected ? AppColors.primary : Colors.grey.shade400,
+                  ),
                 ),
-              ),
-            );
+              );
+            });
           },
         ),
       ),

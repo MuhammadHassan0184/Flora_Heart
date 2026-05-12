@@ -5,7 +5,7 @@ import 'package:floraheart/Widgets/custom_cycle_card.dart';
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:floraheart/config/Routes/routes_name.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 class SelfCareScreen extends StatefulWidget {
   const SelfCareScreen({super.key});
@@ -15,7 +15,7 @@ class SelfCareScreen extends StatefulWidget {
 }
 
 class _SelfCareScreenState extends State<SelfCareScreen> {
-  String selectedChip = "All";
+  final RxString selectedChip = "All".obs;
 
   final List<String> chips = [
     "All",
@@ -127,41 +127,41 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: chips.map((chip) {
-                  final bool isSelected = selectedChip == chip;
+                  return Obx(() {
+                    final bool isSelected = selectedChip.value == chip;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedChip = chip;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primary : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.grey.withOpacity(0.3),
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          selectedChip.value = chip;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
                           ),
-                        ),
-                        child: Text(
-                          chip,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : AppColors.grey,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary : Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.grey.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            chip,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : AppColors.grey,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  });
                 }).toList(),
               ),
             ),
@@ -169,13 +169,13 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
             SizedBox(height: 15),
 
             /// ---------------- ARTICLE LIST ----------------
-            ListView(
+            Obx(() => ListView(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               children: articles
                   .where(
                     (article) =>
-                        selectedChip == "All" || article["tag"] == selectedChip,
+                        selectedChip.value == "All" || article["tag"] == selectedChip.value,
                   )
                   .map(
                     (article) => CustomArticleCard(
@@ -191,7 +191,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                     ),
                   )
                   .toList(),
-            ),
+            )),
           ],
         ),
       ),

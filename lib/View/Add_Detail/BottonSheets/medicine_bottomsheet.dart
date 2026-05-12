@@ -9,6 +9,7 @@ class MedicineBottomSheetExample extends StatefulWidget {
   const MedicineBottomSheetExample({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MedicineBottomSheetExampleState createState() =>
       _MedicineBottomSheetExampleState();
 }
@@ -16,7 +17,7 @@ class MedicineBottomSheetExample extends StatefulWidget {
 class _MedicineBottomSheetExampleState
     extends State<MedicineBottomSheetExample> {
   final TodayDataController controller = Get.find<TodayDataController>();
-  late String selectedMedicine;
+  final RxString selectedMedicine = "".obs;
 
   final List<Map<String, dynamic>> medicines = [
     {"label": "Contraceptive Pill", "icon": "assets/contraceptive.svg"},
@@ -31,7 +32,7 @@ class _MedicineBottomSheetExampleState
   void initState() {
     super.initState();
     // Load existing selection from controller
-    selectedMedicine = controller.medicine.value;
+    selectedMedicine.value = controller.medicine.value;
 
     // Automatically open the bottom sheet when the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -49,106 +50,100 @@ class _MedicineBottomSheetExampleState
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 4,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(10),
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 4,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "Choose Medicine",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(height: 16),
+                ...medicines.map((medicine) {
+                  return Obx(() {
+                    bool isSelected =
+                        selectedMedicine.value == medicine['label'];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 6,
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Choose Medicine",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    ...medicines.map((medicine) {
-                      bool isSelected = selectedMedicine == medicine['label'];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 6,
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(25),
-                          onTap: () {
-                            setModalState(() {
-                              selectedMedicine = medicine['label'];
-                            });
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          selectedMedicine.value = medicine['label'];
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : Colors.grey.shade300,
+                              width: 1.5,
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                medicine['label'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                medicine['icon'],
+                                width: 24,
+                                height: 24,
                                 color: isSelected
                                     ? AppColors.primary
-                                    : Colors.grey.shade300,
-                                width: 1.5,
+                                    : Colors.black54,
                               ),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  medicine['label'],
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                                SvgPicture.asset(
-                                  medicine['icon'],
-                                  width: 24,
-                                  height: 24,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.black54,
-                                ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    }),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomButton(
-                        label: "Done",
-                        ontap: () {
-                          controller.medicine.value = selectedMedicine;
-                          Navigator.pop(context);
-                        },
                       ),
-                    ),
-                    SizedBox(height: 16),
-                  ],
+                    );
+                  });
+                }),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: CustomButton(
+                    label: "Done",
+                    ontap: () {
+                      controller.medicine.value = selectedMedicine.value;
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
+                SizedBox(height: 16),
+              ],
+            ),
+          ),
         );
       },
       // After bottom sheet is closed, go back to previous screen

@@ -2,6 +2,7 @@
 
 import 'package:floraheart/config/Colors/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomCalendar extends StatefulWidget {
   final DateTime? ovulationDate;
@@ -42,12 +43,12 @@ class CustomCalendar extends StatefulWidget {
 }
 
 class _CustomCalendarState extends State<CustomCalendar> {
-  DateTime currentMonth = DateTime.now();
-  DateTime? startDate;
-  DateTime? endDate;
-  Set<DateTime> selectedDates = {};
+  final Rx<DateTime> currentMonth = DateTime.now().obs;
+  final Rx<DateTime?> startDate = Rx<DateTime?>(null);
+  final Rx<DateTime?> endDate = Rx<DateTime?>(null);
+  final RxSet<DateTime> selectedDates = <DateTime>{}.obs;
 
-  String fertilityChance = "Low"; // default value
+  final RxString fertilityChance = "Low".obs;
 
   // static const int maxRangeDays = 5;
   final List<String> weekDays = ["mo", "tu", "we", "th", "fr", "sa", "su"];
@@ -55,24 +56,24 @@ class _CustomCalendarState extends State<CustomCalendar> {
   @override
   void initState() {
     super.initState();
-    startDate = widget.initialStartDate;
-    endDate = widget.initialEndDate;
+    startDate.value = widget.initialStartDate;
+    endDate.value = widget.initialEndDate;
     _syncSelectedDatesFromRange();
-    if (startDate != null) {
-      currentMonth = DateTime(startDate!.year, startDate!.month);
+    if (startDate.value != null) {
+      currentMonth.value = DateTime(startDate.value!.year, startDate.value!.month);
     }
   }
 
   void _syncSelectedDatesFromRange() {
     selectedDates.clear();
-    if (startDate != null) {
+    if (startDate.value != null) {
       DateTime start = DateTime(
-        startDate!.year,
-        startDate!.month,
-        startDate!.day,
+        startDate.value!.year,
+        startDate.value!.month,
+        startDate.value!.day,
       );
-      DateTime end = endDate != null
-          ? DateTime(endDate!.year, endDate!.month, endDate!.day)
+      DateTime end = endDate.value != null
+          ? DateTime(endDate.value!.year, endDate.value!.month, endDate.value!.day)
           : start.add(const Duration(days: 5)); // Default to 6 days
 
       DateTime current = start;
@@ -88,25 +89,23 @@ class _CustomCalendarState extends State<CustomCalendar> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialStartDate != oldWidget.initialStartDate ||
         widget.initialEndDate != oldWidget.initialEndDate) {
-      startDate = widget.initialStartDate;
-      endDate = widget.initialEndDate;
+      startDate.value = widget.initialStartDate;
+      endDate.value = widget.initialEndDate;
       _syncSelectedDatesFromRange();
-      if (startDate != null) {
-        setState(() {
-          currentMonth = DateTime(startDate!.year, startDate!.month);
-        });
+      if (startDate.value != null) {
+        currentMonth.value = DateTime(startDate.value!.year, startDate.value!.month);
       }
     }
   }
 
   void _updateRangeFromSelectedDates() {
     if (selectedDates.isEmpty) {
-      startDate = null;
-      endDate = null;
+      startDate.value = null;
+      endDate.value = null;
     } else {
       final sorted = selectedDates.toList()..sort();
-      startDate = sorted.first;
-      endDate = sorted.last;
+      startDate.value = sorted.first;
+      endDate.value = sorted.last;
     }
   }
 
@@ -122,30 +121,28 @@ class _CustomCalendarState extends State<CustomCalendar> {
       return;
     }
 
-    setState(() {
-      if (selectedDates.contains(normalizedDate)) {
-        // One-by-one deselection
-        selectedDates.remove(normalizedDate);
-      } else {
-        if (selectedDates.isEmpty) {
-          // Select 6 days (tapped date + 5 more)
-          for (int i = 0; i < 6; i++) {
-            selectedDates.add(normalizedDate.add(Duration(days: i)));
-          }
-        } else {
-          // Manual addition
-          selectedDates.add(normalizedDate);
+    if (selectedDates.contains(normalizedDate)) {
+      // One-by-one deselection
+      selectedDates.remove(normalizedDate);
+    } else {
+      if (selectedDates.isEmpty) {
+        // Select 6 days (tapped date + 5 more)
+        for (int i = 0; i < 6; i++) {
+          selectedDates.add(normalizedDate.add(Duration(days: i)));
         }
+      } else {
+        // Manual addition
+        selectedDates.add(normalizedDate);
       }
+    }
 
-      _updateRangeFromSelectedDates();
-      widget.onDateTap?.call(normalizedDate);
-    });
+    _updateRangeFromSelectedDates();
+    widget.onDateTap?.call(normalizedDate);
 
-    if (startDate != null && endDate != null) {
-      widget.onRangeSelected?.call(startDate!, endDate!);
-    } else if (startDate != null) {
-      widget.onRangeSelected?.call(startDate!, startDate!);
+    if (startDate.value != null && endDate.value != null) {
+      widget.onRangeSelected?.call(startDate.value!, endDate.value!);
+    } else if (startDate.value != null) {
+      widget.onRangeSelected?.call(startDate.value!, startDate.value!);
     }
   }
 
@@ -205,34 +202,30 @@ class _CustomCalendarState extends State<CustomCalendar> {
         child: Column(
           children: [
             /// Month Header
-            Row(
+            Obx(() => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _arrowButton(Icons.chevron_left, () {
-                  setState(() {
-                    currentMonth = DateTime(
-                      currentMonth.year,
-                      currentMonth.month - 1,
-                    );
-                  });
+                  currentMonth.value = DateTime(
+                    currentMonth.value.year,
+                    currentMonth.value.month - 1,
+                  );
                 }),
                 Text(
-                  "${_monthName(currentMonth.month)} ${currentMonth.year}",
+                  "${_monthName(currentMonth.value.month)} ${currentMonth.value.year}",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 _arrowButton(Icons.chevron_right, () {
-                  setState(() {
-                    currentMonth = DateTime(
-                      currentMonth.year,
-                      currentMonth.month + 1,
-                    );
-                  });
+                  currentMonth.value = DateTime(
+                    currentMonth.value.year,
+                    currentMonth.value.month + 1,
+                  );
                 }),
               ],
-            ),
+            )),
 
             const SizedBox(height: 20), 
 
@@ -253,8 +246,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
             const SizedBox(height: 15),
             
             /// Dates Grid
-            Builder(
-              builder: (context) {
+            Obx(() {
                 // --- OPTIMIZED COLOR LOOKUP MAP ---
                 final Map<int, Color> calendarMap = {};
                 int toKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
@@ -272,8 +264,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 }
 
                 final firstDayOfMonth = DateTime(
-                  currentMonth.year,
-                  currentMonth.month,
+                  currentMonth.value.year,
+                  currentMonth.value.month,
                   1,
                 );
 
@@ -281,14 +273,14 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 int startWeekday = (firstDayOfMonth.weekday - 1);
 
                 final daysInMonth = DateTime(
-                  currentMonth.year,
-                  currentMonth.month + 1,
+                  currentMonth.value.year,
+                  currentMonth.value.month + 1,
                   0,
                 ).day;
 
                 final daysInPrevMonth = DateTime(
-                  currentMonth.year,
-                  currentMonth.month,
+                  currentMonth.value.year,
+                  currentMonth.value.month,
                   0,
                 ).day;
 
@@ -311,20 +303,20 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       bool isCurrentMonth = true;
 
                       if (dayNumber < 1) {
-                        cellDate = DateTime(currentMonth.year, currentMonth.month - 1, daysInPrevMonth + dayNumber);
+                        cellDate = DateTime(currentMonth.value.year, currentMonth.value.month - 1, daysInPrevMonth + dayNumber);
                         isCurrentMonth = false;
                       } else if (dayNumber > daysInMonth) {
-                        cellDate = DateTime(currentMonth.year, currentMonth.month + 1, dayNumber - daysInMonth);
+                        cellDate = DateTime(currentMonth.value.year, currentMonth.value.month + 1, dayNumber - daysInMonth);
                         isCurrentMonth = false;
                       } else {
-                        cellDate = DateTime(currentMonth.year, currentMonth.month, dayNumber);
+                        cellDate = DateTime(currentMonth.value.year, currentMonth.value.month, dayNumber);
                       }
 
                       final normalizedCellDate = DateTime(cellDate.year, cellDate.month, cellDate.day);
                       bool isSelected = selectedDates.contains(normalizedCellDate);
 
-                      if (!isSelected && startDate != null && endDate == null) {
-                        DateTime start = DateTime(startDate!.year, startDate!.month, startDate!.day);
+                      if (!isSelected && startDate.value != null && endDate.value == null) {
+                        DateTime start = DateTime(startDate.value!.year, startDate.value!.month, startDate.value!.day);
                         DateTime end = start.add(const Duration(days: 5));
                         if (!normalizedCellDate.isBefore(start) && !normalizedCellDate.isAfter(end)) {
                           isSelected = true;
@@ -344,9 +336,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                             ? () {
                                 _handleCellTap(cellDate);
                                 final chance = _getFertilityChance(cellDate);
-                                setState(() {
-                                  fertilityChance = chance ?? "Low";
-                                });
+                                fertilityChance.value = chance ?? "Low";
                               }
                             : null,
                         child: Container(
@@ -380,8 +370,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     },
                   ),
                 );
-              },
-            ),
+              }),
           ],
         ),
       ),

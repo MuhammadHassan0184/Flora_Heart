@@ -14,8 +14,8 @@ class HeightScreen extends StatefulWidget {
 }
 
 class _HeightScreenState extends State<HeightScreen> {
-  int selectedFeet = 5;
-  int selectedInches = 6;
+  final RxInt selectedFeet = 5.obs;
+  final RxInt selectedInches = 6.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +137,7 @@ class _HeightScreenState extends State<HeightScreen> {
                 label: "Continue",
                 ontap: () {
                   final onboarding = Get.find<OnboardingController>();
-                  if (selectedFeet <= 0 || selectedInches < 0) {
+                  if (selectedFeet.value <= 0 || selectedInches.value < 0) {
                     Get.snackbar(
                       "Error",
                       "Please select your height",
@@ -146,7 +146,7 @@ class _HeightScreenState extends State<HeightScreen> {
                     );
                     return;
                   }
-                  onboarding.height = "$selectedFeet.$selectedInches";
+                  onboarding.height = "${selectedFeet.value}.${selectedInches.value}";
                   widget.onNext();
                 },
               ),
@@ -164,25 +164,25 @@ class _HeightScreenState extends State<HeightScreen> {
       perspective: 0.001,
       physics: const FixedExtentScrollPhysics(),
       onSelectedItemChanged: (index) {
-        setState(() {
-          selectedFeet = index + 3;
-        });
+        selectedFeet.value = index + 3;
       },
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: 6, // 3 to 8
         builder: (context, index) {
           int value = index + 3;
-          bool isSelected = value == selectedFeet;
-          return Center(
-            child: Text(
-              value.toString().padLeft(2, '0'),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppColors.primary : Colors.grey[400],
+          return Obx(() {
+            bool isSelected = value == selectedFeet.value;
+            return Center(
+              child: Text(
+                value.toString().padLeft(2, '0'),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected ? AppColors.primary : Colors.grey[400],
+                ),
               ),
-            ),
-          );
+            );
+          });
         },
       ),
     );
@@ -194,24 +194,24 @@ class _HeightScreenState extends State<HeightScreen> {
       perspective: 0.001,
       physics: const FixedExtentScrollPhysics(),
       onSelectedItemChanged: (index) {
-        setState(() {
-          selectedInches = index;
-        });
+        selectedInches.value = index;
       },
       childDelegate: ListWheelChildBuilderDelegate(
         childCount: 12,
         builder: (context, index) {
-          bool isSelected = index == selectedInches;
-          return Center(
-            child: Text(
-              index.toString().padLeft(2, '0'),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? Colors.red : Colors.grey[400],
+          return Obx(() {
+            bool isSelected = index == selectedInches.value;
+            return Center(
+              child: Text(
+                index.toString().padLeft(2, '0'),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected ? Colors.red : Colors.grey[400],
+                ),
               ),
-            ),
-          );
+            );
+          });
         },
       ),
     );
