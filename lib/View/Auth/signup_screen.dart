@@ -32,7 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          /// 🌸 Top Left Pink Drops
+          /// Top Left Pink Drops
           Positioned(
             top: size.height * 0.06,
             left: size.width * 0.05,
@@ -42,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
 
-          /// 🌸 Bottom Right Pink Flower
+          /// Bottom Right Pink Flower
           Positioned(
             bottom: -25,
             right: 0,
@@ -205,7 +205,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       },
                     ),
                   ),
-
                   SizedBox(height: 50),
                 ],
               ),

@@ -70,9 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 7),
-
                   Text(
                     "Sign In to access your profile",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -139,9 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-
                   SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -167,9 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   SizedBox(height: 20),
-
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
