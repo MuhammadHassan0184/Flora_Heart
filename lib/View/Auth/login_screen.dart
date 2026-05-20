@@ -117,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Forgot your password?",
                             style: TextStyle(
-                              color: AppColors.grey, // use primary instead of grey
+                              color:
+                                  AppColors.grey, // use primary instead of grey
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -203,7 +204,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-
                   SizedBox(height: 50),
                 ],
               ),

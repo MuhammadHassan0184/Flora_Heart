@@ -20,8 +20,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-
-  // final SignupController controller = SignupController();
   final SignupController controller = Get.put(SignupController());
 
   @override
@@ -52,7 +50,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
 
-          /// 🔹 Your Existing UI
+          /// Your Existing UI
           SafeArea(
             child: SingleChildScrollView(
               child: Column(
