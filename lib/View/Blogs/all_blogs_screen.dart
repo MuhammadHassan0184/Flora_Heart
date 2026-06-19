@@ -73,6 +73,7 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
               },
             ),
           ),
+
           SizedBox(height: 15),
 
           /// ---------------- CHIP ----------------
@@ -119,7 +120,9 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
               }).toList(),
             ),
           ),
+
           SizedBox(height: 15),
+          
           /// ---------------- ARTICLE LIST ----------------
           Expanded(
             child: Obx(
