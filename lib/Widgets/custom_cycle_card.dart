@@ -20,74 +20,82 @@ class CustomArticleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final imageHeight = (width * 0.22).toInt();
+    final imageWidth = (width * 0.28).toInt();
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16),),
-        child: Row(
-          children: [
-            /// Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: isNetworkImage
-                  ? Image.network(
-                      imagePath,
-                      width: width * 0.28,
-                      height: width * 0.22,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset(
-                      imagePath,
-                      width: width * 0.28,
-                      height: width * 0.22,
-                      fit: BoxFit.cover,
-                    ),
-            ),
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+          child: Row(
+            children: [
+              /// Image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: isNetworkImage
+                    ? Image.network(
+                        imagePath,
+                        width: width * 0.28,
+                        height: width * 0.22,
+                        fit: BoxFit.cover,
+                        cacheHeight: imageHeight,
+                        cacheWidth: imageWidth,
+                      )
+                    : Image.asset(
+                        imagePath,
+                        width: width * 0.28,
+                        height: width * 0.22,
+                        fit: BoxFit.cover,
+                        cacheHeight: imageHeight,
+                        cacheWidth: imageWidth,
+                      ),
+              ),
 
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
 
-            /// Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Tag
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightgrey,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      tag,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+              /// Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Tag
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightgrey,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        tag,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 8),
 
-                  /// Title
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    /// Title
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

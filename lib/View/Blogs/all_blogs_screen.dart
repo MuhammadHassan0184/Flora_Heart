@@ -58,6 +58,17 @@ class _AllBlogsScreenState extends State<AllBlogsScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Precache all article images
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (var article in articles) {
+        precacheImage(AssetImage(article["image"]!), context);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,

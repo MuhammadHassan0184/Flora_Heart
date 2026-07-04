@@ -16,6 +16,8 @@ class SelfCareScreen extends StatefulWidget {
 
 class _SelfCareScreenState extends State<SelfCareScreen> {
   final RxString selectedChip = "All".obs;
+  late ImageProvider recommendedImage1;
+  late ImageProvider recommendedImage2;
 
   final List<String> chips = [
     "All",
@@ -54,6 +56,16 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
           "Did you know there's a specific time in your cycle when you're naturally stronger? During the follicular phase, particularly leading up to ovulation, your body is primed for high-intensity workouts and strength training. Lower progesterone levels during this time mean your body can bounce back faster and handle heavier loads. By timing your toughest workouts to these 'superhuman' windows, you can maximize your fitness gains and work with your body's strengths.",
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Precache recommended images after frame to avoid jank
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage(articles[3]["image"]!), context);
+      precacheImage(AssetImage(articles[0]["image"]!), context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,29 +181,32 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
             SizedBox(height: 15),
 
             /// ---------------- ARTICLE LIST ----------------
-            Obx(() => ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: articles
+            Obx(() {
+              final filteredArticles = articles
                   .where(
                     (article) =>
                         selectedChip.value == "All" || article["tag"] == selectedChip.value,
                   )
-                  .map(
-                    (article) => CustomArticleCard(
-                      title: article["title"]!,
-                      tag: article["tag"]!,
-                      imagePath: article["image"]!,
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutesName.blogsDetailScreen,
-                          arguments: article,
-                        );
-                      },
-                    ),
-                  )
-                  .toList(),
-            )),
+                  .toList();
+              
+              return Column(
+                children: filteredArticles
+                    .map(
+                      (article) => CustomArticleCard(
+                        title: article["title"]!,
+                        tag: article["tag"]!,
+                        imagePath: article["image"]!,
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutesName.blogsDetailScreen,
+                            arguments: article,
+                          );
+                        },
+                      ),
+                    )
+                    .toList(),
+              );
+            }),
           ],
         ),
       ),
@@ -200,33 +215,40 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
 }
 
 Widget _recommendedCard(Map<String, String> article) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: () {
-          Get.toNamed(AppRoutesName.blogsDetailScreen, arguments: article);
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            width: 270,
-            height: 160,
-            color: AppColors.lightgrey,
-            child: Image.asset(article["image"]!, fit: BoxFit.cover),
+  return RepaintBoundary(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(AppRoutesName.blogsDetailScreen, arguments: article);
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: Container(
+              width: 270,
+              height: 160,
+              color: AppColors.lightgrey,
+              child: Image.asset(
+                article["image"]!,
+                fit: BoxFit.cover,
+                cacheHeight: 320,
+                cacheWidth: 540,
+              ),
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 10),
-      SizedBox(
-        width: 270,
-        child: Text(
-          article["title"]!,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17),
+        SizedBox(height: 10),
+        SizedBox(
+          width: 270,
+          child: Text(
+            article["title"]!,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17),
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }

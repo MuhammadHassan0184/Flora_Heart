@@ -70,12 +70,16 @@ class TodayDataController extends GetxController {
 
     /// 4. HEAVY FLOW SPECIAL
     if (flow.value == 2 || flow.value == 3) {
-      return "Heavy flow detected, stay hydrated, take rest, and consider iron-rich foods for recovery.";
+      final morningMsg = "Heavy flow detected, stay hydrated, take rest, and consider iron-rich foods for recovery.";
+      final eveningMsg = "With heavy flow, ensure you drink plenty of water, get adequate rest, and eat iron-rich foods like spinach and dates.";
+      return seedModifier == 0 ? morningMsg : eveningMsg;
     }
 
     /// 5. MOOD BASED
     if (moods.contains("Sad") || moods.contains("Stressed")) {
-      return "Take time for yourself, relax your mind, and do activities that bring you peace.";
+      final morningMsg = "Take time for yourself, relax your mind, and do activities that bring you peace.";
+      final eveningMsg = "Remember to prioritize your well-being, practice mindfulness, and engage in activities that make you happy.";
+      return seedModifier == 0 ? morningMsg : eveningMsg;
     }
 
     /// 6. DEFAULT
@@ -113,9 +117,9 @@ class TodayDataController extends GetxController {
             "discharge": discharge.toList(),
             "sexualActivity": sexualActivity.value,
             "temperature": temperature.value,
-            "tempUnit": temperatureUnit.value, // 🔥 save unit
+            "tempUnit": temperatureUnit.value, // save unit
             "weight": weight.value,
-            "weightUnit": weightUnit.value, // 🔥 save unit
+            "weightUnit": weightUnit.value, // save unit
             "ovulationTest": ovulationTest.value,
             "pregnancyTest": pregnancyTest.value,
             "drinkWater": drinkWater.value,

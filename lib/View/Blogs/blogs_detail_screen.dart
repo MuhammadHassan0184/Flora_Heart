@@ -38,10 +38,14 @@ class BlogsDetailScreen extends StatelessWidget {
                   ? Image.asset(
                       data["image"]!,
                       fit: BoxFit.cover,
+                      cacheHeight: 360,
+                      cacheWidth: 360,
                     )
                   : Image.network(
                       data["image"]!,
                       fit: BoxFit.cover,
+                      cacheHeight: 360,
+                      cacheWidth: 360,
                     ),
               ),
             ),
